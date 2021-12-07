@@ -84,6 +84,7 @@
 <span id="84">84</span>
 <span id="85">85</span>
 <span id="86">86</span>
+<span id="87">87</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -113,6 +114,7 @@
 	<span class="ident">ws_url</span>: <span class="ident">String</span>,
 ) {
 	<span class="kw">use</span> <span class="ident">frame_support::storage::generator::StorageMap</span>;
+
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">Builder</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>()
 		.<span class="ident">mode</span>(<span class="ident">Mode::Online</span>(<span class="ident">OnlineConfig</span> {
 			<span class="ident">transport</span>: <span class="ident">ws_url</span>.<span class="ident">to_string</span>().<span class="ident">into</span>(),
@@ -124,10 +126,10 @@
 		}))
 		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Bonded</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::prefix_hash</span>())
 		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Ledger</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::prefix_hash</span>())
-		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Validators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::prefix_hash</span>())
-		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Nominators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::prefix_hash</span>())
-		.<span class="ident">inject_hashed_key</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::CounterForNominators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::hashed_key</span>())
-		.<span class="ident">inject_hashed_key</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::CounterForValidators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::hashed_key</span>())
+		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Validators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::map_storage_final_prefix</span>())
+		.<span class="ident">inject_hashed_prefix</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Nominators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::map_storage_final_prefix</span>())
+		.<span class="ident">inject_hashed_key</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Validators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::counter_storage_final_key</span>())
+		.<span class="ident">inject_hashed_key</span>(<span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">pallet_staking::Nominators</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::counter_storage_final_key</span>())
 		.<span class="ident">build</span>()
 		.<span class="kw">await</span>
 		.<span class="ident">unwrap</span>();

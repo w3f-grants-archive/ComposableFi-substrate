@@ -1041,6 +1041,17 @@
 <span id="1041">1041</span>
 <span id="1042">1042</span>
 <span id="1043">1043</span>
+<span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -1141,6 +1152,17 @@
 	<span class="ident">OnEmpty</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">QueryKind::Query</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">MaxValues</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
+	<span class="doccomment">/// The key used to store the counter of the map.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">counter_storage_final_key</span>() -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
+		<span class="ident">CounterFor</span>::<span class="op">&lt;</span><span class="ident">Prefix</span><span class="op">&gt;</span><span class="ident">::hashed_key</span>()
+	}
+
+	<span class="doccomment">/// The prefix used to generate the key of the map.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_storage_final_prefix</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+		<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::storage::generator::StorageMap</span>;
+		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MapWrapper</span><span class="op">&gt;</span><span class="ident">::Map::prefix_hash</span>()
+	}
+
 	<span class="doccomment">/// Get the storage key used to fetch a value corresponding to a specific key.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hashed_key_for</span><span class="op">&lt;</span><span class="ident">KeyArg</span>: <span class="ident">EncodeLike</span><span class="op">&lt;</span><span class="ident">Key</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">key</span>: <span class="ident">KeyArg</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MapWrapper</span><span class="op">&gt;</span><span class="ident">::Map::hashed_key_for</span>(<span class="ident">key</span>)
