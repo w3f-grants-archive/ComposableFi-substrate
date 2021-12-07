@@ -444,6 +444,9 @@
 <span id="444">444</span>
 <span id="445">445</span>
 <span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Substrate.</span>
 
@@ -465,8 +468,8 @@
 <span class="kw">use</span> <span class="ident">sp_runtime::codec</span>::{<span class="self">self</span>, <span class="ident">Decode</span>, <span class="ident">Encode</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">best_justification</span>, <span class="ident">find_scheduled_change</span>, <span class="ident">AuthoritySetChanges</span>, <span class="ident">BlockNumberOps</span>,
-	<span class="ident">GrandpaJustification</span>, <span class="ident">SharedAuthoritySet</span>,
+	<span class="ident">best_justification</span>, <span class="ident">find_scheduled_change</span>, <span class="ident">AuthoritySetChanges</span>, <span class="ident">AuthoritySetHardFork</span>,
+	<span class="ident">BlockNumberOps</span>, <span class="ident">GrandpaJustification</span>, <span class="ident">SharedAuthoritySet</span>,
 };
 <span class="kw">use</span> <span class="ident">sc_client_api::Backend</span> <span class="kw">as</span> <span class="ident">ClientBackend</span>;
 <span class="kw">use</span> <span class="ident">sc_network::warp_request_handler</span>::{<span class="ident">EncodedProof</span>, <span class="ident">VerificationResult</span>, <span class="ident">WarpSyncProvider</span>};
@@ -701,12 +704,15 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">authority_set</span>: <span class="ident">SharedAuthoritySet</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-		<span class="ident">hard_forks</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SetId</span>, (<span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>), <span class="ident">AuthorityList</span>)<span class="op">&gt;</span>,
+		<span class="ident">hard_forks</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthoritySetHardFork</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="self">Self</span> {
 		<span class="ident">NetworkProvider</span> {
 			<span class="ident">backend</span>,
 			<span class="ident">authority_set</span>,
-			<span class="ident">hard_forks</span>: <span class="ident">hard_forks</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">s</span>, <span class="ident">hn</span>, <span class="ident">list</span>)<span class="op">|</span> (<span class="ident">hn</span>, (<span class="ident">s</span>, <span class="ident">list</span>))).<span class="ident">collect</span>(),
+			<span class="ident">hard_forks</span>: <span class="ident">hard_forks</span>
+				.<span class="ident">into_iter</span>()
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">fork</span><span class="op">|</span> (<span class="ident">fork</span>.<span class="ident">block</span>, (<span class="ident">fork</span>.<span class="ident">set_id</span>, <span class="ident">fork</span>.<span class="ident">authorities</span>)))
+				.<span class="ident">collect</span>(),
 		}
 	}
 }
