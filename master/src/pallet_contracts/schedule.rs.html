@@ -758,10 +758,6 @@
 <span id="758">758</span>
 <span id="759">759</span>
 <span id="760">760</span>
-<span id="761">761</span>
-<span id="762">762</span>
-<span id="763">763</span>
-<span id="764">764</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -1034,9 +1030,6 @@
 
 	<span class="doccomment">/// Weight of calling `seal_minimum_balance`.</span>
 	<span class="kw">pub</span> <span class="ident">minimum_balance</span>: <span class="ident">Weight</span>,
-
-	<span class="doccomment">/// Weight of calling `seal_contract_deposit`.</span>
-	<span class="kw">pub</span> <span class="ident">contract_deposit</span>: <span class="ident">Weight</span>,
 
 	<span class="doccomment">/// Weight of calling `seal_block_number`.</span>
 	<span class="kw">pub</span> <span class="ident">block_number</span>: <span class="ident">Weight</span>,
@@ -1325,7 +1318,6 @@
 			<span class="ident">balance</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_balance</span>),
 			<span class="ident">value_transferred</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_value_transferred</span>),
 			<span class="ident">minimum_balance</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_minimum_balance</span>),
-			<span class="ident">contract_deposit</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_tombstone_deposit</span>),
 			<span class="ident">block_number</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_block_number</span>),
 			<span class="ident">now</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_now</span>),
 			<span class="ident">weight_to_fee</span>: <span class="macro">cost_batched!</span>(<span class="ident">seal_weight_to_fee</span>),

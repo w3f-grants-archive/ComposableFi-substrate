@@ -71,6 +71,18 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -98,7 +110,7 @@
 
 <span class="kw">use</span> <span class="ident">codec::Codec</span>;
 <span class="kw">use</span> <span class="ident">pallet_contracts_primitives</span>::{
-	<span class="ident">Code</span>, <span class="ident">ContractExecResult</span>, <span class="ident">ContractInstantiateResult</span>, <span class="ident">GetStorageResult</span>,
+	<span class="ident">Code</span>, <span class="ident">CodeUploadResult</span>, <span class="ident">ContractExecResult</span>, <span class="ident">ContractInstantiateResult</span>, <span class="ident">GetStorageResult</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
 
@@ -118,20 +130,32 @@
 			<span class="ident">dest</span>: <span class="ident">AccountId</span>,
 			<span class="ident">value</span>: <span class="ident">Balance</span>,
 			<span class="ident">gas_limit</span>: <span class="ident">u64</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
 			<span class="ident">input_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-		) -&gt; <span class="ident">ContractExecResult</span>;
+		) -&gt; <span class="ident">ContractExecResult</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Instantiate a new contract.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// See `pallet_contracts::Pallet::instantiate`.</span>
 		<span class="kw">fn</span> <span class="ident">instantiate</span>(
 			<span class="ident">origin</span>: <span class="ident">AccountId</span>,
-			<span class="ident">endowment</span>: <span class="ident">Balance</span>,
+			<span class="ident">value</span>: <span class="ident">Balance</span>,
 			<span class="ident">gas_limit</span>: <span class="ident">u64</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
 			<span class="ident">code</span>: <span class="ident">Code</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
 			<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 			<span class="ident">salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-		) -&gt; <span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
+		) -&gt; <span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span>;
+
+
+		<span class="doccomment">/// Upload new code without instantiating a contract from it.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// See `pallet_contracts::Pallet::upload_code`.</span>
+		<span class="kw">fn</span> <span class="ident">upload_code</span>(
+			<span class="ident">origin</span>: <span class="ident">AccountId</span>,
+			<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Balance</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Query a given storage key in a given contract.</span>
 		<span class="doccomment">///</span>

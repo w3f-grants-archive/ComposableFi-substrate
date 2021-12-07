@@ -747,6 +747,110 @@
 <span id="747">747</span>
 <span id="748">748</span>
 <span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -855,24 +959,27 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">exec</span>::{<span class="ident">AccountIdOf</span>, <span class="ident">ExecError</span>, <span class="ident">Executable</span>, <span class="ident">Stack</span> <span class="kw">as</span> <span class="ident">ExecStack</span>},
 	<span class="ident">gas::GasMeter</span>,
-	<span class="ident">storage</span>::{<span class="ident">ContractInfo</span>, <span class="ident">DeletedContract</span>, <span class="ident">Storage</span>},
-	<span class="ident">wasm::PrefabWasmModule</span>,
+	<span class="ident">storage</span>::{<span class="ident">meter::Meter</span> <span class="kw">as</span> <span class="ident">StorageMeter</span>, <span class="ident">ContractInfo</span>, <span class="ident">DeletedContract</span>, <span class="ident">Storage</span>},
+	<span class="ident">wasm</span>::{<span class="ident">OwnerInfo</span>, <span class="ident">PrefabWasmModule</span>},
 	<span class="ident">weights::WeightInfo</span>,
 };
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Encode</span>, <span class="ident">HasCompact</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch::Dispatchable</span>,
 	<span class="ident">ensure</span>,
-	<span class="ident">traits</span>::{<span class="ident">Contains</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">Randomness</span>, <span class="ident">StorageVersion</span>, <span class="ident">Time</span>},
-	<span class="ident">weights</span>::{<span class="ident">GetDispatchInfo</span>, <span class="ident">PostDispatchInfo</span>, <span class="ident">Weight</span>},
+	<span class="ident">traits</span>::{<span class="ident">Contains</span>, <span class="ident">Currency</span>, <span class="ident">Get</span>, <span class="ident">Randomness</span>, <span class="ident">ReservableCurrency</span>, <span class="ident">StorageVersion</span>, <span class="ident">Time</span>},
+	<span class="ident">weights</span>::{<span class="ident">GetDispatchInfo</span>, <span class="ident">Pays</span>, <span class="ident">PostDispatchInfo</span>, <span class="ident">Weight</span>},
 };
 <span class="kw">use</span> <span class="ident">frame_system::Pallet</span> <span class="kw">as</span> <span class="ident">System</span>;
 <span class="kw">use</span> <span class="ident">pallet_contracts_primitives</span>::{
-	<span class="ident">Code</span>, <span class="ident">ContractAccessError</span>, <span class="ident">ContractExecResult</span>, <span class="ident">ContractInstantiateResult</span>, <span class="ident">ExecReturnValue</span>,
-	<span class="ident">GetStorageResult</span>, <span class="ident">InstantiateReturnValue</span>,
+	<span class="ident">Code</span>, <span class="ident">CodeUploadResult</span>, <span class="ident">CodeUploadReturnValue</span>, <span class="ident">ContractAccessError</span>, <span class="ident">ContractExecResult</span>,
+	<span class="ident">ContractInstantiateResult</span>, <span class="ident">ExecReturnValue</span>, <span class="ident">GetStorageResult</span>, <span class="ident">InstantiateReturnValue</span>,
+	<span class="ident">StorageDeposit</span>,
 };
+<span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">crypto::UncheckedFrom</span>, <span class="ident">Bytes</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Convert</span>, <span class="ident">Hash</span>, <span class="ident">Saturating</span>, <span class="ident">StaticLookup</span>};
-<span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="kw">type</span> <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Hash</span>;
 <span class="kw">type</span> <span class="ident">TrieId</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>;
@@ -880,7 +987,7 @@
 	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Currency</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Balance</span>;
 
 <span class="doccomment">/// The current storage version.</span>
-<span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">5</span>);
+<span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">6</span>);
 
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
@@ -897,7 +1004,7 @@
 		<span class="kw">type</span> <span class="ident">Randomness</span>: <span class="ident">Randomness</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Hash</span>, <span class="ident"><span class="self">Self</span>::BlockNumber</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The currency in which fees are paid and contract balances are held.</span>
-		<span class="kw">type</span> <span class="ident">Currency</span>: <span class="ident">Currency</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Currency</span>: <span class="ident">ReservableCurrency</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The overarching event type.</span>
 		<span class="kw">type</span> <span class="ident">Event</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">IsType</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Event</span><span class="op">&gt;</span>;
@@ -913,12 +1020,6 @@
 		<span class="doccomment">/// Use this filter to control which dispatchables are callable by contracts.</span>
 		<span class="doccomment">/// This is applied in **addition** to [`frame_system::Config::BaseCallFilter`].</span>
 		<span class="doccomment">/// It is recommended to treat this as a whitelist.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// # Subsistence Threshold</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// The runtime **must** make sure that any allowed dispatchable makes sure that the</span>
-		<span class="doccomment">/// `total_balance` of the contract stays above [`Pallet::subsistence_threshold()`].</span>
-		<span class="doccomment">/// Otherwise users could clutter the storage with contracts.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Stability</span>
 		<span class="doccomment">///</span>
@@ -950,13 +1051,6 @@
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">Schedule</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">Schedule</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-		<span class="doccomment">/// The deposit that must be placed into the contract&#39;s account to instantiate it.</span>
-		<span class="doccomment">/// This is in **addition** to the [`Currency::minimum_balance`].</span>
-		<span class="doccomment">/// The minimum balance for a contract&#39;s account can be queried using</span>
-		<span class="doccomment">/// [`Pallet::subsistence_threshold`].</span>
-		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
-		<span class="kw">type</span> <span class="ident">ContractDeposit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-
 		<span class="doccomment">/// The type of the call stack determines the maximum nesting depth of contract calls.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// The allowed depth is `CallStack::size() + 1`.</span>
@@ -971,6 +1065,21 @@
 		<span class="doccomment">/// The maximum amount of weight that can be consumed per block for lazy trie removal.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">DeletionWeightLimit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The amount of balance a caller has to pay for each byte of storage.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// # Note</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Changing this value for an existing chain might need a storage migration.</span>
+		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
+		<span class="kw">type</span> <span class="ident">DepositPerByte</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// The amount of balance a caller has to pay for each storage item.</span>
+		<span class="doccomment">/// # Note</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Changing this value for an existing chain might need a storage migration.</span>
+		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
+		<span class="kw">type</span> <span class="ident">DepositPerItem</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
@@ -1004,8 +1113,18 @@
 	<span class="kw">where</span>
 		<span class="ident">T::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">T::AccountId</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
+		<span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">TypeInfo</span> <span class="op">+</span> <span class="ident">Encode</span>,
 	{
 		<span class="doccomment">/// Makes a call to an account, optionally transferring some balance.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// # Parameters</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// * `dest`: Address of the contract to call.</span>
+		<span class="doccomment">/// * `value`: The balance to transfer from the `origin` to `dest`.</span>
+		<span class="doccomment">/// * `gas_limit`: The gas limit enforced when executing the constructor.</span>
+		<span class="doccomment">/// * `storage_deposit_limit`: The maximum amount of balance that can be charged from the</span>
+		<span class="doccomment">///   caller to pay for the storage consumed.</span>
+		<span class="doccomment">/// * `data`: The input data to pass to the contract.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// * If the account is a smart-contract account, the associated code will be</span>
 		<span class="doccomment">/// executed and any value will be transferred.</span>
@@ -1018,23 +1137,36 @@
 			<span class="ident">dest</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">codec::HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span><span class="op">&gt;</span>,
 			<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">dest</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">dest</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_call</span>(<span class="ident">origin</span>, <span class="ident">dest</span>, <span class="ident">value</span>, <span class="ident">gas_limit</span>, <span class="ident">data</span>, <span class="prelude-val">None</span>);
+			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_call</span>(
+				<span class="ident">origin</span>,
+				<span class="ident">dest</span>,
+				<span class="ident">value</span>,
+				<span class="ident">gas_limit</span>,
+				<span class="ident">storage_deposit_limit</span>.<span class="ident">map</span>(<span class="ident">Into::into</span>),
+				<span class="ident">data</span>,
+				<span class="prelude-val">None</span>,
+			);
 			<span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">into_dispatch_result</span>(<span class="ident">output</span>.<span class="ident">result</span>, <span class="ident">T::WeightInfo::call</span>())
 		}
 
 		<span class="doccomment">/// Instantiates a new contract from the supplied `code` optionally transferring</span>
 		<span class="doccomment">/// some balance.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// This is the only function that can deploy new code to the chain.</span>
+		<span class="doccomment">/// This dispatchable has the same effect as calling [`Self::upload_code`] +</span>
+		<span class="doccomment">/// [`Self::instantiate`]. Bundling them together provides efficiency gains. Please</span>
+		<span class="doccomment">/// also check the documentation of [`Self::upload_code`].</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// # Parameters</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// * `endowment`: The balance to transfer from the `origin` to the newly created contract.</span>
+		<span class="doccomment">/// * `value`: The balance to transfer from the `origin` to the newly created contract.</span>
 		<span class="doccomment">/// * `gas_limit`: The gas limit enforced when executing the constructor.</span>
+		<span class="doccomment">/// * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved</span>
+		<span class="doccomment">///   from the caller to pay for the storage consumed.</span>
 		<span class="doccomment">/// * `code`: The contract code to deploy in raw bytes.</span>
 		<span class="doccomment">/// * `data`: The input data to pass to the contract constructor.</span>
 		<span class="doccomment">/// * `salt`: Used for the address derivation. See [`Pallet::contract_address`].</span>
@@ -1046,7 +1178,7 @@
 		<span class="doccomment">/// - If the `code_hash` already exists on the chain the underlying `code` will be shared.</span>
 		<span class="doccomment">/// - The destination address is computed based on the sender, code_hash and the salt.</span>
 		<span class="doccomment">/// - The smart-contract account is created at the computed address.</span>
-		<span class="doccomment">/// - The `endowment` is transferred to the new account.</span>
+		<span class="doccomment">/// - The `value` is transferred to the new account.</span>
 		<span class="doccomment">/// - The `deploy` function is executed in the context of the newly-created account.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(
 			<span class="ident">T::WeightInfo::instantiate_with_code</span>(
@@ -1057,8 +1189,9 @@
 		)]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">instantiate_with_code</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">endowment</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">codec::HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span><span class="op">&gt;</span>,
 			<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 			<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 			<span class="ident">salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
@@ -1068,8 +1201,9 @@
 			<span class="kw">let</span> <span class="ident">salt_len</span> <span class="op">=</span> <span class="ident">salt</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
 				<span class="ident">origin</span>,
-				<span class="ident">endowment</span>,
+				<span class="ident">value</span>,
 				<span class="ident">gas_limit</span>,
+				<span class="ident">storage_deposit_limit</span>.<span class="ident">map</span>(<span class="ident">Into::into</span>),
 				<span class="ident">Code::Upload</span>(<span class="ident">Bytes</span>(<span class="ident">code</span>)),
 				<span class="ident">data</span>,
 				<span class="ident">salt</span>,
@@ -1091,8 +1225,9 @@
 		)]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">instantiate</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">endowment</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">codec::HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span><span class="op">&gt;</span>,
 			<span class="ident">code_hash</span>: <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 			<span class="ident">salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
@@ -1101,8 +1236,9 @@
 			<span class="kw">let</span> <span class="ident">salt_len</span> <span class="op">=</span> <span class="ident">salt</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
 				<span class="ident">origin</span>,
-				<span class="ident">endowment</span>,
+				<span class="ident">value</span>,
 				<span class="ident">gas_limit</span>,
+				<span class="ident">storage_deposit_limit</span>.<span class="ident">map</span>(<span class="ident">Into::into</span>),
 				<span class="ident">Code::Existing</span>(<span class="ident">code_hash</span>),
 				<span class="ident">data</span>,
 				<span class="ident">salt</span>,
@@ -1112,6 +1248,47 @@
 				<span class="ident">output</span>.<span class="ident">result</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">_address</span>, <span class="ident">output</span>)<span class="op">|</span> <span class="ident">output</span>),
 				<span class="ident">T::WeightInfo::instantiate</span>(<span class="ident">salt_len</span> <span class="op">/</span> <span class="number">1024</span>),
 			)
+		}
+
+		<span class="doccomment">/// Upload new `code` without instantiating a contract from it.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// If the code does not already exist a deposit is reserved from the caller</span>
+		<span class="doccomment">/// and unreserved only when [`Self::remove_code`] is called. The size of the reserve</span>
+		<span class="doccomment">/// depends on the instrumented size of the the supplied `code`.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// If the code already exists in storage it will still return `Ok` and upgrades</span>
+		<span class="doccomment">/// the in storage version to the current</span>
+		<span class="doccomment">/// [`InstructionWeights::version`](InstructionWeights).</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// # Note</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Anyone can instantiate a contract from any uploaded code and thus prevent its removal.</span>
+		<span class="doccomment">/// To avoid this situation a constructor could employ access control so that it can</span>
+		<span class="doccomment">/// only be instantiated by permissioned entities. The same is true when uploading</span>
+		<span class="doccomment">/// through [`Self::instantiate_with_code`].</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::upload_code</span>(<span class="ident">code</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">/</span> <span class="number">1024</span>))]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">upload_code</span>(
+			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">codec::HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+			<span class="ident"><span class="self">Self</span>::bare_upload_code</span>(<span class="ident">origin</span>, <span class="ident">code</span>, <span class="ident">storage_deposit_limit</span>.<span class="ident">map</span>(<span class="ident">Into::into</span>)).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+		}
+
+		<span class="doccomment">/// Remove the code stored under `code_hash` and refund the deposit to its owner.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// A code can only be removed by its original uploader (its owner) and only if it is</span>
+		<span class="doccomment">/// not used by any contract.</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::remove_code</span>())]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_code</span>(
+			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">code_hash</span>: <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
+			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+			<span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="kw-2">&amp;</span><span class="ident">origin</span>, <span class="ident">code_hash</span>)<span class="question-mark">?</span>;
+			<span class="comment">// we waive the fee because removing unused code is beneficial</span>
+			<span class="prelude-val">Ok</span>(<span class="ident">Pays::No</span>.<span class="ident">into</span>())
 		}
 	}
 
@@ -1137,12 +1314,6 @@
 		<span class="doccomment">/// Code with the specified hash has been stored.</span>
 		<span class="ident">CodeStored</span> { <span class="ident">code_hash</span>: <span class="ident">T::Hash</span> },
 
-		<span class="doccomment">/// Triggered when the current schedule is updated.</span>
-		<span class="ident">ScheduleUpdated</span> {
-			<span class="doccomment">/// The version of the newly set schedule.</span>
-			<span class="ident">version</span>: <span class="ident">u32</span>,
-		},
-
 		<span class="doccomment">/// A custom event emitted by the contract.</span>
 		<span class="ident">ContractEmitted</span> {
 			<span class="doccomment">/// The contract that emitted the event.</span>
@@ -1153,8 +1324,6 @@
 		},
 
 		<span class="doccomment">/// A code with the specified hash was removed.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// This happens when the last contract that uses this code hash was removed.</span>
 		<span class="ident">CodeRemoved</span> { <span class="ident">code_hash</span>: <span class="ident">T::Hash</span> },
 	}
 
@@ -1166,16 +1335,8 @@
 		<span class="ident">OutOfGas</span>,
 		<span class="doccomment">/// The output buffer supplied to a contract API call was too small.</span>
 		<span class="ident">OutputBufferTooSmall</span>,
-		<span class="doccomment">/// Performing the requested transfer would have brought the contract below</span>
-		<span class="doccomment">/// the subsistence threshold. No transfer is allowed to do this. Use `seal_terminate`</span>
-		<span class="doccomment">/// to recover a deposit.</span>
-		<span class="ident">BelowSubsistenceThreshold</span>,
-		<span class="doccomment">/// The newly created contract is below the subsistence threshold after executing</span>
-		<span class="doccomment">/// its contructor. No contracts are allowed to exist below that threshold.</span>
-		<span class="ident">NewContractNotFunded</span>,
-		<span class="doccomment">/// Performing the requested transfer failed for a reason originating in the</span>
-		<span class="doccomment">/// chosen currency implementation of the runtime. Most probably the balance is</span>
-		<span class="doccomment">/// too low or locks are placed on it.</span>
+		<span class="doccomment">/// Performing the requested transfer failed. Probably because there isn&#39;t enough</span>
+		<span class="doccomment">/// free balance in the sender&#39;s account.</span>
 		<span class="ident">TransferFailed</span>,
 		<span class="doccomment">/// Performing a call was denied because the calling depth reached the limit</span>
 		<span class="doccomment">/// of what is specified in the schedule.</span>
@@ -1216,11 +1377,6 @@
 		<span class="doccomment">/// The queue is filled by deleting contracts and emptied by a fixed amount each block.</span>
 		<span class="doccomment">/// Trying again during another block is the only way to resolve this issue.</span>
 		<span class="ident">DeletionQueueFull</span>,
-		<span class="doccomment">/// A storage modification exhausted the 32bit type that holds the storage size.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// This can either happen when the accumulated storage in bytes is too large or</span>
-		<span class="doccomment">/// when number of storage items is too large.</span>
-		<span class="ident">StorageExhausted</span>,
 		<span class="doccomment">/// A contract with the same AccountId already exists.</span>
 		<span class="ident">DuplicateContract</span>,
 		<span class="doccomment">/// A contract self destructed in its constructor.</span>
@@ -1231,6 +1387,12 @@
 		<span class="ident">DebugMessageInvalidUTF8</span>,
 		<span class="doccomment">/// A call tried to invoke a contract that is flagged as non-reentrant.</span>
 		<span class="ident">ReentranceDenied</span>,
+		<span class="doccomment">/// Origin doesn&#39;t have enough balance to pay the required storage deposits.</span>
+		<span class="ident">StorageDepositNotEnoughFunds</span>,
+		<span class="doccomment">/// More storage was created than allowed by the storage deposit limit.</span>
+		<span class="ident">StorageDepositLimitExhausted</span>,
+		<span class="doccomment">/// Code removal was denied because the code is still in use by at least one contract.</span>
+		<span class="ident">CodeInUse</span>,
 	}
 
 	<span class="doccomment">/// A mapping from an original code hash to the original code, untouched by instrumentation.</span>
@@ -1241,6 +1403,10 @@
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span>
 		<span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+	<span class="doccomment">/// A mapping between an original code hash and its owner information.</span>
+	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type</span> <span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">Identity</span>, <span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">OwnerInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// The subtrie counter.</span>
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
@@ -1271,6 +1437,8 @@
 <span class="kw">struct</span> <span class="ident">InternalOutput</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span>, <span class="ident">O</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The gas meter that was used to execute the call.</span>
 	<span class="ident">gas_meter</span>: <span class="ident">GasMeter</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// The storage deposit used by the call.</span>
+	<span class="ident">storage_deposit</span>: <span class="ident">StorageDeposit</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// The result of the call.</span>
 	<span class="ident">result</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">ExecError</span><span class="op">&gt;</span>,
 }
@@ -1296,16 +1464,25 @@
 		<span class="ident">dest</span>: <span class="ident">T::AccountId</span>,
 		<span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+		<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">debug</span>: <span class="ident">bool</span>,
-	) -&gt; <span class="ident">ContractExecResult</span> {
+	) -&gt; <span class="ident">ContractExecResult</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_message</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">debug</span> { <span class="prelude-val">Some</span>(<span class="ident">Vec::new</span>()) } <span class="kw">else</span> { <span class="prelude-val">None</span> };
-		<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span>
-			<span class="ident"><span class="self">Self</span>::internal_call</span>(<span class="ident">origin</span>, <span class="ident">dest</span>, <span class="ident">value</span>, <span class="ident">gas_limit</span>, <span class="ident">data</span>, <span class="ident">debug_message</span>.<span class="ident">as_mut</span>());
+		<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_call</span>(
+			<span class="ident">origin</span>,
+			<span class="ident">dest</span>,
+			<span class="ident">value</span>,
+			<span class="ident">gas_limit</span>,
+			<span class="ident">storage_deposit_limit</span>,
+			<span class="ident">data</span>,
+			<span class="ident">debug_message</span>.<span class="ident">as_mut</span>(),
+		);
 		<span class="ident">ContractExecResult</span> {
 			<span class="ident">result</span>: <span class="ident">output</span>.<span class="ident">result</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">error</span>),
 			<span class="ident">gas_consumed</span>: <span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">gas_consumed</span>(),
 			<span class="ident">gas_required</span>: <span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">gas_required</span>(),
+			<span class="ident">storage_deposit</span>: <span class="ident">output</span>.<span class="ident">storage_deposit</span>,
 			<span class="ident">debug_message</span>: <span class="ident">debug_message</span>.<span class="ident">unwrap_or_default</span>(),
 		}
 	}
@@ -1317,7 +1494,6 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// It returns the execution result, account id and the amount of used weight.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Note</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// `debug` should only ever be set to `true` when executing as an RPC because</span>
@@ -1325,18 +1501,20 @@
 	<span class="doccomment">/// If set to `true` it returns additional human readable debugging information.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bare_instantiate</span>(
 		<span class="ident">origin</span>: <span class="ident">T::AccountId</span>,
-		<span class="ident">endowment</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+		<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">code</span>: <span class="ident">Code</span><span class="op">&lt;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">debug</span>: <span class="ident">bool</span>,
-	) -&gt; <span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">debug_message</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">debug</span> { <span class="prelude-val">Some</span>(<span class="ident">Vec::new</span>()) } <span class="kw">else</span> { <span class="prelude-val">None</span> };
 		<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
 			<span class="ident">origin</span>,
-			<span class="ident">endowment</span>,
+			<span class="ident">value</span>,
 			<span class="ident">gas_limit</span>,
+			<span class="ident">storage_deposit_limit</span>,
 			<span class="ident">code</span>,
 			<span class="ident">data</span>,
 			<span class="ident">salt</span>,
@@ -1349,8 +1527,29 @@
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">error</span>),
 			<span class="ident">gas_consumed</span>: <span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">gas_consumed</span>(),
 			<span class="ident">gas_required</span>: <span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">gas_required</span>(),
+			<span class="ident">storage_deposit</span>: <span class="ident">output</span>.<span class="ident">storage_deposit</span>,
 			<span class="ident">debug_message</span>: <span class="ident">debug_message</span>.<span class="ident">unwrap_or_default</span>(),
 		}
+	}
+
+	<span class="doccomment">/// Upload new code without instantiating a contract from it.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This function is similar to [`Self::upload_code`], but doesn&#39;t perform any address lookups</span>
+	<span class="doccomment">/// and better suitable for calling directly from Rust.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bare_upload_code</span>(
+		<span class="ident">origin</span>: <span class="ident">T::AccountId</span>,
+		<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+		<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">CodeUploadResult</span><span class="op">&lt;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
+		<span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">PrefabWasmModule::from_code</span>(<span class="ident">code</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">origin</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">open_deposit</span>();
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">storage_deposit_limit</span>) <span class="op">=</span> <span class="ident">storage_deposit_limit</span> {
+			<span class="macro">ensure!</span>(<span class="ident">storage_deposit_limit</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">deposit</span>, <span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::StorageDepositLimitExhausted</span>);
+		}
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">CodeUploadReturnValue</span> { <span class="ident">code_hash</span>: <span class="kw-2">*</span><span class="ident">module</span>.<span class="ident">code_hash</span>(), <span class="ident">deposit</span> };
+		<span class="ident">module</span>.<span class="ident">store</span>()<span class="question-mark">?</span>;
+		<span class="prelude-val">Ok</span>(<span class="ident">result</span>)
 	}
 
 	<span class="doccomment">/// Query storage of a specified contract under a specified key.</span>
@@ -1385,35 +1584,14 @@
 		<span class="ident">UncheckedFrom::unchecked_from</span>(<span class="ident">T::Hashing::hash</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>))
 	}
 
-	<span class="doccomment">/// Subsistence threshold is the extension of the minimum balance (aka existential deposit)</span>
-	<span class="doccomment">/// by the contract deposit. It is the minimum balance any contract must hold.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Any contract initiated balance transfer mechanism cannot make the balance lower</span>
-	<span class="doccomment">/// than the subsistence threshold. The only way to recover the balance is to remove</span>
-	<span class="doccomment">/// contract using `seal_terminate`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subsistence_threshold</span>() -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="ident">T::Currency::minimum_balance</span>().<span class="ident">saturating_add</span>(<span class="ident">T::ContractDeposit::get</span>())
-	}
-
-	<span class="doccomment">/// The in-memory size in bytes of the data structure associated with each contract.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// The data structure is also put into storage for each contract. The in-storage size</span>
-	<span class="doccomment">/// is never larger than the in-memory representation and usually smaller due to compact</span>
-	<span class="doccomment">/// encoding and lack of padding.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Note</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// This returns the in-memory size because the in-storage size (SCALE encoded) cannot</span>
-	<span class="doccomment">/// be efficiently determined. Treat this as an upper bound of the in-storage size.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contract_info_size</span>() -&gt; <span class="ident">u32</span> {
-		<span class="ident">sp_std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">u32</span>
-	}
-
 	<span class="doccomment">/// Store code for benchmarks which does not check nor instrument the code.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">store_code_raw</span>(<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; <span class="ident">frame_support::dispatch::DispatchResult</span> {
+	<span class="kw">fn</span> <span class="ident">store_code_raw</span>(
+		<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+		<span class="ident">owner</span>: <span class="ident">T::AccountId</span>,
+	) -&gt; <span class="ident">frame_support::dispatch::DispatchResult</span> {
 		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
-		<span class="ident">PrefabWasmModule::store_code_unchecked</span>(<span class="ident">code</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>)<span class="question-mark">?</span>;
+		<span class="ident">PrefabWasmModule::store_code_unchecked</span>(<span class="ident">code</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">owner</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(())
 	}
 
@@ -1434,21 +1612,32 @@
 		<span class="ident">dest</span>: <span class="ident">T::AccountId</span>,
 		<span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+		<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">debug_message</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">InternalCallOutput</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gas_meter</span> <span class="op">=</span> <span class="ident">GasMeter::new</span>(<span class="ident">gas_limit</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage_meter</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">StorageMeter::new</span>(<span class="kw-2">&amp;</span><span class="ident">origin</span>, <span class="ident">storage_deposit_limit</span>, <span class="ident">value</span>) {
+			<span class="prelude-val">Ok</span>(<span class="ident">meter</span>) =&gt; <span class="ident">meter</span>,
+			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt;
+				<span class="kw">return</span> <span class="ident">InternalCallOutput</span> {
+					<span class="ident">result</span>: <span class="prelude-val">Err</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
+					<span class="ident">gas_meter</span>,
+					<span class="ident">storage_deposit</span>: <span class="ident">Default::default</span>(),
+				},
+		};
 		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
 		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">ExecStack</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::run_call</span>(
 			<span class="ident">origin</span>,
 			<span class="ident">dest</span>,
 			<span class="kw-2">&amp;mut</span> <span class="ident">gas_meter</span>,
+			<span class="kw-2">&amp;mut</span> <span class="ident">storage_meter</span>,
 			<span class="kw-2">&amp;</span><span class="ident">schedule</span>,
 			<span class="ident">value</span>,
 			<span class="ident">data</span>,
 			<span class="ident">debug_message</span>,
 		);
-		<span class="ident">InternalCallOutput</span> { <span class="ident">gas_meter</span>, <span class="ident">result</span> }
+		<span class="ident">InternalCallOutput</span> { <span class="ident">result</span>, <span class="ident">gas_meter</span>, <span class="ident">storage_deposit</span>: <span class="ident">storage_meter</span>.<span class="ident">into_deposit</span>() }
 	}
 
 	<span class="doccomment">/// Internal function that does the actual instantiation.</span>
@@ -1456,44 +1645,63 @@
 	<span class="doccomment">/// Called by dispatchables and public functions.</span>
 	<span class="kw">fn</span> <span class="ident">internal_instantiate</span>(
 		<span class="ident">origin</span>: <span class="ident">T::AccountId</span>,
-		<span class="ident">endowment</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">gas_limit</span>: <span class="ident">Weight</span>,
+		<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">code</span>: <span class="ident">Code</span><span class="op">&lt;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 		<span class="ident">debug_message</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">InternalInstantiateOutput</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage_deposit</span> <span class="op">=</span> <span class="ident">Default::default</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gas_meter</span> <span class="op">=</span> <span class="ident">GasMeter::new</span>(<span class="ident">gas_limit</span>);
-		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
 		<span class="kw">let</span> <span class="ident">try_exec</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">executable</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">code</span> {
+			<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
+			<span class="kw">let</span> (<span class="ident">extra_deposit</span>, <span class="ident">executable</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">code</span> {
 				<span class="ident">Code::Upload</span>(<span class="ident">Bytes</span>(<span class="ident">binary</span>)) =&gt; {
 					<span class="macro">ensure!</span>(
 						<span class="ident">binary</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>,
 						<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeTooLarge</span>
 					);
-					<span class="kw">let</span> <span class="ident">executable</span> <span class="op">=</span> <span class="ident">PrefabWasmModule::from_code</span>(<span class="ident">binary</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>)<span class="question-mark">?</span>;
+					<span class="kw">let</span> <span class="ident">executable</span> <span class="op">=</span>
+						<span class="ident">PrefabWasmModule::from_code</span>(<span class="ident">binary</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="ident">origin</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 					<span class="macro">ensure!</span>(
 						<span class="ident">executable</span>.<span class="ident">code_len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">schedule</span>.<span class="ident">limits</span>.<span class="ident">code_len</span>,
 						<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::CodeTooLarge</span>
 					);
-					<span class="ident">executable</span>
+					<span class="comment">// The open deposit will be charged during execution when the</span>
+					<span class="comment">// uploaded module does not already exist. This deposit is not part of the</span>
+					<span class="comment">// storage meter because it is not transfered to the contract but</span>
+					<span class="comment">// reserved on the uploading account.</span>
+					(<span class="ident">executable</span>.<span class="ident">open_deposit</span>(), <span class="ident">executable</span>)
 				},
-				<span class="ident">Code::Existing</span>(<span class="ident">hash</span>) =&gt;
+				<span class="ident">Code::Existing</span>(<span class="ident">hash</span>) =&gt; (
+					<span class="ident">Default::default</span>(),
 					<span class="ident">PrefabWasmModule::from_storage</span>(<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="kw-2">&amp;mut</span> <span class="ident">gas_meter</span>)<span class="question-mark">?</span>,
+				),
 			};
-			<span class="ident">ExecStack</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::run_instantiate</span>(
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage_meter</span> <span class="op">=</span> <span class="ident">StorageMeter::new</span>(
+				<span class="kw-2">&amp;</span><span class="ident">origin</span>,
+				<span class="ident">storage_deposit_limit</span>,
+				<span class="ident">value</span>.<span class="ident">saturating_add</span>(<span class="ident">extra_deposit</span>),
+			)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">ExecStack</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::run_instantiate</span>(
 				<span class="ident">origin</span>,
 				<span class="ident">executable</span>,
 				<span class="kw-2">&amp;mut</span> <span class="ident">gas_meter</span>,
+				<span class="kw-2">&amp;mut</span> <span class="ident">storage_meter</span>,
 				<span class="kw-2">&amp;</span><span class="ident">schedule</span>,
-				<span class="ident">endowment</span>,
+				<span class="ident">value</span>,
 				<span class="ident">data</span>,
 				<span class="kw-2">&amp;</span><span class="ident">salt</span>,
 				<span class="ident">debug_message</span>,
-			)
+			);
+			<span class="ident">storage_deposit</span> <span class="op">=</span> <span class="ident">storage_meter</span>
+				.<span class="ident">into_deposit</span>()
+				.<span class="ident">saturating_add</span>(<span class="kw-2">&amp;</span><span class="ident">StorageDeposit::Charge</span>(<span class="ident">extra_deposit</span>));
+			<span class="ident">result</span>
 		};
-		<span class="ident">InternalInstantiateOutput</span> { <span class="ident">result</span>: <span class="ident">try_exec</span>(), <span class="ident">gas_meter</span> }
+		<span class="ident">InternalInstantiateOutput</span> { <span class="ident">result</span>: <span class="ident">try_exec</span>(), <span class="ident">gas_meter</span>, <span class="ident">storage_deposit</span> }
 	}
 }
 </code></pre></div>

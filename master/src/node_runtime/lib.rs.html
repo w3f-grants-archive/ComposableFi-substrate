@@ -1789,6 +1789,16 @@
 <span id="1789">1789</span>
 <span id="1790">1790</span>
 <span id="1791">1791</span>
+<span id="1792">1792</span>
+<span id="1793">1793</span>
+<span id="1794">1794</span>
+<span id="1795">1795</span>
+<span id="1796">1796</span>
+<span id="1797">1797</span>
+<span id="1798">1798</span>
+<span id="1799">1799</span>
+<span id="1800">1800</span>
+<span id="1801">1801</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -2688,10 +2698,8 @@
 }
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="ident">ContractDeposit</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(
-		<span class="number">1</span>,
-		<span class="op">&lt;</span><span class="ident">pallet_contracts::Pallet</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contract_info_size</span>(),
-	);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DepositPerItem</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">1</span>, <span class="number">0</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DepositPerByte</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">0</span>, <span class="number">1</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxValueSize</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">16</span> <span class="op">*</span> <span class="number">1024</span>;
 	<span class="comment">// The lazy deletion runs inside on_initialize.</span>
 	<span class="kw">pub</span> <span class="ident">DeletionWeightLimit</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">AVERAGE_ON_INITIALIZE_RATIO</span> <span class="op">*</span>
@@ -2718,7 +2726,8 @@
 	<span class="doccomment">/// change because that would break already deployed contracts. The `Call` structure itself</span>
 	<span class="doccomment">/// is not allowed to change the indices of existing pallets, too.</span>
 	<span class="kw">type</span> <span class="ident">CallFilter</span> <span class="op">=</span> <span class="ident">Nothing</span>;
-	<span class="kw">type</span> <span class="ident">ContractDeposit</span> <span class="op">=</span> <span class="ident">ContractDeposit</span>;
+	<span class="kw">type</span> <span class="ident">DepositPerItem</span> <span class="op">=</span> <span class="ident">DepositPerItem</span>;
+	<span class="kw">type</span> <span class="ident">DepositPerByte</span> <span class="op">=</span> <span class="ident">DepositPerByte</span>;
 	<span class="kw">type</span> <span class="ident">CallStack</span> <span class="op">=</span> [<span class="ident">pallet_contracts::Frame</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>; <span class="number">31</span>];
 	<span class="kw">type</span> <span class="ident">WeightPrice</span> <span class="op">=</span> <span class="ident">pallet_transaction_payment::Pallet</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_contracts::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
@@ -3313,21 +3322,32 @@
 			<span class="ident">dest</span>: <span class="ident">AccountId</span>,
 			<span class="ident">value</span>: <span class="ident">Balance</span>,
 			<span class="ident">gas_limit</span>: <span class="ident">u64</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
 			<span class="ident">input_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-		) -&gt; <span class="ident">pallet_contracts_primitives::ContractExecResult</span> {
-			<span class="ident">Contracts::bare_call</span>(<span class="ident">origin</span>, <span class="ident">dest</span>, <span class="ident">value</span>, <span class="ident">gas_limit</span>, <span class="ident">input_data</span>, <span class="bool-val">true</span>)
+		) -&gt; <span class="ident">pallet_contracts_primitives::ContractExecResult</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span> {
+			<span class="ident">Contracts::bare_call</span>(<span class="ident">origin</span>, <span class="ident">dest</span>, <span class="ident">value</span>, <span class="ident">gas_limit</span>, <span class="ident">storage_deposit_limit</span>, <span class="ident">input_data</span>, <span class="bool-val">true</span>)
 		}
 
 		<span class="kw">fn</span> <span class="ident">instantiate</span>(
 			<span class="ident">origin</span>: <span class="ident">AccountId</span>,
-			<span class="ident">endowment</span>: <span class="ident">Balance</span>,
+			<span class="ident">value</span>: <span class="ident">Balance</span>,
 			<span class="ident">gas_limit</span>: <span class="ident">u64</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
 			<span class="ident">code</span>: <span class="ident">pallet_contracts_primitives::Code</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
 			<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 			<span class="ident">salt</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-		) -&gt; <span class="ident">pallet_contracts_primitives::ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>
+		) -&gt; <span class="ident">pallet_contracts_primitives::ContractInstantiateResult</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span>
 		{
-			<span class="ident">Contracts::bare_instantiate</span>(<span class="ident">origin</span>, <span class="ident">endowment</span>, <span class="ident">gas_limit</span>, <span class="ident">code</span>, <span class="ident">data</span>, <span class="ident">salt</span>, <span class="bool-val">true</span>)
+			<span class="ident">Contracts::bare_instantiate</span>(<span class="ident">origin</span>, <span class="ident">value</span>, <span class="ident">gas_limit</span>, <span class="ident">storage_deposit_limit</span>, <span class="ident">code</span>, <span class="ident">data</span>, <span class="ident">salt</span>, <span class="bool-val">true</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">upload_code</span>(
+			<span class="ident">origin</span>: <span class="ident">AccountId</span>,
+			<span class="ident">code</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+			<span class="ident">storage_deposit_limit</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">pallet_contracts_primitives::CodeUploadResult</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Balance</span><span class="op">&gt;</span>
+		{
+			<span class="ident">Contracts::bare_upload_code</span>(<span class="ident">origin</span>, <span class="ident">code</span>, <span class="ident">storage_deposit_limit</span>)
 		}
 
 		<span class="kw">fn</span> <span class="ident">get_storage</span>(

@@ -2332,6 +2332,63 @@
 <span id="2332">2332</span>
 <span id="2333">2333</span>
 <span id="2334">2334</span>
+<span id="2335">2335</span>
+<span id="2336">2336</span>
+<span id="2337">2337</span>
+<span id="2338">2338</span>
+<span id="2339">2339</span>
+<span id="2340">2340</span>
+<span id="2341">2341</span>
+<span id="2342">2342</span>
+<span id="2343">2343</span>
+<span id="2344">2344</span>
+<span id="2345">2345</span>
+<span id="2346">2346</span>
+<span id="2347">2347</span>
+<span id="2348">2348</span>
+<span id="2349">2349</span>
+<span id="2350">2350</span>
+<span id="2351">2351</span>
+<span id="2352">2352</span>
+<span id="2353">2353</span>
+<span id="2354">2354</span>
+<span id="2355">2355</span>
+<span id="2356">2356</span>
+<span id="2357">2357</span>
+<span id="2358">2358</span>
+<span id="2359">2359</span>
+<span id="2360">2360</span>
+<span id="2361">2361</span>
+<span id="2362">2362</span>
+<span id="2363">2363</span>
+<span id="2364">2364</span>
+<span id="2365">2365</span>
+<span id="2366">2366</span>
+<span id="2367">2367</span>
+<span id="2368">2368</span>
+<span id="2369">2369</span>
+<span id="2370">2370</span>
+<span id="2371">2371</span>
+<span id="2372">2372</span>
+<span id="2373">2373</span>
+<span id="2374">2374</span>
+<span id="2375">2375</span>
+<span id="2376">2376</span>
+<span id="2377">2377</span>
+<span id="2378">2378</span>
+<span id="2379">2379</span>
+<span id="2380">2380</span>
+<span id="2381">2381</span>
+<span id="2382">2382</span>
+<span id="2383">2383</span>
+<span id="2384">2384</span>
+<span id="2385">2385</span>
+<span id="2386">2386</span>
+<span id="2387">2387</span>
+<span id="2388">2388</span>
+<span id="2389">2389</span>
+<span id="2390">2390</span>
+<span id="2391">2391</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -2391,13 +2448,14 @@
 	<span class="ident">caller</span>: <span class="ident">T::AccountId</span>,
 	<span class="ident">account_id</span>: <span class="ident">T::AccountId</span>,
 	<span class="ident">addr</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
-	<span class="ident">endowment</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Contract</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">T</span>: <span class="ident">Config</span>,
 	<span class="ident">T::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
+	<span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">TypeInfo</span> <span class="op">+</span> <span class="ident">Encode</span>,
 {
 	<span class="doccomment">/// Create new contract and use a default account id as instantiator.</span>
 	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">module</span>: <span class="ident">WasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Contract</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
@@ -2419,27 +2477,24 @@
 		<span class="ident">module</span>: <span class="ident">WasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Contract</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">endowment</span> <span class="op">=</span> <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
 		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0xff</span>];
 		<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contract_address</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="kw-2">&amp;</span><span class="ident">module</span>.<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">salt</span>);
 
-		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">module</span>.<span class="ident">code</span>)<span class="question-mark">?</span>;
+		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">module</span>.<span class="ident">code</span>, <span class="ident">caller</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::instantiate</span>(
 			<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
-			<span class="ident">endowment</span>,
-			<span class="ident">Weight::max_value</span>(),
+			<span class="ident">value</span>,
+			<span class="ident">Weight::MAX</span>,
+			<span class="prelude-val">None</span>,
 			<span class="ident">module</span>.<span class="ident">hash</span>,
 			<span class="ident">data</span>,
 			<span class="ident">salt</span>,
 		)<span class="question-mark">?</span>;
 
-		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Contract</span> {
-			<span class="ident">caller</span>,
-			<span class="ident">account_id</span>: <span class="ident">addr</span>.<span class="ident">clone</span>(),
-			<span class="ident">addr</span>: <span class="ident">T::Lookup::unlookup</span>(<span class="ident">addr</span>),
-			<span class="ident">endowment</span>,
-		};
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
+			<span class="ident">Contract</span> { <span class="ident">caller</span>, <span class="ident">account_id</span>: <span class="ident">addr</span>.<span class="ident">clone</span>(), <span class="ident">addr</span>: <span class="ident">T::Lookup::unlookup</span>(<span class="ident">addr</span>), <span class="ident">value</span> };
 
 		<span class="ident">ContractInfoOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">account_id</span>, <span class="ident">result</span>.<span class="ident">info</span>()<span class="question-mark">?</span>);
 
@@ -2468,9 +2523,9 @@
 
 	<span class="doccomment">/// Store the supplied storage items into this contracts storage.</span>
 	<span class="kw">fn</span> <span class="ident">store</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">StorageKey</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>)<span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">info</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
 		<span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
-			<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::write</span>(<span class="kw-2">&amp;mut</span> <span class="ident">info</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="ident">item</span>.<span class="number">1</span>.<span class="ident">clone</span>()))
+			<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::write</span>(<span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">trie_id</span>, <span class="kw-2">&amp;</span><span class="ident">item</span>.<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="ident">item</span>.<span class="number">1</span>.<span class="ident">clone</span>()), <span class="prelude-val">None</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Failed to write storage to restoration dest&quot;</span>)<span class="question-mark">?</span>;
 		}
 		<span class="op">&lt;</span><span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">account_id</span>, <span class="ident">info</span>.<span class="ident">clone</span>());
@@ -2486,16 +2541,30 @@
 	<span class="kw">fn</span> <span class="ident">info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ContractInfo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="ident"><span class="self">Self</span>::address_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">account_id</span>)
 	}
+
+	<span class="doccomment">/// Set the balance of the contract to the supplied amount.</span>
+	<span class="kw">fn</span> <span class="ident">set_balance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">balance</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">account_id</span>, <span class="ident">balance</span>);
+	}
+
+	<span class="doccomment">/// Returns `true` iff all storage entries related to code storage exist.</span>
+	<span class="kw">fn</span> <span class="ident">code_exists</span>(<span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">bool</span> {
+		<span class="op">&lt;</span><span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="ident">hash</span>) <span class="op">&amp;&amp;</span>
+			<span class="op">&lt;</span><span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>) <span class="op">&amp;&amp;</span>
+			<span class="op">&lt;</span><span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>)
+	}
+
+	<span class="doccomment">/// Returns `true` iff no storage entry related to code storage exist.</span>
+	<span class="kw">fn</span> <span class="ident">code_removed</span>(<span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">CodeHash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">bool</span> {
+		<span class="op">!</span><span class="op">&lt;</span><span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="ident">hash</span>) <span class="op">&amp;&amp;</span>
+			<span class="op">!</span><span class="op">&lt;</span><span class="ident">CodeStorage</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>) <span class="op">&amp;&amp;</span>
+			<span class="op">!</span><span class="op">&lt;</span><span class="ident">OwnerInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>)
+	}
 }
 
 <span class="doccomment">/// The funding that each account that either calls or instantiates contracts is funded with.</span>
 <span class="kw">fn</span> <span class="ident">caller_funding</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>() <span class="op">/</span> <span class="number">2u32</span>.<span class="ident">into</span>()
-}
-
-<span class="doccomment">/// The funding used for contracts. It is less than `caller_funding` in purpose.</span>
-<span class="kw">fn</span> <span class="ident">contract_funding</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>().<span class="ident">saturating_sub</span>(<span class="ident">T::Currency::minimum_balance</span>() <span class="op">*</span> <span class="number">100u32</span>.<span class="ident">into</span>())
 }
 
 <span class="doccomment">/// Load the specified contract file from disk by including it into the runtime.</span>
@@ -2520,11 +2589,12 @@
 	<span class="ident">where_clause</span> { <span class="kw">where</span>
 		<span class="ident">T::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">T::AccountId</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
+		<span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">codec::HasCompact</span><span class="op">&gt;</span><span class="ident">::Type</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">sp_std::fmt::Debug</span> <span class="op">+</span> <span class="ident">scale_info::TypeInfo</span> <span class="op">+</span> <span class="ident">codec::Encode</span>,
 	}
 
 	<span class="comment">// The base weight without any actual work performed apart from the setup costs.</span>
 	<span class="ident">on_initialize</span> {}: {
-		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::process_deletion_queue_batch</span>(<span class="ident">Weight::max_value</span>())
+		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::process_deletion_queue_batch</span>(<span class="ident">Weight::MAX</span>)
 	}
 
 	<span class="attribute">#[<span class="ident">skip_meta</span>]</span>
@@ -2533,7 +2603,7 @@
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::with_storage</span>(<span class="ident">WasmModule::dummy</span>(), <span class="ident">k</span>, <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">payload_len</span>)<span class="question-mark">?</span>;
 		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::queue_trie_for_deletion</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
 	}: {
-		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::process_deletion_queue_batch</span>(<span class="ident">Weight::max_value</span>())
+		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::process_deletion_queue_batch</span>(<span class="ident">Weight::MAX</span>)
 	}
 
 	<span class="ident">on_initialize_per_queue_item</span> {
@@ -2544,7 +2614,7 @@
 			<span class="ident">ContractInfoOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">instance</span>.<span class="ident">account_id</span>);
 		}
 	}: {
-		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::process_deletion_queue_batch</span>(<span class="ident">Weight::max_value</span>())
+		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::process_deletion_queue_batch</span>(<span class="ident">Weight::MAX</span>)
 	}
 
 	<span class="comment">// This benchmarks the additional weight that is charged when a contract is executed the</span>
@@ -2553,9 +2623,10 @@
 	<span class="ident">instrument</span> {
 		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>;
 		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>);
-		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">PrefabWasmModule::from_storage_noinstr</span>(<span class="ident">hash</span>)<span class="question-mark">?</span>;
+		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>, <span class="ident">whitelisted_caller</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gas_meter</span> <span class="op">=</span> <span class="ident">GasMeter::new</span>(<span class="ident">Weight::MAX</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">PrefabWasmModule::from_storage</span>(<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="kw-2">&amp;mut</span> <span class="ident">gas_meter</span>)<span class="question-mark">?</span>;
 	}: {
 		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::reinstrument_module</span>(<span class="kw-2">&amp;mut</span> <span class="ident">module</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>)<span class="question-mark">?</span>;
 	}
@@ -2564,19 +2635,11 @@
 	<span class="ident">code_load</span> {
 		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>;
 		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::dummy_with_bytes</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>);
-		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
+		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>, <span class="ident">whitelisted_caller</span>())<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">schedule</span> <span class="op">=</span> <span class="ident">T::Schedule::get</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gas_meter</span> <span class="op">=</span> <span class="ident">GasMeter::new</span>(<span class="ident">Weight::MAX</span>);
 	}: {
-		<span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_storage_noinstr</span>(<span class="ident">hash</span>)<span class="question-mark">?</span>;
-	}
-
-	<span class="comment">// The weight of changing the refcount of a contract&#39;s code per kilobyte.</span>
-	<span class="ident">code_refcount</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>;
-		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::dummy_with_bytes</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>);
-		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gas_meter</span> <span class="op">=</span> <span class="ident">GasMeter::new</span>(<span class="ident">Weight::max_value</span>());
-	}: {
-		<span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::add_user</span>(<span class="ident">hash</span>, <span class="kw-2">&amp;mut</span> <span class="ident">gas_meter</span>)<span class="question-mark">?</span>;
+		<span class="op">&lt;</span><span class="ident">PrefabWasmModule</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_storage</span>(<span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">schedule</span>, <span class="kw-2">&amp;mut</span> <span class="ident">gas_meter</span>)<span class="question-mark">?</span>;
 	}
 
 	<span class="comment">// This constructs a contract that is maximal expensive to instrument.</span>
@@ -2594,18 +2657,24 @@
 		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>).<span class="ident">mul_ceil</span>(<span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>);
 		<span class="kw">let</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span>;
 		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">s</span> <span class="op">*</span> <span class="number">1024</span>) <span class="kw">as</span> <span class="ident">usize</span>];
-		<span class="kw">let</span> <span class="ident">endowment</span> <span class="op">=</span> <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">/</span> <span class="number">3u32</span>.<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
 		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>);
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contract_address</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">salt</span>);
-	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">endowment</span>, <span class="ident">Weight::max_value</span>(), <span class="ident">code</span>, <span class="macro">vec!</span>[], <span class="ident">salt</span>)
+	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">value</span>, <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="ident">code</span>, <span class="macro">vec!</span>[], <span class="ident">salt</span>)
 	<span class="ident">verify</span> {
-		<span class="comment">// endowment was removed from the caller</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>), <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-</span> <span class="ident">endowment</span>);
-		<span class="comment">// contract has the full endowment</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>), <span class="ident">endowment</span>);
+		<span class="comment">// the contract itself does not trigger any reserves</span>
+		<span class="kw">let</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>);
+		<span class="comment">// uploading the code reserves some balance in the callers account</span>
+		<span class="kw">let</span> <span class="ident">code_deposit</span> <span class="op">=</span> <span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>);
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>),
+			<span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-</span> <span class="ident">value</span> <span class="op">-</span> <span class="ident">deposit</span> <span class="op">-</span> <span class="ident">code_deposit</span>,
+		);
+		<span class="comment">// contract has the full value</span>
+		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>), <span class="ident">value</span>);
 		<span class="comment">// instantiate should leave a contract</span>
 		<span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::address_info</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>)<span class="question-mark">?</span>;
 	}
@@ -2615,19 +2684,21 @@
 	<span class="ident">instantiate</span> {
 		<span class="kw">let</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span>;
 		<span class="kw">let</span> <span class="ident">salt</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">s</span> <span class="op">*</span> <span class="number">1024</span>) <span class="kw">as</span> <span class="ident">usize</span>];
-		<span class="kw">let</span> <span class="ident">endowment</span> <span class="op">=</span> <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">/</span> <span class="number">3u32</span>.<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
 		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::dummy</span>();
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::contract_address</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">salt</span>);
-		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>)<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">endowment</span>, <span class="ident">Weight::max_value</span>(), <span class="ident">hash</span>, <span class="macro">vec!</span>[], <span class="ident">salt</span>)
+		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>, <span class="ident">caller</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
+	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">value</span>, <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="ident">hash</span>, <span class="macro">vec!</span>[], <span class="ident">salt</span>)
 	<span class="ident">verify</span> {
-		<span class="comment">// endowment was removed from the caller</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>), <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-</span> <span class="ident">endowment</span>);
-		<span class="comment">// contract has the full endowment</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>), <span class="ident">endowment</span>);
+		<span class="comment">// the contract itself does not trigger any reserves</span>
+		<span class="kw">let</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>);
+		<span class="comment">// value was removed from the caller</span>
+		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>), <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-</span> <span class="ident">value</span> <span class="op">-</span> <span class="ident">deposit</span>);
+		<span class="comment">// contract has the full value</span>
+		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>), <span class="ident">value</span>);
 		<span class="comment">// instantiate should leave a contract</span>
 		<span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::address_info</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>)<span class="question-mark">?</span>;
 	}
@@ -2646,17 +2717,59 @@
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">callee</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">addr</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">before</span> <span class="op">=</span> <span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>);
-	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">callee</span>, <span class="ident">value</span>, <span class="ident">Weight::max_value</span>(), <span class="ident">data</span>)
+	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">callee</span>, <span class="ident">value</span>, <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="ident">data</span>)
 	<span class="ident">verify</span> {
-		<span class="comment">// endowment and value transfered via call should be removed from the caller</span>
+		<span class="comment">// the contract itself does not trigger any reserves</span>
+		<span class="kw">let</span> <span class="ident">deposit</span> <span class="op">=</span> <span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>);
+		<span class="comment">// value and value transfered via call should be removed from the caller</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">caller</span>),
-			<span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-</span> <span class="ident">instance</span>.<span class="ident">endowment</span> <span class="op">-</span> <span class="ident">value</span>,
+			<span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-</span> <span class="ident">instance</span>.<span class="ident">value</span> <span class="op">-</span> <span class="ident">value</span> <span class="op">-</span> <span class="ident">deposit</span>,
 		);
 		<span class="comment">// contract should have received the value</span>
 		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>), <span class="ident">before</span> <span class="op">+</span> <span class="ident">value</span>);
 		<span class="comment">// contract should still exist</span>
 		<span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
+	}
+
+	<span class="comment">// This constructs a contract that is maximal expensive to instrument.</span>
+	<span class="comment">// It creates a maximum number of metering blocks per byte.</span>
+	<span class="comment">// `c`: Size of the code in kilobytes.</span>
+	<span class="comment">//</span>
+	<span class="comment">// # Note</span>
+	<span class="comment">//</span>
+	<span class="comment">// We cannot let `c` grow to the maximum code size because the code is not allowed</span>
+	<span class="comment">// to be larger than the maximum size **after instrumentation**.</span>
+	<span class="ident">upload_code</span> {
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>).<span class="ident">mul_ceil</span>(<span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>);
+		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
+		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
+		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::sized</span>(<span class="ident">c</span> <span class="op">*</span> <span class="number">1024</span>);
+		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
+	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">code</span>, <span class="prelude-val">None</span>)
+	<span class="ident">verify</span> {
+		<span class="comment">// uploading the code reserves some balance in the callers account</span>
+		<span class="macro">assert!</span>(<span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>) <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>());
+		<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">Contract</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::code_exists</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>));
+	}
+
+	<span class="comment">// Removing code does not depend on the size of the contract because all the information</span>
+	<span class="comment">// needed to verify the removal claim (refcount, owner) is stored in a separate storage</span>
+	<span class="comment">// item (`OwnerInfoOf`).</span>
+	<span class="ident">remove_code</span> {
+		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
+		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">caller_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
+		<span class="kw">let</span> <span class="ident">WasmModule</span> { <span class="ident">code</span>, <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">WasmModule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::dummy</span>();
+		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> <span class="ident">uploaded</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Contracts</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::bare_upload_code</span>(<span class="ident">caller</span>.<span class="ident">clone</span>(), <span class="ident">code</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+		<span class="macro">assert_eq!</span>(<span class="ident">uploaded</span>.<span class="ident">code_hash</span>, <span class="ident">hash</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">uploaded</span>.<span class="ident">deposit</span>, <span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>));
+		<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">Contract</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::code_exists</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>));
+	}: <span class="kw">_</span>(<span class="ident">origin</span>, <span class="ident">hash</span>)
+	<span class="ident">verify</span> {
+		<span class="comment">// removing the code should have unreserved the deposit</span>
+		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>), <span class="number">0u32</span>.<span class="ident">into</span>());
+		<span class="macro">assert!</span>(<span class="op">&lt;</span><span class="ident">Contract</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::code_removed</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>));
 	}
 
 	<span class="ident">seal_caller</span> {
@@ -2665,7 +2778,7 @@
 			<span class="string">&quot;seal_caller&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_address</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2673,7 +2786,7 @@
 			<span class="string">&quot;seal_address&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_gas_left</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2681,7 +2794,7 @@
 			<span class="string">&quot;seal_gas_left&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_balance</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2689,7 +2802,7 @@
 			<span class="string">&quot;seal_balance&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_value_transferred</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2697,7 +2810,7 @@
 			<span class="string">&quot;seal_value_transferred&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_minimum_balance</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2705,15 +2818,7 @@
 			<span class="string">&quot;seal_minimum_balance&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
-
-	<span class="ident">seal_tombstone_deposit</span> {
-		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
-		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">WasmModule::getter</span>(
-			<span class="string">&quot;seal_tombstone_deposit&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
-		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_block_number</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2721,7 +2826,7 @@
 			<span class="string">&quot;seal_block_number&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_now</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2729,7 +2834,7 @@
 			<span class="string">&quot;seal_now&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_weight_to_fee</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2756,7 +2861,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_gas</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2776,7 +2881,7 @@
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
 
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_input</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
@@ -2803,7 +2908,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_input_per_kb</span> {
 		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span>;
@@ -2833,7 +2938,7 @@
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>).<span class="ident">min</span>(<span class="ident">buffer_size</span>) <span class="kw">as</span> <span class="ident">usize</span>];
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="ident">data</span>)
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="ident">data</span>)
 
 	<span class="comment">// We cannot call `seal_return` multiple times. Therefore our weight determination is not</span>
 	<span class="comment">// as precise as with other APIs. Because this function can only be called once per</span>
@@ -2858,7 +2963,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_return_per_kb</span> {
 		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">code::max_pages</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="number">64</span>;
@@ -2881,7 +2986,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// The same argument as for `seal_return` is true here.</span>
 	<span class="ident">seal_terminate</span> {
@@ -2913,12 +3018,13 @@
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="kw-2">&amp;</span><span class="ident">beneficiary</span>), <span class="number">0u32</span>.<span class="ident">into</span>());
-		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>), <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>.<span class="ident">clone</span>(), <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+		<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>), <span class="ident">T::Currency::minimum_balance</span>());
+		<span class="macro">assert_ne!</span>(<span class="ident">T::Currency::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>), <span class="number">0u32</span>.<span class="ident">into</span>());
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>.<span class="ident">clone</span>(), <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 	<span class="ident">verify</span> {
 		<span class="kw">if</span> <span class="ident">r</span> <span class="op">&gt;</span> <span class="number">0</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>), <span class="number">0u32</span>.<span class="ident">into</span>());
-			<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="kw-2">&amp;</span><span class="ident">beneficiary</span>), <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>());
+			<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="kw-2">&amp;</span><span class="ident">beneficiary</span>), <span class="ident">T::Currency::minimum_balance</span>());
 		}
 	}
 
@@ -2955,7 +3061,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Overhead of calling the function without any topic.</span>
 	<span class="comment">// We benchmark for the worst case (largest event).</span>
@@ -2980,7 +3086,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Benchmark the overhead that topics generate.</span>
 	<span class="comment">// `t`: Number of topics</span>
@@ -3018,7 +3124,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// The size of the supplied message does not influence the weight because as it is never</span>
 	<span class="comment">// processed during on-chain execution: It is only ever read during debugging which happens</span>
@@ -3044,7 +3150,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Only the overhead of calling the function itself with minimal arguments.</span>
 	<span class="comment">// The contract is a bit more complex because I needs to use different keys in order</span>
@@ -3081,7 +3187,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_set_storage_per_kb</span> {
 		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">payload_len</span> <span class="op">/</span> <span class="number">1024</span>;
@@ -3111,7 +3217,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Similar to seal_set_storage. However, we store all the keys that we are about to</span>
 	<span class="comment">// delete beforehand in order to prevent any optimizations that could occur when</span>
@@ -3145,18 +3251,19 @@
 			.. <span class="ident">Default::default</span>()
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
 		<span class="kw">for</span> <span class="ident">key</span> <span class="kw">in</span> <span class="ident">keys</span> {
 			<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::write</span>(
-				<span class="kw-2">&amp;mut</span> <span class="ident">info</span>,
+				<span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">trie_id</span>,
 				<span class="ident">key</span>.<span class="ident">as_slice</span>().<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="string">&quot;Key has wrong length&quot;</span>)<span class="question-mark">?</span>,
-				<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="number">42</span>; <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">usize</span>])
+				<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="number">42</span>; <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">usize</span>]),
+				<span class="prelude-val">None</span>,
 			)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Failed to write to storage during setup.&quot;</span>)<span class="question-mark">?</span>;
 		}
 		<span class="op">&lt;</span><span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>, <span class="ident">info</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// We make sure that all storage accesses are to unique keys.</span>
 	<span class="attribute">#[<span class="ident">skip_meta</span>]</span>
@@ -3192,18 +3299,19 @@
 			.. <span class="ident">Default::default</span>()
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
 		<span class="kw">for</span> <span class="ident">key</span> <span class="kw">in</span> <span class="ident">keys</span> {
 			<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::write</span>(
-				<span class="kw-2">&amp;mut</span> <span class="ident">info</span>,
+				<span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">trie_id</span>,
 				<span class="ident">key</span>.<span class="ident">as_slice</span>().<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="string">&quot;Key has wrong length&quot;</span>)<span class="question-mark">?</span>,
-				<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[])
+				<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[]),
+				<span class="prelude-val">None</span>,
 			)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Failed to write to storage during setup.&quot;</span>)<span class="question-mark">?</span>;
 		}
 		<span class="op">&lt;</span><span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>, <span class="ident">info</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_get_storage_per_kb</span> {
 		<span class="kw">let</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::Schedule::get</span>().<span class="ident">limits</span>.<span class="ident">payload_len</span> <span class="op">/</span> <span class="number">1024</span>;
@@ -3238,16 +3346,17 @@
 			.. <span class="ident">Default::default</span>()
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">info</span>()<span class="question-mark">?</span>;
 		<span class="ident">Storage</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::write</span>(
-			<span class="kw-2">&amp;mut</span> <span class="ident">info</span>,
+			<span class="kw-2">&amp;</span><span class="ident">info</span>.<span class="ident">trie_id</span>,
 			<span class="ident">key</span>.<span class="ident">as_slice</span>().<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="string">&quot;Key has wrong length&quot;</span>)<span class="question-mark">?</span>,
-			<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>) <span class="kw">as</span> <span class="ident">usize</span>])
+			<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="number">42u8</span>; (<span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>) <span class="kw">as</span> <span class="ident">usize</span>]),
+			<span class="prelude-val">None</span>,
 		)
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Failed to write to storage during setup.&quot;</span>)<span class="question-mark">?</span>;
 		<span class="op">&lt;</span><span class="ident">ContractInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">instance</span>.<span class="ident">account_id</span>, <span class="ident">info</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// We transfer to unique accounts.</span>
 	<span class="ident">seal_transfer</span> {
@@ -3257,7 +3366,7 @@
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">account_len</span> <span class="op">=</span> <span class="ident">accounts</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="ident">encode</span>().<span class="ident">len</span>()).<span class="ident">unwrap_or</span>(<span class="number">0</span>);
 		<span class="kw">let</span> <span class="ident">account_bytes</span> <span class="op">=</span> <span class="ident">accounts</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">encode</span>()).<span class="ident">collect</span>();
-		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::subsistence_threshold</span>();
+		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="macro">assert!</span>(<span class="ident">value</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>());
 		<span class="kw">let</span> <span class="ident">value_bytes</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">encode</span>();
 		<span class="kw">let</span> <span class="ident">value_len</span> <span class="op">=</span> <span class="ident">value_bytes</span>.<span class="ident">len</span>();
@@ -3290,11 +3399,12 @@
 			.. <span class="ident">Default::default</span>()
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
+		<span class="ident">instance</span>.<span class="ident">set_balance</span>(<span class="ident">value</span> <span class="op">*</span> (<span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">into</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="kw">for</span> <span class="ident">account</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">accounts</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="ident">account</span>), <span class="number">0u32</span>.<span class="ident">into</span>());
 		}
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 	<span class="ident">verify</span> {
 		<span class="kw">for</span> <span class="ident">account</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">accounts</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">T::Currency::total_balance</span>(<span class="ident">account</span>), <span class="ident">value</span>);
@@ -3358,7 +3468,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="ident">seal_call_per_transfer_input_output_kb</span> {
 		<span class="kw">let</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="number">1</span>;
@@ -3443,9 +3553,9 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
-	<span class="comment">// We assume that every instantiate sends at least the subsistence amount.</span>
+	<span class="comment">// We assume that every instantiate sends at least the minimum balance.</span>
 	<span class="ident">seal_instantiate</span> {
 		<span class="kw">let</span> <span class="ident">r</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">API_BENCHMARK_BATCHES</span>;
 		<span class="kw">let</span> <span class="ident">hashes</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>)
@@ -3461,14 +3571,14 @@
 					])),
 					.. <span class="ident">Default::default</span>()
 				});
-				<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>.<span class="ident">code</span>)<span class="question-mark">?</span>;
+				<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">code</span>.<span class="ident">code</span>, <span class="ident">whitelisted_caller</span>())<span class="question-mark">?</span>;
 				<span class="prelude-val">Ok</span>(<span class="ident">code</span>.<span class="ident">hash</span>)
 			})
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">hash_len</span> <span class="op">=</span> <span class="ident">hashes</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">encode</span>().<span class="ident">len</span>()).<span class="ident">unwrap_or</span>(<span class="number">0</span>);
 		<span class="kw">let</span> <span class="ident">hashes_bytes</span> <span class="op">=</span> <span class="ident">hashes</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">encode</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">hashes_len</span> <span class="op">=</span> <span class="ident">hashes_bytes</span>.<span class="ident">len</span>();
-		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">/</span> (<span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span> <span class="op">+</span> <span class="number">2</span>).<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="macro">assert!</span>(<span class="ident">value</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>());
 		<span class="kw">let</span> <span class="ident">value_bytes</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">encode</span>();
 		<span class="kw">let</span> <span class="ident">value_len</span> <span class="op">=</span> <span class="ident">value_bytes</span>.<span class="ident">len</span>();
@@ -3536,6 +3646,7 @@
 			.. <span class="ident">Default::default</span>()
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
+		<span class="ident">instance</span>.<span class="ident">set_balance</span>(<span class="ident">value</span> <span class="op">*</span> (<span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">into</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">callee</span> <span class="op">=</span> <span class="ident">instance</span>.<span class="ident">addr</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">addresses</span> <span class="op">=</span> <span class="ident">hashes</span>
@@ -3550,7 +3661,7 @@
 				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Expected that contract does not exist at this point.&quot;</span>.<span class="ident">into</span>());
 			}
 		}
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">callee</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">callee</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 	<span class="ident">verify</span> {
 		<span class="kw">for</span> <span class="ident">addr</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">addresses</span> {
 			<span class="ident">ContractInfoOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>)
@@ -3586,12 +3697,12 @@
 		<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">callee_code</span>.<span class="ident">hash</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">hash_bytes</span> <span class="op">=</span> <span class="ident">callee_code</span>.<span class="ident">hash</span>.<span class="ident">encode</span>();
 		<span class="kw">let</span> <span class="ident">hash_len</span> <span class="op">=</span> <span class="ident">hash_bytes</span>.<span class="ident">len</span>();
-		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">callee_code</span>.<span class="ident">code</span>)<span class="question-mark">?</span>;
+		<span class="ident">Contracts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::store_code_raw</span>(<span class="ident">callee_code</span>.<span class="ident">code</span>, <span class="ident">whitelisted_caller</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">inputs</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">API_BENCHMARK_BATCH_SIZE</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">encode</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">input_len</span> <span class="op">=</span> <span class="ident">inputs</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">len</span>()).<span class="ident">unwrap_or</span>(<span class="number">0</span>);
 		<span class="kw">let</span> <span class="ident">input_bytes</span> <span class="op">=</span> <span class="ident">inputs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">flatten</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">inputs_len</span> <span class="op">=</span> <span class="ident">input_bytes</span>.<span class="ident">len</span>();
-		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">contract_funding</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">/</span> (<span class="ident">API_BENCHMARK_BATCH_SIZE</span> <span class="op">+</span> <span class="number">2</span>).<span class="ident">into</span>();
+		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>();
 		<span class="macro">assert!</span>(<span class="ident">value</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>());
 		<span class="kw">let</span> <span class="ident">value_bytes</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">encode</span>();
 		<span class="kw">let</span> <span class="ident">value_len</span> <span class="op">=</span> <span class="ident">value_bytes</span>.<span class="ident">len</span>();
@@ -3674,8 +3785,9 @@
 			.. <span class="ident">Default::default</span>()
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
+		<span class="ident">instance</span>.<span class="ident">set_balance</span>(<span class="ident">value</span> <span class="op">*</span> (<span class="ident">API_BENCHMARK_BATCH_SIZE</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">into</span>());
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Only the overhead of calling the function itself with minimal arguments.</span>
 	<span class="ident">seal_hash_sha2_256</span> {
@@ -3684,7 +3796,7 @@
 			<span class="string">&quot;seal_hash_sha2_256&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="number">0</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// `n`: Input to hash in kilobytes</span>
 	<span class="ident">seal_hash_sha2_256_per_kb</span> {
@@ -3693,7 +3805,7 @@
 			<span class="string">&quot;seal_hash_sha2_256&quot;</span>, <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Only the overhead of calling the function itself with minimal arguments.</span>
 	<span class="ident">seal_hash_keccak_256</span> {
@@ -3702,7 +3814,7 @@
 			<span class="string">&quot;seal_hash_keccak_256&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="number">0</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// `n`: Input to hash in kilobytes</span>
 	<span class="ident">seal_hash_keccak_256_per_kb</span> {
@@ -3711,7 +3823,7 @@
 			<span class="string">&quot;seal_hash_keccak_256&quot;</span>, <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Only the overhead of calling the function itself with minimal arguments.</span>
 	<span class="ident">seal_hash_blake2_256</span> {
@@ -3720,7 +3832,7 @@
 			<span class="string">&quot;seal_hash_blake2_256&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="number">0</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// `n`: Input to hash in kilobytes</span>
 	<span class="ident">seal_hash_blake2_256_per_kb</span> {
@@ -3729,7 +3841,7 @@
 			<span class="string">&quot;seal_hash_blake2_256&quot;</span>, <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Only the overhead of calling the function itself with minimal arguments.</span>
 	<span class="ident">seal_hash_blake2_128</span> {
@@ -3738,7 +3850,7 @@
 			<span class="string">&quot;seal_hash_blake2_128&quot;</span>, <span class="ident">r</span> <span class="op">*</span> <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="number">0</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// `n`: Input to hash in kilobytes</span>
 	<span class="ident">seal_hash_blake2_128_per_kb</span> {
@@ -3747,7 +3859,7 @@
 			<span class="string">&quot;seal_hash_blake2_128&quot;</span>, <span class="ident">API_BENCHMARK_BATCH_SIZE</span>, <span class="ident">n</span> <span class="op">*</span> <span class="number">1024</span>,
 		), <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// Only calling the function itself with valid arguments.</span>
 	<span class="comment">// It generates different private keys and signatures for the message &quot;Hello world&quot;.</span>
@@ -3801,7 +3913,7 @@
 		});
 		<span class="kw">let</span> <span class="ident">instance</span> <span class="op">=</span> <span class="ident">Contract</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">code</span>, <span class="macro">vec!</span>[])<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">RawOrigin::Signed</span>(<span class="ident">instance</span>.<span class="ident">caller</span>.<span class="ident">clone</span>());
-	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::max_value</span>(), <span class="macro">vec!</span>[])
+	}: <span class="ident">call</span>(<span class="ident">origin</span>, <span class="ident">instance</span>.<span class="ident">addr</span>, <span class="number">0u32</span>.<span class="ident">into</span>(), <span class="ident">Weight::MAX</span>, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
 
 	<span class="comment">// We make the assumption that pushing a constant and dropping a value takes roughly</span>
 	<span class="comment">// the same amount of time. We follow that `t.load` and `drop` both have the weight</span>
@@ -4608,6 +4720,7 @@
 			<span class="ident">instance</span>.<span class="ident">account_id</span>,
 			<span class="number">0u32</span>.<span class="ident">into</span>(),
 			<span class="ident">Weight::MAX</span>,
+			<span class="prelude-val">None</span>,
 			<span class="ident">data</span>,
 			<span class="bool-val">false</span>,
 		)
@@ -4654,6 +4767,7 @@
 			<span class="ident">instance</span>.<span class="ident">account_id</span>,
 			<span class="number">0u32</span>.<span class="ident">into</span>(),
 			<span class="ident">Weight::MAX</span>,
+			<span class="prelude-val">None</span>,
 			<span class="ident">data</span>,
 			<span class="bool-val">false</span>,
 		)
