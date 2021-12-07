@@ -1799,6 +1799,21 @@
 <span id="1799">1799</span>
 <span id="1800">1800</span>
 <span id="1801">1801</span>
+<span id="1802">1802</span>
+<span id="1803">1803</span>
+<span id="1804">1804</span>
+<span id="1805">1805</span>
+<span id="1806">1806</span>
+<span id="1807">1807</span>
+<span id="1808">1808</span>
+<span id="1809">1809</span>
+<span id="1810">1810</span>
+<span id="1811">1811</span>
+<span id="1812">1812</span>
+<span id="1813">1813</span>
+<span id="1814">1814</span>
+<span id="1815">1815</span>
+<span id="1816">1816</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -2645,10 +2660,13 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositPayoutDelay</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DAYS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TreasuryPalletId</span>: <span class="ident">PalletId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="kw-2">*</span><span class="string">b&quot;py/trsry&quot;</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyUpdatePeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">14</span> <span class="op">*</span> <span class="ident">DAYS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaximumReasonLength</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">16384</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaximumReasonLength</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">300</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyCuratorDeposit</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">50</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">5</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxApprovals</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxActiveChildBountyCount</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">5</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyCuratorDepositBase</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">10</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_treasury::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2684,6 +2702,15 @@
 	<span class="kw">type</span> <span class="ident">DataDepositPerByte</span> <span class="op">=</span> <span class="ident">DataDepositPerByte</span>;
 	<span class="kw">type</span> <span class="ident">MaximumReasonLength</span> <span class="op">=</span> <span class="ident">MaximumReasonLength</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_bounties::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">ChildBountyManager</span> <span class="op">=</span> <span class="ident">ChildBounties</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">pallet_child_bounties::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">MaxActiveChildBountyCount</span> <span class="op">=</span> <span class="ident">MaxActiveChildBountyCount</span>;
+	<span class="kw">type</span> <span class="ident">ChildBountyValueMinimum</span> <span class="op">=</span> <span class="ident">ChildBountyValueMinimum</span>;
+	<span class="kw">type</span> <span class="ident">ChildBountyCuratorDepositBase</span> <span class="op">=</span> <span class="ident">ChildBountyCuratorDepositBase</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_child_bounties::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_tips::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -3103,6 +3130,7 @@
 		<span class="ident">Uniques</span>: <span class="ident">pallet_uniques</span>,
 		<span class="ident">TransactionStorage</span>: <span class="ident">pallet_transaction_storage</span>,
 		<span class="ident">BagsList</span>: <span class="ident">pallet_bags_list</span>,
+		<span class="ident">ChildBounties</span>: <span class="ident">pallet_child_bounties</span>,
 	}
 );
 
@@ -3453,6 +3481,7 @@
 			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_bags_list</span>, <span class="ident">BagsList</span>);
 			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_balances</span>, <span class="ident">Balances</span>);
 			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_bounties</span>, <span class="ident">Bounties</span>);
+			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_child_bounties</span>, <span class="ident">ChildBounties</span>);
 			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_collective</span>, <span class="ident">Council</span>);
 			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_contracts</span>, <span class="ident">Contracts</span>);
 			<span class="macro">list_benchmark!</span>(<span class="ident">list</span>, <span class="ident">extra</span>, <span class="ident">pallet_democracy</span>, <span class="ident">Democracy</span>);
@@ -3530,6 +3559,7 @@
 			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_balances</span>, <span class="ident">Balances</span>);
 			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_bags_list</span>, <span class="ident">BagsList</span>);
 			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_bounties</span>, <span class="ident">Bounties</span>);
+			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_child_bounties</span>, <span class="ident">ChildBounties</span>);
 			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_collective</span>, <span class="ident">Council</span>);
 			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_contracts</span>, <span class="ident">Contracts</span>);
 			<span class="macro">add_benchmark!</span>(<span class="ident">params</span>, <span class="ident">batches</span>, <span class="ident">pallet_democracy</span>, <span class="ident">Democracy</span>);

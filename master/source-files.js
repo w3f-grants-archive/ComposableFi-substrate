@@ -350,6 +350,7 @@ sourcesIndex["pallet_balances"] = {"name":"","files":["benchmarking.rs","lib.rs"
 sourcesIndex["pallet_beefy"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_beefy_mmr"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_bounties"] = {"name":"","dirs":[{"name":"migrations","files":["mod.rs","v4.rs"]}],"files":["benchmarking.rs","lib.rs","weights.rs"]};
+sourcesIndex["pallet_child_bounties"] = {"name":"","files":["benchmarking.rs","lib.rs","weights.rs"]};
 sourcesIndex["pallet_collective"] = {"name":"","dirs":[{"name":"migrations","files":["mod.rs","v4.rs"]}],"files":["benchmarking.rs","lib.rs","weights.rs"]};
 sourcesIndex["pallet_contracts"] = {"name":"","dirs":[{"name":"benchmarking","files":["code.rs","mod.rs","sandbox.rs"]},{"name":"storage","files":["meter.rs"]},{"name":"wasm","dirs":[{"name":"env_def","files":["macros.rs","mod.rs"]}],"files":["code_cache.rs","mod.rs","prepare.rs","runtime.rs"]}],"files":["chain_extension.rs","exec.rs","gas.rs","lib.rs","migration.rs","schedule.rs","storage.rs","weights.rs"]};
 sourcesIndex["pallet_contracts_primitives"] = {"name":"","files":["lib.rs"]};
