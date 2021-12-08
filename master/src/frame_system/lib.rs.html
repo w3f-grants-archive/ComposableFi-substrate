@@ -1656,6 +1656,7 @@
 <span id="1656">1656</span>
 <span id="1657">1657</span>
 <span id="1658">1658</span>
+<span id="1659">1659</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1773,7 +1774,8 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">weights</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">extensions</span>::{
-	<span class="ident">check_genesis::CheckGenesis</span>, <span class="ident">check_mortality::CheckMortality</span>, <span class="ident">check_nonce::CheckNonce</span>,
+	<span class="ident">check_genesis::CheckGenesis</span>, <span class="ident">check_mortality::CheckMortality</span>,
+	<span class="ident">check_non_zero_sender::CheckNonZeroSender</span>, <span class="ident">check_nonce::CheckNonce</span>,
 	<span class="ident">check_spec_version::CheckSpecVersion</span>, <span class="ident">check_tx_version::CheckTxVersion</span>,
 	<span class="ident">check_weight::CheckWeight</span>,
 };

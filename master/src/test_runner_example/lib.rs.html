@@ -129,6 +129,7 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
+<span id="132">132</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -200,6 +201,7 @@
 		<span class="ident">from</span>: <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Runtime</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
 	) -&gt; <span class="ident"><span class="self">Self</span>::SignedExtras</span> {
 		(
+			<span class="ident">frame_system::CheckNonZeroSender</span>::<span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckSpecVersion</span>::<span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckTxVersion</span>::<span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckGenesis</span>::<span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
