@@ -157,14 +157,14 @@
 			)<span class="question-mark">?</span>,
 			<span class="ident">create_inherents_time</span>: <span class="ident">register</span>(
 				<span class="ident">Histogram::with_opts</span>(<span class="ident">HistogramOpts::new</span>(
-					<span class="string">&quot;proposer_create_inherents_time&quot;</span>,
+					<span class="string">&quot;substrate_proposer_create_inherents_time&quot;</span>,
 					<span class="string">&quot;Histogram of time taken to execute create inherents&quot;</span>,
 				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">create_block_proposal_time</span>: <span class="ident">register</span>(
 				<span class="ident">Histogram::with_opts</span>(<span class="ident">HistogramOpts::new</span>(
-					<span class="string">&quot;proposer_block_proposal_time&quot;</span>,
+					<span class="string">&quot;substrate_proposer_block_proposal_time&quot;</span>,
 					<span class="string">&quot;Histogram of time taken to construct a block and prepare it for proposal&quot;</span>,
 				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
