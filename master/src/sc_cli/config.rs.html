@@ -615,6 +615,15 @@
 <span id="615">615</span>
 <span id="616">616</span>
 <span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -1069,6 +1078,13 @@
 		<span class="prelude-val">Ok</span>(<span class="ident">Default::default</span>())
 	}
 
+	<span class="doccomment">/// Get maximum different runtimes in cache</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// By default this is `2`.</span>
+	<span class="kw">fn</span> <span class="ident">runtime_cache_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="number">2</span>)
+	}
+
 	<span class="doccomment">/// Activate or not the automatic announcing of blocks after import</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// By default this is `false`.</span>
@@ -1099,6 +1115,7 @@
 		<span class="kw">let</span> <span class="ident">is_validator</span> <span class="op">=</span> <span class="ident">role</span>.<span class="ident">is_authority</span>();
 		<span class="kw">let</span> (<span class="ident">keystore_remote</span>, <span class="ident">keystore</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">keystore_config</span>(<span class="kw-2">&amp;</span><span class="ident">config_dir</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">telemetry_endpoints</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">telemetry_endpoints</span>(<span class="kw-2">&amp;</span><span class="ident">chain_spec</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">runtime_cache_size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">runtime_cache_size</span>()<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">unsafe_pruning</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">import_params</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">unsafe_pruning</span>).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>);
 
@@ -1151,6 +1168,7 @@
 			<span class="ident">role</span>,
 			<span class="ident">base_path</span>: <span class="prelude-val">Some</span>(<span class="ident">base_path</span>),
 			<span class="ident">informant_output_format</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">runtime_cache_size</span>,
 		})
 	}
 

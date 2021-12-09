@@ -351,6 +351,8 @@
 <span id="351">351</span>
 <span id="352">352</span>
 <span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -635,6 +637,7 @@
 				<span class="ident">WasmExecutionMethod::Interpreted</span>,
 				<span class="prelude-val">Some</span>(<span class="number">128</span>),
 				<span class="number">1</span>,
+				<span class="number">2</span>,
 			);
 		<span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">substrate_test_runtime::wasm_binary_unwrap</span>();
 		<span class="kw">let</span> <span class="ident">dir</span> <span class="op">=</span> <span class="ident">tempfile::tempdir</span>().<span class="ident">expect</span>(<span class="string">&quot;Create a temporary directory&quot;</span>);
@@ -648,6 +651,7 @@
 			<span class="ident">WasmExecutionMethod::Interpreted</span>,
 			<span class="prelude-val">Some</span>(<span class="number">128</span>),
 			<span class="number">1</span>,
+			<span class="number">2</span>,
 		);
 
 		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="ident">WasmOverride::runtime_version</span>(
