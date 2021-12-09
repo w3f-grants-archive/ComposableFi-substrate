@@ -233,6 +233,11 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -357,20 +362,25 @@
 <span class="doccomment">/// `minimum_balance` of the asset. This is additive - the `minimum_balance` of the asset must be</span>
 <span class="doccomment">/// met *and then* anything here in addition.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FrozenBalance</span><span class="op">&lt;</span><span class="ident">AssetId</span>, <span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Return the frozen balance. Under normal behaviour, this amount should always be</span>
-	<span class="doccomment">/// withdrawable.</span>
+	<span class="doccomment">/// Return the frozen balance.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// In reality, the balance of every account must be at least the sum of this (if `Some`) and</span>
-	<span class="doccomment">/// the asset&#39;s minimum_balance, since there may be complications to destroying an asset&#39;s</span>
-	<span class="doccomment">/// account completely.</span>
+	<span class="doccomment">/// Under normal behaviour, the account balance should not go below the sum of this (if `Some`)</span>
+	<span class="doccomment">/// and the asset&#39;s minimum balance.</span>
+	<span class="doccomment">/// But the account balance can be below this sum (e.g. if less than the sum has been</span>
+	<span class="doccomment">/// transfered to the account).</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// In special case (privileged intervention) the account balance can go below the sum.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If `None` is returned, then nothing special is enforced.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// If any operation ever breaks this requirement (which will only happen through some sort of</span>
-	<span class="doccomment">/// privileged intervention), then `melted` is called to do any cleanup.</span>
 	<span class="kw">fn</span> <span class="ident">frozen_balance</span>(<span class="ident">asset</span>: <span class="ident">AssetId</span>, <span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">AccountId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Called when an account has been removed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Warning</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This function must never access storage of pallet asset. This function is called while some</span>
+	<span class="doccomment">/// change are pending. Calling into the pallet asset in this function can result in unexpected</span>
+	<span class="doccomment">/// state.</span>
 	<span class="kw">fn</span> <span class="ident">died</span>(<span class="ident">asset</span>: <span class="ident">AssetId</span>, <span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">AccountId</span>);
 }
 
