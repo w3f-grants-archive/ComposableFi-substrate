@@ -605,6 +605,9 @@
 <span id="605">605</span>
 <span id="606">606</span>
 <span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -975,10 +978,13 @@
 			<span class="kw">let</span> <span class="ident">interface</span> <span class="op">=</span>
 				<span class="kw">if</span> <span class="self">self</span>.<span class="ident">prometheus_external</span> { <span class="ident">Ipv4Addr::UNSPECIFIED</span> } <span class="kw">else</span> { <span class="ident">Ipv4Addr::LOCALHOST</span> };
 
-			<span class="prelude-val">Some</span>(<span class="ident">PrometheusConfig::new_with_default_registry</span>(<span class="ident">SocketAddr::new</span>(
-				<span class="ident">interface</span>.<span class="ident">into</span>(),
-				<span class="self">self</span>.<span class="ident">prometheus_port</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_listen_port</span>),
-			)))
+			<span class="prelude-val">Some</span>(<span class="ident">PrometheusConfig::new_with_default_registry</span>(
+				<span class="ident">SocketAddr::new</span>(
+					<span class="ident">interface</span>.<span class="ident">into</span>(),
+					<span class="self">self</span>.<span class="ident">prometheus_port</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_listen_port</span>),
+				),
+				<span class="self">self</span>.<span class="ident">shared_params</span>.<span class="ident">chain_id</span>(<span class="self">self</span>.<span class="ident">shared_params</span>.<span class="ident">dev</span>),
+			))
 		})
 	}
 

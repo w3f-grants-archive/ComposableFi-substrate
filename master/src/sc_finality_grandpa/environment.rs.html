@@ -1827,19 +1827,19 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">PrometheusError</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">finality_grandpa_round</span>: <span class="ident">register</span>(
-				<span class="ident">Gauge::new</span>(<span class="string">&quot;finality_grandpa_round&quot;</span>, <span class="string">&quot;Highest completed GRANDPA round.&quot;</span>)<span class="question-mark">?</span>,
+				<span class="ident">Gauge::new</span>(<span class="string">&quot;substrate_finality_grandpa_round&quot;</span>, <span class="string">&quot;Highest completed GRANDPA round.&quot;</span>)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">finality_grandpa_prevotes</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;finality_grandpa_prevotes_total&quot;</span>,
+					<span class="string">&quot;substrate_finality_grandpa_prevotes_total&quot;</span>,
 					<span class="string">&quot;Total number of GRANDPA prevotes cast locally.&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">finality_grandpa_precommits</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;finality_grandpa_precommits_total&quot;</span>,
+					<span class="string">&quot;substrate_finality_grandpa_precommits_total&quot;</span>,
 					<span class="string">&quot;Total number of GRANDPA precommits cast locally.&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,

@@ -1531,14 +1531,14 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">publish</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;authority_discovery_times_published_total&quot;</span>,
+					<span class="string">&quot;substrate_authority_discovery_times_published_total&quot;</span>,
 					<span class="string">&quot;Number of times authority discovery has published external addresses.&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">amount_addresses_last_published</span>: <span class="ident">register</span>(
 				<span class="ident">Gauge::new</span>(
-					<span class="string">&quot;authority_discovery_amount_external_addresses_last_published&quot;</span>,
+					<span class="string">&quot;substrate_authority_discovery_amount_external_addresses_last_published&quot;</span>,
 					<span class="string">&quot;Number of external addresses published when authority discovery last \
 					 published addresses.&quot;</span>,
 				)<span class="question-mark">?</span>,
@@ -1546,7 +1546,7 @@
 			)<span class="question-mark">?</span>,
 			<span class="ident">requests</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;authority_discovery_authority_addresses_requested_total&quot;</span>,
+					<span class="string">&quot;substrate_authority_discovery_authority_addresses_requested_total&quot;</span>,
 					<span class="string">&quot;Number of times authority discovery has requested external addresses of a \
 					 single authority.&quot;</span>,
 				)<span class="question-mark">?</span>,
@@ -1554,7 +1554,7 @@
 			)<span class="question-mark">?</span>,
 			<span class="ident">requests_pending</span>: <span class="ident">register</span>(
 				<span class="ident">Gauge::new</span>(
-					<span class="string">&quot;authority_discovery_authority_address_requests_pending&quot;</span>,
+					<span class="string">&quot;substrate_authority_discovery_authority_address_requests_pending&quot;</span>,
 					<span class="string">&quot;Number of pending authority address requests.&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
@@ -1562,7 +1562,7 @@
 			<span class="ident">dht_event_received</span>: <span class="ident">register</span>(
 				<span class="ident">CounterVec::new</span>(
 					<span class="ident">Opts::new</span>(
-						<span class="string">&quot;authority_discovery_dht_event_received&quot;</span>,
+						<span class="string">&quot;substrate_authority_discovery_dht_event_received&quot;</span>,
 						<span class="string">&quot;Number of dht events received by authority discovery.&quot;</span>,
 					),
 					<span class="kw-2">&amp;</span>[<span class="string">&quot;name&quot;</span>],
@@ -1571,14 +1571,14 @@
 			)<span class="question-mark">?</span>,
 			<span class="ident">handle_value_found_event_failure</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;authority_discovery_handle_value_found_event_failure&quot;</span>,
+					<span class="string">&quot;substrate_authority_discovery_handle_value_found_event_failure&quot;</span>,
 					<span class="string">&quot;Number of times handling a dht value found event failed.&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">known_authorities_count</span>: <span class="ident">register</span>(
 				<span class="ident">Gauge::new</span>(
-					<span class="string">&quot;authority_discovery_known_authorities_count&quot;</span>,
+					<span class="string">&quot;substrate_authority_discovery_known_authorities_count&quot;</span>,
 					<span class="string">&quot;Number of authorities known by authority discovery.&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,

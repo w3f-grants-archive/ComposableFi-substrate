@@ -98,6 +98,12 @@
 <span id="98"> 98</span>
 <span id="99"> 99</span>
 <span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -141,28 +147,34 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">import_queue_processed</span>: <span class="ident">register</span>(
 				<span class="ident">CounterVec::new</span>(
-					<span class="ident">Opts::new</span>(<span class="string">&quot;import_queue_processed_total&quot;</span>, <span class="string">&quot;Blocks processed by import queue&quot;</span>),
+					<span class="ident">Opts::new</span>(
+						<span class="string">&quot;substrate_import_queue_processed_total&quot;</span>,
+						<span class="string">&quot;Blocks processed by import queue&quot;</span>,
+					),
 					<span class="kw-2">&amp;</span>[<span class="string">&quot;result&quot;</span>], <span class="comment">// &#39;success or failure</span>
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">block_verification_time</span>: <span class="ident">register</span>(
 				<span class="ident">HistogramVec::new</span>(
-					<span class="ident">HistogramOpts::new</span>(<span class="string">&quot;block_verification_time&quot;</span>, <span class="string">&quot;Time taken to verify blocks&quot;</span>),
+					<span class="ident">HistogramOpts::new</span>(
+						<span class="string">&quot;substrate_block_verification_time&quot;</span>,
+						<span class="string">&quot;Time taken to verify blocks&quot;</span>,
+					),
 					<span class="kw-2">&amp;</span>[<span class="string">&quot;result&quot;</span>],
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">block_verification_and_import_time</span>: <span class="ident">register</span>(
 				<span class="ident">Histogram::with_opts</span>(<span class="ident">HistogramOpts::new</span>(
-					<span class="string">&quot;block_verification_and_import_time&quot;</span>,
+					<span class="string">&quot;substrate_block_verification_and_import_time&quot;</span>,
 					<span class="string">&quot;Time taken to verify and import blocks&quot;</span>,
 				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">justification_import_time</span>: <span class="ident">register</span>(
 				<span class="ident">Histogram::with_opts</span>(<span class="ident">HistogramOpts::new</span>(
-					<span class="string">&quot;justification_import_time&quot;</span>,
+					<span class="string">&quot;substrate_justification_import_time&quot;</span>,
 					<span class="string">&quot;Time taken to import justifications&quot;</span>,
 				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,

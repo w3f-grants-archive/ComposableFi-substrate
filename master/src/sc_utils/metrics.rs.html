@@ -86,17 +86,17 @@
 
 <span class="macro">lazy_static!</span> {
 	<span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TOKIO_THREADS_TOTAL</span>: <span class="ident">GenericCounter</span><span class="op">&lt;</span><span class="ident">AtomicU64</span><span class="op">&gt;</span> <span class="op">=</span>
-		<span class="ident">GenericCounter::new</span>(<span class="string">&quot;tokio_threads_total&quot;</span>, <span class="string">&quot;Total number of threads created&quot;</span>)
+		<span class="ident">GenericCounter::new</span>(<span class="string">&quot;substrate_tokio_threads_total&quot;</span>, <span class="string">&quot;Total number of threads created&quot;</span>)
 			.<span class="ident">expect</span>(<span class="string">&quot;Creating of statics doesn&#39;t fail. qed&quot;</span>);
 	<span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TOKIO_THREADS_ALIVE</span>: <span class="ident">GenericGauge</span><span class="op">&lt;</span><span class="ident">AtomicU64</span><span class="op">&gt;</span> <span class="op">=</span>
-		<span class="ident">GenericGauge::new</span>(<span class="string">&quot;tokio_threads_alive&quot;</span>, <span class="string">&quot;Number of threads alive right now&quot;</span>)
+		<span class="ident">GenericGauge::new</span>(<span class="string">&quot;substrate_tokio_threads_alive&quot;</span>, <span class="string">&quot;Number of threads alive right now&quot;</span>)
 			.<span class="ident">expect</span>(<span class="string">&quot;Creating of statics doesn&#39;t fail. qed&quot;</span>);
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;metered&quot;</span>)]</span>
 <span class="macro">lazy_static!</span> {
 	<span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">UNBOUNDED_CHANNELS_COUNTER</span> : <span class="ident">GenericCounterVec</span><span class="op">&lt;</span><span class="ident">AtomicU64</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">GenericCounterVec::new</span>(
-		<span class="ident">Opts::new</span>(<span class="string">&quot;unbounded_channel_len&quot;</span>, <span class="string">&quot;Items in each mpsc::unbounded instance&quot;</span>),
+		<span class="ident">Opts::new</span>(<span class="string">&quot;substrate_unbounded_channel_len&quot;</span>, <span class="string">&quot;Items in each mpsc::unbounded instance&quot;</span>),
 		<span class="kw-2">&amp;</span>[<span class="string">&quot;entity&quot;</span>, <span class="string">&quot;action&quot;</span>] <span class="comment">// &#39;name of channel, send|received|dropped</span>
 	).<span class="ident">expect</span>(<span class="string">&quot;Creating of statics doesn&#39;t fail. qed&quot;</span>);
 

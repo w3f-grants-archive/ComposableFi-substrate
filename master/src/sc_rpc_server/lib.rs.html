@@ -322,7 +322,7 @@
 				<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 					<span class="ident">session_opened</span>: <span class="ident">register</span>(
 						<span class="ident">Counter::new</span>(
-							<span class="string">&quot;rpc_sessions_opened&quot;</span>,
+							<span class="string">&quot;substrate_rpc_sessions_opened&quot;</span>,
 							<span class="string">&quot;Number of persistent RPC sessions opened&quot;</span>,
 						)<span class="question-mark">?</span>,
 						<span class="ident">r</span>,
@@ -330,7 +330,7 @@
 					.<span class="ident">into</span>(),
 					<span class="ident">session_closed</span>: <span class="ident">register</span>(
 						<span class="ident">Counter::new</span>(
-							<span class="string">&quot;rpc_sessions_closed&quot;</span>,
+							<span class="string">&quot;substrate_rpc_sessions_closed&quot;</span>,
 							<span class="string">&quot;Number of persistent RPC sessions closed&quot;</span>,
 						)<span class="question-mark">?</span>,
 						<span class="ident">r</span>,

@@ -143,14 +143,14 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">block_constructed</span>: <span class="ident">register</span>(
 				<span class="ident">Histogram::with_opts</span>(<span class="ident">HistogramOpts::new</span>(
-					<span class="string">&quot;proposer_block_constructed&quot;</span>,
+					<span class="string">&quot;substrate_proposer_block_constructed&quot;</span>,
 					<span class="string">&quot;Histogram of time taken to construct new block&quot;</span>,
 				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">number_of_transactions</span>: <span class="ident">register</span>(
 				<span class="ident">Gauge::new</span>(
-					<span class="string">&quot;proposer_number_of_transactions&quot;</span>,
+					<span class="string">&quot;substrate_proposer_number_of_transactions&quot;</span>,
 					<span class="string">&quot;Number of transactions included in block&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,

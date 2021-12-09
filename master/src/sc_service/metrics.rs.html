@@ -302,6 +302,9 @@
 <span id="302">302</span>
 <span id="303">303</span>
 <span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -359,7 +362,7 @@
 		<span class="ident">register</span>(
 			<span class="ident">Gauge</span>::<span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span><span class="ident">::with_opts</span>(
 				<span class="ident">Opts::new</span>(
-					<span class="string">&quot;build_info&quot;</span>,
+					<span class="string">&quot;substrate_build_info&quot;</span>,
 					<span class="string">&quot;A metric with a constant &#39;1&#39; value labeled by name, version&quot;</span>,
 				)
 				.<span class="ident">const_label</span>(<span class="string">&quot;name&quot;</span>, <span class="ident">name</span>)
@@ -369,8 +372,11 @@
 		)<span class="question-mark">?</span>
 		.<span class="ident">set</span>(<span class="number">1</span>);
 
-		<span class="ident">register</span>(<span class="ident">Gauge</span>::<span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="string">&quot;node_roles&quot;</span>, <span class="string">&quot;The roles the node is running as&quot;</span>)<span class="question-mark">?</span>, <span class="kw-2">&amp;</span><span class="ident">registry</span>)<span class="question-mark">?</span>
-			.<span class="ident">set</span>(<span class="ident">roles</span>);
+		<span class="ident">register</span>(
+			<span class="ident">Gauge</span>::<span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="string">&quot;substrate_node_roles&quot;</span>, <span class="string">&quot;The roles the node is running as&quot;</span>)<span class="question-mark">?</span>,
+			<span class="kw-2">&amp;</span><span class="ident">registry</span>,
+		)<span class="question-mark">?</span>
+		.<span class="ident">set</span>(<span class="ident">roles</span>);
 
 		<span class="ident">register_globals</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>;
 
@@ -378,7 +384,7 @@
 			<span class="ident">SystemTime::now</span>().<span class="ident">duration_since</span>(<span class="ident">SystemTime::UNIX_EPOCH</span>).<span class="ident">unwrap_or_default</span>();
 		<span class="ident">register</span>(
 			<span class="ident">Gauge</span>::<span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span><span class="ident">::new</span>(
-				<span class="string">&quot;process_start_time_seconds&quot;</span>,
+				<span class="string">&quot;substrate_process_start_time_seconds&quot;</span>,
 				<span class="string">&quot;Number of seconds between the UNIX epoch and the moment the process started&quot;</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">registry</span>,
@@ -389,20 +395,20 @@
 			<span class="comment">// generic internals</span>
 			<span class="ident">block_height</span>: <span class="ident">register</span>(
 				<span class="ident">GaugeVec::new</span>(
-					<span class="ident">Opts::new</span>(<span class="string">&quot;block_height&quot;</span>, <span class="string">&quot;Block height info of the chain&quot;</span>),
+					<span class="ident">Opts::new</span>(<span class="string">&quot;substrate_block_height&quot;</span>, <span class="string">&quot;Block height info of the chain&quot;</span>),
 					<span class="kw-2">&amp;</span>[<span class="string">&quot;status&quot;</span>],
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 
 			<span class="ident">number_leaves</span>: <span class="ident">register</span>(
-				<span class="ident">Gauge::new</span>(<span class="string">&quot;number_leaves&quot;</span>, <span class="string">&quot;Number of known chain leaves (aka forks)&quot;</span>)<span class="question-mark">?</span>,
+				<span class="ident">Gauge::new</span>(<span class="string">&quot;substrate_number_leaves&quot;</span>, <span class="string">&quot;Number of known chain leaves (aka forks)&quot;</span>)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 
 			<span class="ident">ready_transactions_number</span>: <span class="ident">register</span>(
 				<span class="ident">Gauge::new</span>(
-					<span class="string">&quot;ready_transactions_number&quot;</span>,
+					<span class="string">&quot;substrate_ready_transactions_number&quot;</span>,
 					<span class="string">&quot;Number of transactions in the ready queue&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
@@ -410,16 +416,16 @@
 
 			<span class="comment">// I/ O</span>
 			<span class="ident">database_cache</span>: <span class="ident">register</span>(
-				<span class="ident">Gauge::new</span>(<span class="string">&quot;database_cache_bytes&quot;</span>, <span class="string">&quot;RocksDB cache size in bytes&quot;</span>)<span class="question-mark">?</span>,
+				<span class="ident">Gauge::new</span>(<span class="string">&quot;substrate_database_cache_bytes&quot;</span>, <span class="string">&quot;RocksDB cache size in bytes&quot;</span>)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">state_cache</span>: <span class="ident">register</span>(
-				<span class="ident">Gauge::new</span>(<span class="string">&quot;state_cache_bytes&quot;</span>, <span class="string">&quot;State cache size in bytes&quot;</span>)<span class="question-mark">?</span>,
+				<span class="ident">Gauge::new</span>(<span class="string">&quot;substrate_state_cache_bytes&quot;</span>, <span class="string">&quot;State cache size in bytes&quot;</span>)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">state_db</span>: <span class="ident">register</span>(
 				<span class="ident">GaugeVec::new</span>(
-					<span class="ident">Opts::new</span>(<span class="string">&quot;state_db_cache_bytes&quot;</span>, <span class="string">&quot;State DB cache in bytes&quot;</span>),
+					<span class="ident">Opts::new</span>(<span class="string">&quot;substrate_state_db_cache_bytes&quot;</span>, <span class="string">&quot;State DB cache in bytes&quot;</span>),
 					<span class="kw-2">&amp;</span>[<span class="string">&quot;subtype&quot;</span>],
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,

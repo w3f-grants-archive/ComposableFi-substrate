@@ -185,28 +185,28 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">submitted_transactions</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;sub_txpool_submitted_transactions&quot;</span>,
+					<span class="string">&quot;substrate_sub_txpool_submitted_transactions&quot;</span>,
 					<span class="string">&quot;Total number of transactions submitted&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">validations_invalid</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;sub_txpool_validations_invalid&quot;</span>,
+					<span class="string">&quot;substrate_sub_txpool_validations_invalid&quot;</span>,
 					<span class="string">&quot;Total number of transactions that were removed from the pool as invalid&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">block_transactions_pruned</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;sub_txpool_block_transactions_pruned&quot;</span>,
+					<span class="string">&quot;substrate_sub_txpool_block_transactions_pruned&quot;</span>,
 					<span class="string">&quot;Total number of transactions that was requested to be pruned by block events&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">block_transactions_resubmitted</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;sub_txpool_block_transactions_resubmitted&quot;</span>,
+					<span class="string">&quot;substrate_sub_txpool_block_transactions_resubmitted&quot;</span>,
 					<span class="string">&quot;Total number of transactions that was requested to be resubmitted by block events&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
@@ -227,14 +227,14 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> {
 			<span class="ident">validations_scheduled</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;sub_txpool_validations_scheduled&quot;</span>,
+					<span class="string">&quot;substrate_sub_txpool_validations_scheduled&quot;</span>,
 					<span class="string">&quot;Total number of transactions scheduled for validation&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">validations_finished</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;sub_txpool_validations_finished&quot;</span>,
+					<span class="string">&quot;substrate_sub_txpool_validations_finished&quot;</span>,
 					<span class="string">&quot;Total number of transactions that finished validation&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,

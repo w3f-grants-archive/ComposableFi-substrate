@@ -674,7 +674,7 @@
 		<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">prometheus_registry</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> {
 			<span class="ident">CounterVec::new</span>(
 				<span class="ident">Opts::new</span>(
-					<span class="string">&quot;storage_notification_subscribers&quot;</span>,
+					<span class="string">&quot;substrate_storage_notification_subscribers&quot;</span>,
 					<span class="string">&quot;Number of subscribers in storage notification sytem&quot;</span>,
 				),
 				<span class="kw-2">&amp;</span>[<span class="string">&quot;action&quot;</span>], <span class="comment">// added | removed</span>

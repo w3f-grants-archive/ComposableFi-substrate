@@ -292,7 +292,7 @@
 				<span class="ident">requests_started</span>: <span class="ident">register</span>(
 					<span class="ident">CounterVec::new</span>(
 						<span class="ident">Opts::new</span>(
-							<span class="string">&quot;rpc_requests_started&quot;</span>,
+							<span class="string">&quot;substrate_rpc_requests_started&quot;</span>,
 							<span class="string">&quot;Number of RPC requests (not calls) received by the server.&quot;</span>,
 						),
 						<span class="kw-2">&amp;</span>[<span class="string">&quot;protocol&quot;</span>],
@@ -302,7 +302,7 @@
 				<span class="ident">requests_finished</span>: <span class="ident">register</span>(
 					<span class="ident">CounterVec::new</span>(
 						<span class="ident">Opts::new</span>(
-							<span class="string">&quot;rpc_requests_finished&quot;</span>,
+							<span class="string">&quot;substrate_rpc_requests_finished&quot;</span>,
 							<span class="string">&quot;Number of RPC requests (not calls) processed by the server.&quot;</span>,
 						),
 						<span class="kw-2">&amp;</span>[<span class="string">&quot;protocol&quot;</span>],
@@ -312,7 +312,7 @@
 				<span class="ident">calls_time</span>: <span class="ident">register</span>(
 					<span class="ident">HistogramVec::new</span>(
 						<span class="ident">HistogramOpts::new</span>(
-							<span class="string">&quot;rpc_calls_time&quot;</span>,
+							<span class="string">&quot;substrate_rpc_calls_time&quot;</span>,
 							<span class="string">&quot;Total time [μs] of processed RPC calls&quot;</span>,
 						),
 						<span class="kw-2">&amp;</span>[<span class="string">&quot;protocol&quot;</span>, <span class="string">&quot;method&quot;</span>],
@@ -322,7 +322,7 @@
 				<span class="ident">calls_started</span>: <span class="ident">register</span>(
 					<span class="ident">CounterVec::new</span>(
 						<span class="ident">Opts::new</span>(
-							<span class="string">&quot;rpc_calls_started&quot;</span>,
+							<span class="string">&quot;substrate_rpc_calls_started&quot;</span>,
 							<span class="string">&quot;Number of received RPC calls (unique un-batched requests)&quot;</span>,
 						),
 						<span class="kw-2">&amp;</span>[<span class="string">&quot;protocol&quot;</span>, <span class="string">&quot;method&quot;</span>],
@@ -332,7 +332,7 @@
 				<span class="ident">calls_finished</span>: <span class="ident">register</span>(
 					<span class="ident">CounterVec::new</span>(
 						<span class="ident">Opts::new</span>(
-							<span class="string">&quot;rpc_calls_finished&quot;</span>,
+							<span class="string">&quot;substrate_rpc_calls_finished&quot;</span>,
 							<span class="string">&quot;Number of processed RPC calls (unique un-batched requests)&quot;</span>,
 						),
 						<span class="kw-2">&amp;</span>[<span class="string">&quot;protocol&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;is_error&quot;</span>],
