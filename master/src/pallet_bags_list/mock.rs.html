@@ -168,6 +168,7 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
+<span id="171">171</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -238,6 +239,7 @@
 	<span class="kw">type</span> <span class="ident">OnKilledAccount</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {

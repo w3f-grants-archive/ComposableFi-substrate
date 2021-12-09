@@ -90,6 +90,7 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
+<span id="93">93</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -114,13 +115,13 @@
 <span class="doccomment">//! This crate tests that `construct_runtime!` expands the pallet parts</span>
 <span class="doccomment">//! correctly even when frame-support is renamed in Cargo.toml</span>
 
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>};
 <span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">sr25519</span>, <span class="ident">H256</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">create_runtime_str</span>, <span class="ident">generic</span>,
 	<span class="ident">traits</span>::{<span class="ident">BlakeTwo256</span>, <span class="ident">IdentityLookup</span>, <span class="ident">Verify</span>},
 };
 <span class="kw">use</span> <span class="ident">sp_version::RuntimeVersion</span>;
-<span class="kw">use</span> <span class="ident">support</span>::{<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>};
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VERSION</span>: <span class="ident">RuntimeVersion</span> <span class="op">=</span> <span class="ident">RuntimeVersion</span> {
 	<span class="ident">spec_name</span>: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;frame-support-test-compile-pass&quot;</span>),
@@ -143,8 +144,8 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SS58Prefix</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">system::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">type</span> <span class="ident">BaseCallFilter</span> <span class="op">=</span> <span class="ident">support::traits::Everything</span>;
+<span class="kw">impl</span> <span class="ident">frame_system::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">BaseCallFilter</span> <span class="op">=</span> <span class="ident">frame_support::traits::Everything</span>;
 	<span class="kw">type</span> <span class="ident">BlockWeights</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">BlockLength</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">Index</span> <span class="op">=</span> <span class="ident">u128</span>;
@@ -165,6 +166,7 @@
 	<span class="kw">type</span> <span class="ident">OnNewAccount</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">OnKilledAccount</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> <span class="ident">SS58Prefix</span>;
 }
@@ -179,7 +181,7 @@
 		<span class="ident">NodeBlock</span> <span class="op">=</span> <span class="ident">Block</span>,
 		<span class="ident">UncheckedExtrinsic</span> <span class="op">=</span> <span class="ident">UncheckedExtrinsic</span>
 	{
-		<span class="ident">System</span>: <span class="ident">system</span>,
+		<span class="ident">System</span>: <span class="ident">frame_system</span>,
 	}
 );
 </code></pre></div>

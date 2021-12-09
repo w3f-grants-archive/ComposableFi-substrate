@@ -1067,6 +1067,10 @@
 <span id="1067">1067</span>
 <span id="1068">1068</span>
 <span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1563,6 +1567,8 @@
 	<span class="ident">ConsumerRemaining</span>,
 	<span class="doccomment">/// There are no providers so the account cannot be created.</span>
 	<span class="ident">NoProviders</span>,
+	<span class="doccomment">/// There are too many consumers so the account cannot be created.</span>
+	<span class="ident">TooManyConsumers</span>,
 	<span class="doccomment">/// An error to do with tokens.</span>
 	<span class="ident">Token</span>(<span class="ident">TokenError</span>),
 	<span class="doccomment">/// An arithmetic error.</span>
@@ -1698,6 +1704,7 @@
 			<span class="ident">DispatchError::Module</span> { <span class="ident">message</span>, .. } =&gt; <span class="ident">message</span>.<span class="ident">unwrap_or</span>(<span class="string">&quot;Unknown module error&quot;</span>),
 			<span class="ident">DispatchError::ConsumerRemaining</span> =&gt; <span class="string">&quot;Consumer remaining&quot;</span>,
 			<span class="ident">DispatchError::NoProviders</span> =&gt; <span class="string">&quot;No providers&quot;</span>,
+			<span class="ident">DispatchError::TooManyConsumers</span> =&gt; <span class="string">&quot;Too many consumers&quot;</span>,
 			<span class="ident">DispatchError::Token</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
 			<span class="ident">DispatchError::Arithmetic</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>.<span class="ident">into</span>(),
 		}
@@ -1729,6 +1736,7 @@
 			},
 			<span class="ident"><span class="self">Self</span>::ConsumerRemaining</span> =&gt; <span class="string">&quot;Consumer remaining&quot;</span>.<span class="ident">print</span>(),
 			<span class="ident"><span class="self">Self</span>::NoProviders</span> =&gt; <span class="string">&quot;No providers&quot;</span>.<span class="ident">print</span>(),
+			<span class="ident"><span class="self">Self</span>::TooManyConsumers</span> =&gt; <span class="string">&quot;Too many consumers&quot;</span>.<span class="ident">print</span>(),
 			<span class="ident"><span class="self">Self</span>::Token</span>(<span class="ident">e</span>) =&gt; {
 				<span class="string">&quot;Token error: &quot;</span>.<span class="ident">print</span>();
 				<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">print</span>();

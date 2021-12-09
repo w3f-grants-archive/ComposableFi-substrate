@@ -610,6 +610,19 @@
 <span id="610">610</span>
 <span id="611">611</span>
 <span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -672,20 +685,33 @@
 	}
 }
 
-<span class="doccomment">/// Implement `Get&lt;u32&gt;` and `Get&lt;Option&lt;u32&gt;&gt;` using the given const.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">T</span>: <span class="ident">u32</span><span class="op">&gt;</span>;
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">T</span>: <span class="ident">u32</span><span class="op">&gt;</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="ident">u32</span> {
-		<span class="ident">T</span>
-	}
+<span class="macro">macro_rules!</span> <span class="ident">impl_const_get</span> {
+	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) =&gt; {
+		<span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">T</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>;
+		<span class="kw">impl</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">T</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+				<span class="ident">T</span>
+			}
+		}
+		<span class="kw">impl</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">T</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> {
+				<span class="prelude-val">Some</span>(<span class="ident">T</span>)
+			}
+		}
+	};
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">T</span>: <span class="ident">u32</span><span class="op">&gt;</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-		<span class="prelude-val">Some</span>(<span class="ident">T</span>)
-	}
-}
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstBool</span>, <span class="ident">bool</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstU8</span>, <span class="ident">u8</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstU16</span>, <span class="ident">u16</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstU32</span>, <span class="ident">u32</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstU64</span>, <span class="ident">u64</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstU128</span>, <span class="ident">u128</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstI8</span>, <span class="ident">i8</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstI16</span>, <span class="ident">i16</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstI32</span>, <span class="ident">i32</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstI64</span>, <span class="ident">i64</span>);
+<span class="macro">impl_const_get!</span>(<span class="ident">ConstI128</span>, <span class="ident">i128</span>);
 
 <span class="doccomment">/// A type for which some values make sense to be able to drop without further consideration.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryDrop</span>: <span class="ident">Sized</span> {

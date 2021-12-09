@@ -1276,6 +1276,52 @@
 <span id="1276">1276</span>
 <span id="1277">1277</span>
 <span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1490,6 +1536,11 @@
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">AssetDeposit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">DepositBalanceOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
+		<span class="doccomment">/// The amount of funds that must be reserved for a non-provider asset account to be</span>
+		<span class="doccomment">/// maintained.</span>
+		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
+		<span class="kw">type</span> <span class="ident">AssetAccountDeposit</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">DepositBalanceOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
 		<span class="doccomment">/// The basic amount of funds that must be reserved when adding metadata to your asset.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">MetadataDepositBase</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">DepositBalanceOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
@@ -1528,15 +1579,15 @@
 	<span class="op">&gt;</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::storage</span>]</span>
-	<span class="doccomment">/// The number of units of assets held by any given account.</span>
+	<span class="doccomment">/// The holdings of a specific account for a specific asset.</span>
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">type</span> <span class="ident">Account</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageDoubleMap</span><span class="op">&lt;</span>
 		<span class="kw">_</span>,
 		<span class="ident">Blake2_128Concat</span>,
 		<span class="ident">T::AssetId</span>,
 		<span class="ident">Blake2_128Concat</span>,
 		<span class="ident">T::AccountId</span>,
-		<span class="ident">AssetBalance</span><span class="op">&lt;</span><span class="ident">T::Balance</span>, <span class="ident">T::Extra</span><span class="op">&gt;</span>,
-		<span class="ident">ValueQuery</span>,
+		<span class="ident">AssetAccountOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+		<span class="ident">OptionQuery</span>,
 		<span class="ident">GetDefault</span>,
 		<span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">300_000</span><span class="op">&gt;</span>,
 	<span class="op">&gt;</span>;
@@ -1726,8 +1777,8 @@
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
 		<span class="doccomment">/// Account balance must be greater than or equal to the transfer amount.</span>
 		<span class="ident">BalanceLow</span>,
-		<span class="doccomment">/// Balance should be non-zero.</span>
-		<span class="ident">BalanceZero</span>,
+		<span class="doccomment">/// The account to alter does not exist.</span>
+		<span class="ident">NoAccount</span>,
 		<span class="doccomment">/// The signing account has no permission to do the operation.</span>
 		<span class="ident">NoPermission</span>,
 		<span class="doccomment">/// The given asset ID is unknown.</span>
@@ -1749,6 +1800,12 @@
 		<span class="ident">Unapproved</span>,
 		<span class="doccomment">/// The source account would not survive the transfer and it needs to stay alive.</span>
 		<span class="ident">WouldDie</span>,
+		<span class="doccomment">/// The asset-account already exists.</span>
+		<span class="ident">AlreadyExists</span>,
+		<span class="doccomment">/// The asset-account doesn&#39;t have an associated deposit.</span>
+		<span class="ident">NoDeposit</span>,
+		<span class="doccomment">/// The operation would result in funds being burned.</span>
+		<span class="ident">WouldBurn</span>,
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::call</span>]</span>
@@ -1911,7 +1968,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Origin must be Signed and the sender should be the Manager of the asset `id`.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// Bails with `BalanceZero` if the `who` is already dead.</span>
+		<span class="doccomment">/// Bails with `NoAccount` if the `who` is already dead.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `id`: The identifier of the asset to have some amount burned.</span>
 		<span class="doccomment">/// - `who`: The account to be debited from.</span>
@@ -2057,9 +2114,11 @@
 			<span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">id</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Unknown</span>)<span class="question-mark">?</span>;
 			<span class="macro">ensure!</span>(<span class="kw-2">&amp;</span><span class="ident">origin</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">d</span>.<span class="ident">freezer</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoPermission</span>);
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">who</span>)<span class="question-mark">?</span>;
-			<span class="macro">ensure!</span>(<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::BalanceZero</span>);
 
-			<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">is_frozen</span> <span class="op">=</span> <span class="bool-val">true</span>);
+			<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">maybe_account</span><span class="op">|</span> -&gt; <span class="ident">DispatchResult</span> {
+				<span class="ident">maybe_account</span>.<span class="ident">as_mut</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoAccount</span>)<span class="question-mark">?</span>.<span class="ident">is_frozen</span> <span class="op">=</span> <span class="bool-val">true</span>;
+				<span class="prelude-val">Ok</span>(())
+			})<span class="question-mark">?</span>;
 
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Frozen</span> { <span class="ident">asset_id</span>: <span class="ident">id</span>, <span class="ident">who</span> });
 			<span class="prelude-val">Ok</span>(())
@@ -2086,9 +2145,11 @@
 			<span class="kw">let</span> <span class="ident">details</span> <span class="op">=</span> <span class="ident">Asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">id</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Unknown</span>)<span class="question-mark">?</span>;
 			<span class="macro">ensure!</span>(<span class="kw-2">&amp;</span><span class="ident">origin</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">details</span>.<span class="ident">admin</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoPermission</span>);
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">who</span>)<span class="question-mark">?</span>;
-			<span class="macro">ensure!</span>(<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::BalanceZero</span>);
 
-			<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">is_frozen</span> <span class="op">=</span> <span class="bool-val">false</span>);
+			<span class="ident">Account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::try_mutate</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="op">|</span><span class="ident">maybe_account</span><span class="op">|</span> -&gt; <span class="ident">DispatchResult</span> {
+				<span class="ident">maybe_account</span>.<span class="ident">as_mut</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoAccount</span>)<span class="question-mark">?</span>.<span class="ident">is_frozen</span> <span class="op">=</span> <span class="bool-val">false</span>;
+				<span class="prelude-val">Ok</span>(())
+			})<span class="question-mark">?</span>;
 
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::Thawed</span> { <span class="ident">asset_id</span>: <span class="ident">id</span>, <span class="ident">who</span> });
 			<span class="prelude-val">Ok</span>(())
@@ -2551,6 +2612,37 @@
 			<span class="kw">let</span> <span class="ident">owner</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">owner</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">destination</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">destination</span>)<span class="question-mark">?</span>;
 			<span class="ident"><span class="self">Self</span>::do_transfer_approved</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">owner</span>, <span class="kw-2">&amp;</span><span class="ident">delegate</span>, <span class="kw-2">&amp;</span><span class="ident">destination</span>, <span class="ident">amount</span>)
+		}
+
+		<span class="doccomment">/// Create an asset account for non-provider assets.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// A deposit will be taken from the signer account.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// - `origin`: Must be Signed; the signer account must have sufficient funds for a deposit</span>
+		<span class="doccomment">///   to be taken.</span>
+		<span class="doccomment">/// - `id`: The identifier of the asset for the account to be created.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Emits `Touched` event when successful.</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::mint</span>())]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">touch</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">id</span>: <span class="ident">T::AssetId</span>) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="ident"><span class="self">Self</span>::do_touch</span>(<span class="ident">id</span>, <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>)
+		}
+
+		<span class="doccomment">/// Return the deposit (if any) of an asset account.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The origin must be Signed.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// - `id`: The identifier of the asset for the account to be created.</span>
+		<span class="doccomment">/// - `allow_burn`: If `true` then assets may be destroyed in order to complete the refund.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Emits `Refunded` event when successful.</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::mint</span>())]</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">refund</span>(
+			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">id</span>: <span class="ident">T::AssetId</span>,
+			<span class="ident">allow_burn</span>: <span class="ident">bool</span>,
+		) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="ident"><span class="self">Self</span>::do_refund</span>(<span class="ident">id</span>, <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>, <span class="ident">allow_burn</span>)
 		}
 	}
 }
