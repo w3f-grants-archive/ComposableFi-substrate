@@ -558,6 +558,17 @@
 <span id="558">558</span>
 <span id="559">559</span>
 <span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -600,6 +611,14 @@
 	<span class="ident">SandboxEnvironmentBuilder</span>, <span class="ident">SandboxMemory</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">borrow::ToOwned</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
+
+<span class="doccomment">/// The location where to put the genrated code.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Location</span> {
+	<span class="doccomment">/// Generate all code into the `call` exported function.</span>
+	<span class="ident">Call</span>,
+	<span class="doccomment">/// Generate all code into the `deploy` exported function.</span>
+	<span class="ident">Deploy</span>,
+}
 
 <span class="doccomment">/// Pass to `create_code` in order to create a compiled `WasmModule`.</span>
 <span class="doccomment">///</span>
@@ -868,7 +887,8 @@
 	<span class="doccomment">/// Creates a wasm module of `target_bytes` size. Used to benchmark the performance of</span>
 	<span class="doccomment">/// `instantiate_with_code` for different sizes of wasm modules. The generated module maximizes</span>
 	<span class="doccomment">/// instrumentation runtime by nesting blocks as deeply as possible given the byte budget.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sized</span>(<span class="ident">target_bytes</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
+	<span class="doccomment">/// `code_location`: Whether to place the code into `deploy` or `call`.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sized</span>(<span class="ident">target_bytes</span>: <span class="ident">u32</span>, <span class="ident">code_location</span>: <span class="ident">Location</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">use</span> <span class="ident"><span class="self">self</span>::elements::Instruction</span>::{<span class="ident">End</span>, <span class="ident">I32Const</span>, <span class="ident">If</span>, <span class="ident">Return</span>};
 		<span class="comment">// Base size of a contract is 63 bytes and each expansion adds 6 bytes.</span>
 		<span class="comment">// We do one expansion less to account for the code section and function body</span>
@@ -877,12 +897,14 @@
 		<span class="comment">// because of the maximum code size that is enforced by `instantiate_with_code`.</span>
 		<span class="kw">let</span> <span class="ident">expansions</span> <span class="op">=</span> (<span class="ident">target_bytes</span>.<span class="ident">saturating_sub</span>(<span class="number">63</span>) <span class="op">/</span> <span class="number">6</span>).<span class="ident">saturating_sub</span>(<span class="number">1</span>);
 		<span class="kw">const</span> <span class="ident">EXPANSION</span>: [<span class="ident">Instruction</span>; <span class="number">4</span>] <span class="op">=</span> [<span class="ident">I32Const</span>(<span class="number">0</span>), <span class="ident">If</span>(<span class="ident">BlockType::NoResult</span>), <span class="ident">Return</span>, <span class="ident">End</span>];
-		<span class="ident">ModuleDefinition</span> {
-			<span class="ident">call_body</span>: <span class="prelude-val">Some</span>(<span class="ident">body::repeated</span>(<span class="ident">expansions</span>, <span class="kw-2">&amp;</span><span class="ident">EXPANSION</span>)),
-			<span class="ident">memory</span>: <span class="prelude-val">Some</span>(<span class="ident">ImportedMemory::max</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()),
-			..<span class="ident">Default::default</span>()
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span>
+			<span class="ident">ModuleDefinition</span> { <span class="ident">memory</span>: <span class="prelude-val">Some</span>(<span class="ident">ImportedMemory::max</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()), ..<span class="ident">Default::default</span>() };
+		<span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">body::repeated</span>(<span class="ident">expansions</span>, <span class="kw-2">&amp;</span><span class="ident">EXPANSION</span>));
+		<span class="kw">match</span> <span class="ident">code_location</span> {
+			<span class="ident">Location::Call</span> =&gt; <span class="ident">module</span>.<span class="ident">call_body</span> <span class="op">=</span> <span class="ident">body</span>,
+			<span class="ident">Location::Deploy</span> =&gt; <span class="ident">module</span>.<span class="ident">deploy_body</span> <span class="op">=</span> <span class="ident">body</span>,
 		}
-		.<span class="ident">into</span>()
+		<span class="ident">module</span>.<span class="ident">into</span>()
 	}
 
 	<span class="doccomment">/// Creates a wasm module that calls the imported function named `getter_name` `repeat`</span>

@@ -382,7 +382,7 @@
 	<span class="kw">if</span> <span class="ident">prefab_module</span>.<span class="ident">instruction_weights_version</span> <span class="op">&lt;</span> <span class="ident">schedule</span>.<span class="ident">instruction_weights</span>.<span class="ident">version</span> {
 		<span class="comment">// The instruction weights have changed.</span>
 		<span class="comment">// We need to re-instrument the code with the new instruction weights.</span>
-		<span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Instrument</span>(<span class="ident">estimate_code_size</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+		<span class="ident">gas_meter</span>.<span class="ident">charge</span>(<span class="ident">CodeToken::Reinstrument</span>(<span class="ident">estimate_code_size</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">PristineCode</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span>(
 			<span class="kw-2">&amp;</span><span class="ident">code_hash</span>,
 		)<span class="question-mark">?</span>))<span class="question-mark">?</span>;
 		<span class="ident">reinstrument</span>(<span class="kw-2">&amp;mut</span> <span class="ident">prefab_module</span>, <span class="ident">schedule</span>)<span class="question-mark">?</span>;
@@ -425,9 +425,9 @@
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">test</span>, <span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">enum</span> <span class="ident">CodeToken</span> {
-	<span class="doccomment">/// Weight for instrumenting a contract contract of the supplied size in bytes.</span>
-	<span class="ident">Instrument</span>(<span class="ident">u32</span>),
-	<span class="doccomment">/// Weight for loading a contract per kilobyte.</span>
+	<span class="doccomment">/// Weight for reinstrumenting a contract contract of the supplied size in bytes.</span>
+	<span class="ident">Reinstrument</span>(<span class="ident">u32</span>),
+	<span class="doccomment">/// Weight for loading a contract per byte.</span>
 	<span class="ident">Load</span>(<span class="ident">u32</span>),
 }
 
@@ -435,14 +435,14 @@
 	<span class="kw">fn</span> <span class="ident">weight</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Weight</span> {
 		<span class="kw">use</span> <span class="ident"><span class="self">self</span>::CodeToken</span>::<span class="kw-2">*</span>;
 		<span class="comment">// In case of `Load` we already covered the general costs of</span>
-		<span class="comment">// accessing the storage but still need to account for the actual size of the</span>
+		<span class="comment">// calling the storage but still need to account for the actual size of the</span>
 		<span class="comment">// contract code. This is why we substract `T::*::(0)`. We need to do this at this</span>
-		<span class="comment">// point because when charging the general weight we do not know the size of</span>
-		<span class="comment">// the contract.</span>
+		<span class="comment">// point because when charging the general weight for calling the contract we not know the</span>
+		<span class="comment">// size of the contract.</span>
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident">Instrument</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::instrument</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">1024</span>),
-			<span class="ident">Load</span>(<span class="ident">len</span>) =&gt;
-				<span class="ident">T::WeightInfo::code_load</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">1024</span>).<span class="ident">saturating_sub</span>(<span class="ident">T::WeightInfo::code_load</span>(<span class="number">0</span>)),
+			<span class="ident">Reinstrument</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::reinstrument</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">1024</span>),
+			<span class="ident">Load</span>(<span class="ident">len</span>) =&gt; <span class="ident">T::WeightInfo::call_with_code_kb</span>(<span class="ident">len</span> <span class="op">/</span> <span class="number">1024</span>)
+				.<span class="ident">saturating_sub</span>(<span class="ident">T::WeightInfo::call_with_code_kb</span>(<span class="number">0</span>)),
 		}
 	}
 }
