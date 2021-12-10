@@ -185,8 +185,11 @@ impl<Block: BlockT> GrandpaJustification<Block> {
 			}
 		}
 
-		let ancestry_hashes =
-			self.votes_ancestries.iter().map(|h: &Block::Header| h.hash()).collect();
+		let ancestry_hashes = self
+			.votes_ancestries
+			.iter()
+			.map(|h: &Block::Header| h.hash())
+			.collect::<HashSet<_>>();
 
 		if visited_hashes != ancestry_hashes {
 			return Err(ClientError::BadJustification(
