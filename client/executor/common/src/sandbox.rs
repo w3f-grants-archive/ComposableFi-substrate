@@ -660,10 +660,9 @@ impl BackendContext {
 
 			#[cfg(feature = "wasmer-sandbox")]
 			SandboxBackend::Wasmer | SandboxBackend::TryWasmer => {
-				let compiler = wasmer_compiler_singlepass::Singlepass::default();
-
+				use wasmer::{Singlepass, Store, Universal};
 				BackendContext::Wasmer(WasmerBackend {
-					store: wasmer::Store::new(&wasmer::JIT::new(compiler).engine()),
+					store: Store::new(&Universal::new(Singlepass::new()).engine()),
 				})
 			},
 		}
@@ -972,6 +971,7 @@ impl<DT> Store<DT> {
 				wasmer::InstantiationError::Start(_) => InstantiationError::StartTrapped,
 				wasmer::InstantiationError::HostEnvInitialization(_) =>
 					InstantiationError::EnvironmentDefinitionCorrupted,
+				wasmer::InstantiationError::CpuFeature(_) => InstantiationError::ModuleDecoding,
 			})
 		})?;
 
