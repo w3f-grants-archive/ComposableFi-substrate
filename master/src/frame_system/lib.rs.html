@@ -1619,6 +1619,22 @@
 <span id="1619">1619</span>
 <span id="1620">1620</span>
 <span id="1621">1621</span>
+<span id="1622">1622</span>
+<span id="1623">1623</span>
+<span id="1624">1624</span>
+<span id="1625">1625</span>
+<span id="1626">1626</span>
+<span id="1627">1627</span>
+<span id="1628">1628</span>
+<span id="1629">1629</span>
+<span id="1630">1630</span>
+<span id="1631">1631</span>
+<span id="1632">1632</span>
+<span id="1633">1633</span>
+<span id="1634">1634</span>
+<span id="1635">1635</span>
+<span id="1636">1636</span>
+<span id="1637">1637</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1965,7 +1981,7 @@
 		<span class="doccomment">/// # &lt;/weight&gt;</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::SystemWeightInfo::remark</span>(<span class="ident">_remark</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remark</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">_remark</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
-			<span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+			<span class="ident">ensure_signed_or_root</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 		}
 
@@ -2489,6 +2505,22 @@
 {
 	<span class="kw">match</span> <span class="ident">o</span>.<span class="ident">into</span>() {
 		<span class="prelude-val">Ok</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">t</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">t</span>),
+		<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">BadOrigin</span>),
+	}
+}
+
+<span class="doccomment">/// Ensure that the origin `o` represents either a signed extrinsic (i.e. transaction) or the root.</span>
+<span class="doccomment">/// Returns `Ok` with the account that signed the extrinsic, `None` if it was root,  or an `Err`</span>
+<span class="doccomment">/// otherwise.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ensure_signed_or_root</span><span class="op">&lt;</span><span class="ident">OuterOrigin</span>, <span class="ident">AccountId</span><span class="op">&gt;</span>(
+	<span class="ident">o</span>: <span class="ident">OuterOrigin</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>, <span class="ident">BadOrigin</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">OuterOrigin</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RawOrigin</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>, <span class="ident">OuterOrigin</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+{
+	<span class="kw">match</span> <span class="ident">o</span>.<span class="ident">into</span>() {
+		<span class="prelude-val">Ok</span>(<span class="ident">RawOrigin::Root</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+		<span class="prelude-val">Ok</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">t</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">t</span>)),
 		<span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">BadOrigin</span>),
 	}
 }

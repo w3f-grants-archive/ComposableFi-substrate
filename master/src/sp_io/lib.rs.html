@@ -1701,6 +1701,33 @@
 <span id="1701">1701</span>
 <span id="1702">1702</span>
 <span id="1703">1703</span>
+<span id="1704">1704</span>
+<span id="1705">1705</span>
+<span id="1706">1706</span>
+<span id="1707">1707</span>
+<span id="1708">1708</span>
+<span id="1709">1709</span>
+<span id="1710">1710</span>
+<span id="1711">1711</span>
+<span id="1712">1712</span>
+<span id="1713">1713</span>
+<span id="1714">1714</span>
+<span id="1715">1715</span>
+<span id="1716">1716</span>
+<span id="1717">1717</span>
+<span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
+<span id="1721">1721</span>
+<span id="1722">1722</span>
+<span id="1723">1723</span>
+<span id="1724">1724</span>
+<span id="1725">1725</span>
+<span id="1726">1726</span>
+<span id="1727">1727</span>
+<span id="1728">1728</span>
+<span id="1729">1729</span>
+<span id="1730">1730</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -2412,6 +2439,22 @@
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sig</span><span class="op">|</span> <span class="ident">ecdsa::Signature::from_slice</span>(<span class="ident">sig</span>.<span class="ident">as_slice</span>()))
 	}
 
+	<span class="doccomment">/// Sign the given a pre-hashed `msg` with the `ecdsa` key that corresponds to the given public</span>
+	<span class="doccomment">/// key and key type in the keystore.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Returns the signature.</span>
+	<span class="kw">fn</span> <span class="ident">ecdsa_sign_prehashed</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">id</span>: <span class="ident">KeyTypeId</span>,
+		<span class="ident">pub_key</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Public</span>,
+		<span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>],
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ecdsa::Signature</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">keystore</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>
+			.<span class="ident">extension</span>::<span class="op">&lt;</span><span class="ident">KeystoreExt</span><span class="op">&gt;</span>()
+			.<span class="ident">expect</span>(<span class="string">&quot;No `keystore` associated for the current context!&quot;</span>);
+		<span class="ident">SyncCryptoStore::ecdsa_sign_prehashed</span>(<span class="ident">keystore</span>, <span class="ident">id</span>, <span class="ident">pub_key</span>, <span class="ident">msg</span>).<span class="ident">ok</span>().<span class="ident">flatten</span>()
+	}
+
 	<span class="doccomment">/// Verify `ecdsa` signature.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns `true` when the verification was successful.</span>
@@ -2425,6 +2468,17 @@
 	<span class="attribute">#[<span class="ident">version</span>(<span class="number">2</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">ecdsa_verify</span>(<span class="ident">sig</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Signature</span>, <span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">pub_key</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Public</span>) -&gt; <span class="ident">bool</span> {
 		<span class="ident">ecdsa::Pair::verify</span>(<span class="ident">sig</span>, <span class="ident">msg</span>, <span class="ident">pub_key</span>)
+	}
+
+	<span class="doccomment">/// Verify `ecdsa` signature with pre-hashed `msg`.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Returns `true` when the verification was successful.</span>
+	<span class="kw">fn</span> <span class="ident">ecdsa_verify_prehashed</span>(
+		<span class="ident">sig</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Signature</span>,
+		<span class="ident">msg</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>; <span class="number">32</span>],
+		<span class="ident">pub_key</span>: <span class="kw-2">&amp;</span><span class="ident">ecdsa::Public</span>,
+	) -&gt; <span class="ident">bool</span> {
+		<span class="ident">ecdsa::Pair::verify_prehashed</span>(<span class="ident">sig</span>, <span class="ident">msg</span>, <span class="ident">pub_key</span>)
 	}
 
 	<span class="doccomment">/// Register a `ecdsa` signature for batch verification.</span>
