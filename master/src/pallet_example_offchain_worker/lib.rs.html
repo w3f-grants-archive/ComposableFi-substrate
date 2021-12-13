@@ -957,7 +957,7 @@
 			<span class="comment">// Retrieve sender of the transaction.</span>
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="comment">// Add the price to the on-chain list.</span>
-			<span class="ident"><span class="self">Self</span>::add_price</span>(<span class="ident">who</span>, <span class="ident">price</span>);
+			<span class="ident"><span class="self">Self</span>::add_price</span>(<span class="prelude-val">Some</span>(<span class="ident">who</span>), <span class="ident">price</span>);
 			<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 		}
 
@@ -986,7 +986,7 @@
 			<span class="comment">// This ensures that the function can only be called via unsigned transaction.</span>
 			<span class="ident">ensure_none</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="comment">// Add the price to the on-chain list, but mark it as coming from an empty address.</span>
-			<span class="ident"><span class="self">Self</span>::add_price</span>(<span class="ident">Default::default</span>(), <span class="ident">price</span>);
+			<span class="ident"><span class="self">Self</span>::add_price</span>(<span class="prelude-val">None</span>, <span class="ident">price</span>);
 			<span class="comment">// now increment the block number at which we expect next unsigned transaction.</span>
 			<span class="kw">let</span> <span class="ident">current_block</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 			<span class="op">&lt;</span><span class="ident">NextUnsignedAt</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">current_block</span> <span class="op">+</span> <span class="ident">T::UnsignedInterval::get</span>());
@@ -1002,7 +1002,7 @@
 			<span class="comment">// This ensures that the function can only be called via unsigned transaction.</span>
 			<span class="ident">ensure_none</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="comment">// Add the price to the on-chain list, but mark it as coming from an empty address.</span>
-			<span class="ident"><span class="self">Self</span>::add_price</span>(<span class="ident">Default::default</span>(), <span class="ident">price_payload</span>.<span class="ident">price</span>);
+			<span class="ident"><span class="self">Self</span>::add_price</span>(<span class="prelude-val">None</span>, <span class="ident">price_payload</span>.<span class="ident">price</span>);
 			<span class="comment">// now increment the block number at which we expect next unsigned transaction.</span>
 			<span class="kw">let</span> <span class="ident">current_block</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 			<span class="op">&lt;</span><span class="ident">NextUnsignedAt</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">current_block</span> <span class="op">+</span> <span class="ident">T::UnsignedInterval::get</span>());
@@ -1015,7 +1015,7 @@
 	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// Event generated when new price is accepted to contribute to the average.</span>
-		<span class="ident">NewPrice</span> { <span class="ident">price</span>: <span class="ident">u32</span>, <span class="ident">who</span>: <span class="ident">T::AccountId</span> },
+		<span class="ident">NewPrice</span> { <span class="ident">price</span>: <span class="ident">u32</span>, <span class="ident">maybe_who</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> },
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::validate_unsigned</span>]</span>
@@ -1365,7 +1365,7 @@
 	}
 
 	<span class="doccomment">/// Add new price to the list.</span>
-	<span class="kw">fn</span> <span class="ident">add_price</span>(<span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">price</span>: <span class="ident">u32</span>) {
+	<span class="kw">fn</span> <span class="ident">add_price</span>(<span class="ident">maybe_who</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>, <span class="ident">price</span>: <span class="ident">u32</span>) {
 		<span class="macro">log::info!</span>(<span class="string">&quot;Adding to the average: {}&quot;</span>, <span class="ident">price</span>);
 		<span class="op">&lt;</span><span class="ident">Prices</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="op">|</span><span class="ident">prices</span><span class="op">|</span> {
 			<span class="kw">const</span> <span class="ident">MAX_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">64</span>;
@@ -1381,7 +1381,7 @@
 			.<span class="ident">expect</span>(<span class="string">&quot;The average is not empty, because it was just mutated; qed&quot;</span>);
 		<span class="macro">log::info!</span>(<span class="string">&quot;Current average price is: {}&quot;</span>, <span class="ident">average</span>);
 		<span class="comment">// here we are raising the NewPrice event</span>
-		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::NewPrice</span> { <span class="ident">price</span>, <span class="ident">who</span> });
+		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::NewPrice</span> { <span class="ident">price</span>, <span class="ident">maybe_who</span> });
 	}
 
 	<span class="doccomment">/// Calculate current average price.</span>

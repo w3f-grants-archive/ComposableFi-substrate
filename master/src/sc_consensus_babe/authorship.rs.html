@@ -339,7 +339,7 @@
 	<span class="ident">make_transcript</span>, <span class="ident">make_transcript_data</span>, <span class="ident">AuthorityId</span>, <span class="ident">BabeAuthorityWeight</span>, <span class="ident">Slot</span>, <span class="ident">BABE_VRF_PREFIX</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_consensus_vrf::schnorrkel</span>::{<span class="ident">VRFOutput</span>, <span class="ident">VRFProof</span>};
-<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">blake2_256</span>, <span class="ident">crypto::Public</span>, <span class="ident">U256</span>};
+<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">blake2_256</span>, <span class="ident">crypto::ByteArray</span>, <span class="ident">U256</span>};
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">SyncCryptoStore</span>, <span class="ident">SyncCryptoStorePtr</span>};
 
 <span class="doccomment">/// Calculates the primary selection threshold for a given authority, taking</span>

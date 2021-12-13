@@ -272,6 +272,10 @@
 <span id="272">272</span>
 <span id="273">273</span>
 <span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -469,7 +473,11 @@
 	{
 		<span class="kw">let</span> <span class="ident">signed_data</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">signer</span>) <span class="op">=</span> <span class="ident">signer</span> {
 			<span class="kw">let</span> <span class="ident">extra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">with_state</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">T::signed_extras</span>(<span class="ident">signer</span>.<span class="ident">clone</span>()));
-			<span class="prelude-val">Some</span>((<span class="ident">signer</span>.<span class="ident">into</span>(), <span class="ident">MultiSignature::Sr25519</span>(<span class="ident">Default::default</span>()), <span class="ident">extra</span>))
+			<span class="prelude-val">Some</span>((
+				<span class="ident">signer</span>.<span class="ident">into</span>(),
+				<span class="ident">MultiSignature::Sr25519</span>(<span class="ident">sp_core::sr25519::Signature::from_raw</span>([<span class="number">0u8</span>; <span class="number">64</span>])),
+				<span class="ident">extra</span>,
+			))
 		} <span class="kw">else</span> {
 			<span class="prelude-val">None</span>
 		};

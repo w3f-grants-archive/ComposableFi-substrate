@@ -1297,6 +1297,16 @@
 <span id="1297">1297</span>
 <span id="1298">1298</span>
 <span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -2388,8 +2398,13 @@
 	<span class="kw">fn</span> <span class="ident">note_author</span>(<span class="ident">author</span>: <span class="ident">T::AccountId</span>) {
 		<span class="ident"><span class="self">Self</span>::reward_by_ids</span>(<span class="macro">vec!</span>[(<span class="ident">author</span>, <span class="number">20</span>)])
 	}
-	<span class="kw">fn</span> <span class="ident">note_uncle</span>(<span class="ident">author</span>: <span class="ident">T::AccountId</span>, <span class="ident">_age</span>: <span class="ident">T::BlockNumber</span>) {
-		<span class="ident"><span class="self">Self</span>::reward_by_ids</span>(<span class="macro">vec!</span>[(<span class="op">&lt;</span><span class="ident">pallet_authorship::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::author</span>(), <span class="number">2</span>), (<span class="ident">author</span>, <span class="number">1</span>)])
+	<span class="kw">fn</span> <span class="ident">note_uncle</span>(<span class="ident">uncle_author</span>: <span class="ident">T::AccountId</span>, <span class="ident">_age</span>: <span class="ident">T::BlockNumber</span>) {
+		<span class="comment">// defensive-only: block author must exist.</span>
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block_author</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="ident">pallet_authorship::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::author</span>() {
+			<span class="ident"><span class="self">Self</span>::reward_by_ids</span>(<span class="macro">vec!</span>[(<span class="ident">block_author</span>, <span class="number">2</span>), (<span class="ident">uncle_author</span>, <span class="number">1</span>)])
+		} <span class="kw">else</span> {
+			<span class="macro">crate::log!</span>(<span class="ident">warn</span>, <span class="string">&quot;block author not set, this should never happen&quot;</span>);
+		}
 	}
 }
 
@@ -2537,8 +2552,13 @@
 		<span class="comment">// this will clearly results in an inconsistent state, but it should not matter for a</span>
 		<span class="comment">// benchmark.</span>
 		<span class="kw">let</span> <span class="ident">active</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ()).<span class="ident">unwrap</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ledger</span>(<span class="ident">who</span>).<span class="ident">unwrap_or_default</span>();
-		<span class="ident">ledger</span>.<span class="ident">active</span> <span class="op">=</span> <span class="ident">active</span>;
+		<span class="kw">let</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident"><span class="self">Self</span>::ledger</span>(<span class="ident">who</span>) {
+			<span class="prelude-val">None</span> =&gt; <span class="ident">StakingLedger::default_from</span>(<span class="ident">who</span>.<span class="ident">clone</span>()),
+			<span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">l</span>) =&gt; {
+				<span class="ident">l</span>.<span class="ident">active</span> <span class="op">=</span> <span class="ident">active</span>;
+				<span class="ident">l</span>
+			},
+		};
 		<span class="op">&lt;</span><span class="ident">Ledger</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">who</span>, <span class="ident">ledger</span>);
 		<span class="op">&lt;</span><span class="ident">Bonded</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">who</span>, <span class="ident">who</span>);
 

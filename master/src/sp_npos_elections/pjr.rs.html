@@ -601,6 +601,29 @@
 <span id="601">601</span>
 <span id="602">602</span>
 <span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
@@ -890,7 +913,15 @@
 			<span class="kw">let</span> <span class="ident">elected</span> <span class="op">=</span> <span class="ident">maybe_support</span>.<span class="ident">is_some</span>();
 			<span class="kw">let</span> <span class="ident">backed_stake</span> <span class="op">=</span> <span class="ident">maybe_support</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">support</span><span class="op">|</span> <span class="ident">support</span>.<span class="ident">total</span>).<span class="ident">unwrap_or_default</span>();
 
-			<span class="ident">Candidate</span> { <span class="ident">who</span>, <span class="ident">elected</span>, <span class="ident">backed_stake</span>, ..<span class="ident">Default::default</span>() }.<span class="ident">to_ptr</span>()
+			<span class="ident">Candidate</span> {
+				<span class="ident">who</span>,
+				<span class="ident">elected</span>,
+				<span class="ident">backed_stake</span>,
+				<span class="ident">score</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">approval_stake</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">round</span>: <span class="ident">Default::default</span>(),
+			}
+			.<span class="ident">to_ptr</span>()
 		})
 		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
@@ -918,14 +949,14 @@
 						<span class="ident">who</span>: <span class="ident">t</span>,
 						<span class="ident">candidate</span>: <span class="ident">Rc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">candidates</span>[<span class="kw-2">*</span><span class="ident">idx</span>]),
 						<span class="ident">weight</span>,
-						..<span class="ident">Default::default</span>()
+						<span class="ident">load</span>: <span class="ident">Default::default</span>(),
 					});
 				}
 			}
 
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">v</span>;
 			<span class="kw">let</span> <span class="ident">budget</span>: <span class="ident">ExtendedBalance</span> <span class="op">=</span> <span class="ident">w</span>.<span class="ident">into</span>();
-			<span class="ident">Voter</span> { <span class="ident">who</span>, <span class="ident">budget</span>, <span class="ident">edges</span>, ..<span class="ident">Default::default</span>() }
+			<span class="ident">Voter</span> { <span class="ident">who</span>, <span class="ident">budget</span>, <span class="ident">edges</span>, <span class="ident">load</span>: <span class="ident">Default::default</span>() }
 		})
 		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
@@ -990,7 +1021,14 @@
 			.<span class="ident">into_iter</span>()
 			.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">t</span>, <span class="ident">w</span>, <span class="ident">e</span>)<span class="op">|</span> {
 				<span class="ident">budget</span> <span class="op">+</span><span class="op">=</span> <span class="ident">w</span>;
-				<span class="ident">Candidate</span> { <span class="ident">who</span>: <span class="ident">t</span>, <span class="ident">elected</span>: <span class="ident">e</span>, <span class="ident">backed_stake</span>: <span class="ident">w</span>, ..<span class="ident">Default::default</span>() }
+				<span class="ident">Candidate</span> {
+					<span class="ident">who</span>: <span class="ident">t</span>,
+					<span class="ident">elected</span>: <span class="ident">e</span>,
+					<span class="ident">backed_stake</span>: <span class="ident">w</span>,
+					<span class="ident">score</span>: <span class="ident">Default::default</span>(),
+					<span class="ident">approval_stake</span>: <span class="ident">Default::default</span>(),
+					<span class="ident">round</span>: <span class="ident">Default::default</span>(),
+				}
 			})
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="kw">let</span> <span class="ident">edges</span> <span class="op">=</span> <span class="ident">candidates</span>
@@ -999,7 +1037,7 @@
 				<span class="ident">who</span>: <span class="ident">c</span>.<span class="ident">who</span>,
 				<span class="ident">weight</span>: <span class="ident">c</span>.<span class="ident">backed_stake</span>,
 				<span class="ident">candidate</span>: <span class="ident">c</span>.<span class="ident">to_ptr</span>(),
-				..<span class="ident">Default::default</span>()
+				<span class="ident">load</span>: <span class="ident">Default::default</span>(),
 			})
 			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 		<span class="ident">voter</span>.<span class="ident">edges</span> <span class="op">=</span> <span class="ident">edges</span>;
@@ -1035,7 +1073,15 @@
 		<span class="comment">// will give 10 slack.</span>
 		<span class="kw">let</span> <span class="ident">v3</span> <span class="op">=</span> <span class="ident">setup_voter</span>(<span class="number">30</span>, <span class="macro">vec!</span>[(<span class="number">1</span>, <span class="number">20</span>, <span class="bool-val">true</span>), (<span class="number">2</span>, <span class="number">20</span>, <span class="bool-val">true</span>), (<span class="number">3</span>, <span class="number">0</span>, <span class="bool-val">false</span>)]);
 
-		<span class="kw">let</span> <span class="ident">unelected</span> <span class="op">=</span> <span class="ident">Candidate</span> { <span class="ident">who</span>: <span class="number">3u32</span>, <span class="ident">elected</span>: <span class="bool-val">false</span>, ..<span class="ident">Default::default</span>() }.<span class="ident">to_ptr</span>();
+		<span class="kw">let</span> <span class="ident">unelected</span> <span class="op">=</span> <span class="ident">Candidate</span> {
+			<span class="ident">who</span>: <span class="number">3u32</span>,
+			<span class="ident">elected</span>: <span class="bool-val">false</span>,
+			<span class="ident">score</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">approval_stake</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">backed_stake</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">round</span>: <span class="ident">Default::default</span>(),
+		}
+		.<span class="ident">to_ptr</span>();
 		<span class="kw">let</span> <span class="ident">score</span> <span class="op">=</span> <span class="ident">pre_score</span>(<span class="ident">unelected</span>, <span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">v1</span>, <span class="ident">v2</span>, <span class="ident">v3</span>], <span class="number">15</span>);
 
 		<span class="macro">assert_eq!</span>(<span class="ident">score</span>, <span class="number">15</span>);

@@ -496,6 +496,35 @@
 <span id="496">496</span>
 <span id="497">497</span>
 <span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd. SPDX-License-Identifier: Apache-2.0</span>
@@ -676,7 +705,7 @@
 }
 
 <span class="doccomment">/// A vote being casted by a [`Voter`] to a [`Candidate`] is an `Edge`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Edge</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Identifier of the target.</span>
 	<span class="doccomment">///</span>
@@ -689,6 +718,15 @@
 	<span class="ident">candidate</span>: <span class="ident">CandidatePtr</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// The weight (i.e. stake given to `who`) of this edge.</span>
 	<span class="ident">weight</span>: <span class="ident">ExtendedBalance</span>,
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">Edge</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">candidate</span>: <span class="ident">Candidate</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>, <span class="ident">weight</span>: <span class="ident">ExtendedBalance</span>) -&gt; <span class="self">Self</span> {
+		<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">candidate</span>.<span class="ident">who</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="ident">candidate</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">RefCell::new</span>(<span class="ident">candidate</span>));
+		<span class="self">Self</span> { <span class="ident">weight</span>, <span class="ident">who</span>, <span class="ident">candidate</span>, <span class="ident">load</span>: <span class="ident">Default::default</span>() }
+	}
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
@@ -721,7 +759,12 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">IdentifierT</span><span class="op">&gt;</span> <span class="ident">Voter</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Create a new `Voter`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">who</span>: <span class="ident">AccountId</span>) -&gt; <span class="self">Self</span> {
-		<span class="self">Self</span> { <span class="ident">who</span>, ..<span class="ident">Default::default</span>() }
+		<span class="self">Self</span> {
+			<span class="ident">who</span>,
+			<span class="ident">edges</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">budget</span>: <span class="ident">Default::default</span>(),
+			<span class="ident">load</span>: <span class="ident">Default::default</span>(),
+		}
 	}
 
 	<span class="doccomment">/// Returns `true` if `self` votes for `target`.</span>
@@ -837,13 +880,19 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This, at the current version, resembles the `Exposure` defined in the Staking pallet, yet they</span>
 <span class="doccomment">/// do not necessarily have to be the same.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">scale_info::TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RuntimeDebug</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">scale_info::TypeInfo</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Support</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Total support.</span>
 	<span class="kw">pub</span> <span class="ident">total</span>: <span class="ident">ExtendedBalance</span>,
 	<span class="doccomment">/// Support from voters.</span>
 	<span class="kw">pub</span> <span class="ident">voters</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">AccountId</span>, <span class="ident">ExtendedBalance</span>)<span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Support</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">total</span>: <span class="ident">Default::default</span>(), <span class="ident">voters</span>: <span class="macro">vec!</span>[] }
+	}
 }
 
 <span class="doccomment">/// A target-major representation of the the election outcome.</span>
@@ -959,7 +1008,15 @@
 		.<span class="ident">enumerate</span>()
 		.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">idx</span>, <span class="ident">who</span>)<span class="op">|</span> {
 			<span class="ident">c_idx_cache</span>.<span class="ident">insert</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">idx</span>);
-			<span class="ident">Candidate</span> { <span class="ident">who</span>, ..<span class="ident">Default::default</span>() }.<span class="ident">to_ptr</span>()
+			<span class="ident">Candidate</span> {
+				<span class="ident">who</span>,
+				<span class="ident">score</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">approval_stake</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">backed_stake</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">elected</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">round</span>: <span class="ident">Default::default</span>(),
+			}
+			.<span class="ident">to_ptr</span>()
 		})
 		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CandidatePtr</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
@@ -980,7 +1037,8 @@
 					<span class="ident">edges</span>.<span class="ident">push</span>(<span class="ident">Edge</span> {
 						<span class="ident">who</span>: <span class="ident">v</span>.<span class="ident">clone</span>(),
 						<span class="ident">candidate</span>: <span class="ident">Rc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">candidates</span>[<span class="kw-2">*</span><span class="ident">idx</span>]),
-						..<span class="ident">Default::default</span>()
+						<span class="ident">load</span>: <span class="ident">Default::default</span>(),
+						<span class="ident">weight</span>: <span class="ident">Default::default</span>(),
 					});
 				} <span class="comment">// else {} would be wrong votes. We don&#39;t really care about it.</span>
 			}

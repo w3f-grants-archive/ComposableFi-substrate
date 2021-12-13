@@ -359,7 +359,6 @@ sourcesIndex["pallet_contracts_rpc"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_contracts_rpc_runtime_api"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_democracy"] = {"name":"","files":["benchmarking.rs","conviction.rs","lib.rs","types.rs","vote.rs","vote_threshold.rs","weights.rs"]};
 sourcesIndex["pallet_election_provider_multi_phase"] = {"name":"","files":["benchmarking.rs","helpers.rs","lib.rs","signed.rs","unsigned.rs","weights.rs"]};
-sourcesIndex["pallet_elections"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_elections_phragmen"] = {"name":"","dirs":[{"name":"migrations","files":["mod.rs","v3.rs","v4.rs"]}],"files":["benchmarking.rs","lib.rs","weights.rs"]};
 sourcesIndex["pallet_example_basic"] = {"name":"","files":["benchmarking.rs","lib.rs","weights.rs"]};
 sourcesIndex["pallet_example_offchain_worker"] = {"name":"","files":["lib.rs"]};

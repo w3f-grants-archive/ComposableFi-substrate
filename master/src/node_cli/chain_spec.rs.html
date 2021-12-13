@@ -832,7 +832,7 @@
 				.<span class="ident">collect</span>(),
 			<span class="ident">phantom</span>: <span class="ident">Default::default</span>(),
 		},
-		<span class="ident">sudo</span>: <span class="ident">SudoConfig</span> { <span class="ident">key</span>: <span class="ident">root_key</span> },
+		<span class="ident">sudo</span>: <span class="ident">SudoConfig</span> { <span class="ident">key</span>: <span class="prelude-val">Some</span>(<span class="ident">root_key</span>) },
 		<span class="ident">babe</span>: <span class="ident">BabeConfig</span> {
 			<span class="ident">authorities</span>: <span class="macro">vec!</span>[],
 			<span class="ident">epoch_config</span>: <span class="prelude-val">Some</span>(<span class="ident">node_runtime::BABE_GENESIS_EPOCH_CONFIG</span>),

@@ -684,9 +684,9 @@
 		<span class="comment">// Set old members.</span>
 		<span class="comment">// We compute the difference of old and new members, so it should influence timing.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">old_members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_old_member</span> <span class="op">=</span> <span class="ident">T::AccountId::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_old_member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;old member&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> {
-			<span class="ident">last_old_member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;old member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="ident">last_old_member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;old member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">old_members</span>.<span class="ident">push</span>(<span class="ident">last_old_member</span>.<span class="ident">clone</span>());
 		}
 		<span class="kw">let</span> <span class="ident">old_members_count</span> <span class="op">=</span> <span class="ident">old_members</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
@@ -732,9 +732,9 @@
 		<span class="comment">// Construct `new_members`.</span>
 		<span class="comment">// It should influence timing since it will sort this vector.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_member</span> <span class="op">=</span> <span class="ident">T::AccountId::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">n</span> {
-			<span class="ident">last_member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="ident">last_member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">new_members</span>.<span class="ident">push</span>(<span class="ident">last_member</span>.<span class="ident">clone</span>());
 		}
 
@@ -753,7 +753,7 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
 
@@ -783,7 +783,7 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
 
@@ -815,7 +815,7 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
 		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
@@ -857,13 +857,13 @@
 
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-		<span class="kw">let</span> <span class="ident">proposer</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;proposer&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
+		<span class="kw">let</span> <span class="ident">proposer</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;proposer&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">proposer</span>.<span class="ident">clone</span>());
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
-		<span class="kw">let</span> <span class="ident">voter</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;voter&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
+		<span class="kw">let</span> <span class="ident">voter</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;voter&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">voter</span>.<span class="ident">clone</span>());
 		<span class="ident">Collective</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_members</span>(<span class="ident">SystemOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">members</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>, <span class="ident">T::MaxMembers::get</span>())<span class="question-mark">?</span>;
 
@@ -932,13 +932,13 @@
 
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-		<span class="kw">let</span> <span class="ident">proposer</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;proposer&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
+		<span class="kw">let</span> <span class="ident">proposer</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;proposer&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">proposer</span>.<span class="ident">clone</span>());
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
-		<span class="kw">let</span> <span class="ident">voter</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;voter&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
+		<span class="kw">let</span> <span class="ident">voter</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;voter&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">voter</span>.<span class="ident">clone</span>());
 		<span class="ident">Collective</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_members</span>(<span class="ident">SystemOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">members</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>, <span class="ident">T::MaxMembers::get</span>())<span class="question-mark">?</span>;
 
@@ -1014,7 +1014,7 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
 		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
@@ -1095,7 +1095,7 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
 		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
@@ -1169,7 +1169,7 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
 		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
@@ -1240,10 +1240,10 @@
 		<span class="comment">// Construct `members`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">members</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">m</span> <span class="op">-</span> <span class="number">1</span> {
-			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
+			<span class="kw">let</span> <span class="ident">member</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;member&quot;</span>, <span class="ident">i</span>, <span class="ident">SEED</span>);
 			<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">member</span>);
 		}
-		<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
+		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">account</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>, <span class="ident">SEED</span>);
 		<span class="ident">members</span>.<span class="ident">push</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 		<span class="ident">Collective</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::set_members</span>(
 			<span class="ident">SystemOrigin::Root</span>.<span class="ident">into</span>(),

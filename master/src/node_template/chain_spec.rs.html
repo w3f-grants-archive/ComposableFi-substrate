@@ -301,7 +301,7 @@
 		},
 		<span class="ident">sudo</span>: <span class="ident">SudoConfig</span> {
 			<span class="comment">// Assign network admin rights.</span>
-			<span class="ident">key</span>: <span class="ident">root_key</span>,
+			<span class="ident">key</span>: <span class="prelude-val">Some</span>(<span class="ident">root_key</span>),
 		},
 		<span class="ident">transaction_payment</span>: <span class="ident">Default::default</span>(),
 	}

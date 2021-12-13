@@ -151,11 +151,11 @@
 		<span class="ident">balances</span>: <span class="ident">BalancesConfig</span> { <span class="ident">balances</span>: <span class="ident">endowed</span> },
 		<span class="ident">session</span>: <span class="ident">SessionConfig</span> {
 			<span class="ident">keys</span>: <span class="macro">vec!</span>[
-				(<span class="ident">dave</span>(), <span class="ident">alice</span>(), <span class="ident">to_session_keys</span>(<span class="kw-2">&amp;</span><span class="ident">Ed25519Keyring::Alice</span>, <span class="kw-2">&amp;</span><span class="ident">Sr25519Keyring::Alice</span>)),
-				(<span class="ident">eve</span>(), <span class="ident">bob</span>(), <span class="ident">to_session_keys</span>(<span class="kw-2">&amp;</span><span class="ident">Ed25519Keyring::Bob</span>, <span class="kw-2">&amp;</span><span class="ident">Sr25519Keyring::Bob</span>)),
+				(<span class="ident">alice</span>(), <span class="ident">dave</span>(), <span class="ident">to_session_keys</span>(<span class="kw-2">&amp;</span><span class="ident">Ed25519Keyring::Alice</span>, <span class="kw-2">&amp;</span><span class="ident">Sr25519Keyring::Alice</span>)),
+				(<span class="ident">bob</span>(), <span class="ident">eve</span>(), <span class="ident">to_session_keys</span>(<span class="kw-2">&amp;</span><span class="ident">Ed25519Keyring::Bob</span>, <span class="kw-2">&amp;</span><span class="ident">Sr25519Keyring::Bob</span>)),
 				(
-					<span class="ident">ferdie</span>(),
 					<span class="ident">charlie</span>(),
+					<span class="ident">ferdie</span>(),
 					<span class="ident">to_session_keys</span>(<span class="kw-2">&amp;</span><span class="ident">Ed25519Keyring::Charlie</span>, <span class="kw-2">&amp;</span><span class="ident">Sr25519Keyring::Charlie</span>),
 				),
 			],

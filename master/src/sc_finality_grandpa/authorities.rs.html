@@ -1714,6 +1714,9 @@
 <span id="1714">1714</span>
 <span id="1715">1715</span>
 <span id="1716">1716</span>
+<span id="1717">1717</span>
+<span id="1718">1718</span>
+<span id="1719">1719</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -2469,7 +2472,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">sp_core::crypto::Public</span>;
+	<span class="kw">use</span> <span class="ident">sp_core::crypto</span>::{<span class="ident">ByteArray</span>, <span class="ident">UncheckedFrom</span>};
 
 	<span class="kw">fn</span> <span class="ident">static_is_descendent_of</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="ident">value</span>: <span class="ident">bool</span>) -&gt; <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">A</span>, <span class="kw-2">&amp;</span><span class="ident">A</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">std::io::Error</span><span class="op">&gt;</span> {
 		<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
@@ -2484,7 +2487,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">current_limit_filters_min</span>() {
-		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">1</span>)];
+		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">1</span>)];
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">AuthoritySet</span> {
 			<span class="ident">current_authorities</span>: <span class="ident">current_authorities</span>.<span class="ident">clone</span>(),
@@ -2518,7 +2521,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">changes_iterated_in_pre_order</span>() {
-		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">1</span>)];
+		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">1</span>)];
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">AuthoritySet</span> {
 			<span class="ident">current_authorities</span>: <span class="ident">current_authorities</span>.<span class="ident">clone</span>(),
@@ -2610,8 +2613,8 @@
 			<span class="ident">authority_set_changes</span>: <span class="ident">AuthoritySetChanges::empty</span>(),
 		};
 
-		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)];
-		<span class="kw">let</span> <span class="ident">set_b</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_b</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
 
 		<span class="comment">// two competing changes at the same height on different forks</span>
 		<span class="kw">let</span> <span class="ident">change_a</span> <span class="op">=</span> <span class="ident">PendingChange</span> {
@@ -2693,8 +2696,8 @@
 			<span class="ident">authority_set_changes</span>: <span class="ident">AuthoritySetChanges::empty</span>(),
 		};
 
-		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)];
-		<span class="kw">let</span> <span class="ident">set_c</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_c</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
 
 		<span class="comment">// two competing changes at the same height on different forks</span>
 		<span class="kw">let</span> <span class="ident">change_a</span> <span class="op">=</span> <span class="ident">PendingChange</span> {
@@ -2773,7 +2776,7 @@
 			<span class="ident">authority_set_changes</span>: <span class="ident">AuthoritySetChanges::empty</span>(),
 		};
 
-		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
 
 		<span class="kw">let</span> <span class="ident">change_a</span> <span class="op">=</span> <span class="ident">PendingChange</span> {
 			<span class="ident">next_authorities</span>: <span class="ident">set_a</span>.<span class="ident">clone</span>(),
@@ -2844,8 +2847,8 @@
 			<span class="ident">authority_set_changes</span>: <span class="ident">AuthoritySetChanges::empty</span>(),
 		};
 
-		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)];
-		<span class="kw">let</span> <span class="ident">set_b</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_b</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
 
 		<span class="kw">let</span> <span class="ident">change_a</span> <span class="op">=</span> <span class="ident">PendingChange</span> {
 			<span class="ident">next_authorities</span>: <span class="ident">set_a</span>.<span class="ident">clone</span>(),
@@ -2944,7 +2947,7 @@
 			<span class="ident">authority_set_changes</span>: <span class="ident">AuthoritySetChanges::empty</span>(),
 		};
 
-		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)];
+		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>)];
 
 		<span class="comment">// we create a forced change with no delay</span>
 		<span class="kw">let</span> <span class="ident">change_a</span> <span class="op">=</span> <span class="ident">PendingChange</span> {
@@ -2969,7 +2972,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">forced_changes_blocked_by_standard_changes</span>() {
-		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">1</span>)];
+		<span class="kw">let</span> <span class="ident">set_a</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">1</span>)];
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">AuthoritySet</span> {
 			<span class="ident">current_authorities</span>: <span class="ident">set_a</span>.<span class="ident">clone</span>(),
@@ -3094,7 +3097,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">next_change_works</span>() {
-		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">1</span>)];
+		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">1</span>)];
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">AuthoritySet</span> {
 			<span class="ident">current_authorities</span>: <span class="ident">current_authorities</span>.<span class="ident">clone</span>(),
@@ -3209,8 +3212,10 @@
 			<span class="prelude-val">None</span>,
 		);
 
-		<span class="kw">let</span> <span class="ident">invalid_authorities_weight</span> <span class="op">=</span>
-			<span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>), (<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]), <span class="number">0</span>)];
+		<span class="kw">let</span> <span class="ident">invalid_authorities_weight</span> <span class="op">=</span> <span class="macro">vec!</span>[
+			(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">5</span>),
+			(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">2</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">0</span>),
+		];
 
 		<span class="comment">// authority weight of zero is invalid</span>
 		<span class="macro">assert_eq!</span>(<span class="ident">AuthoritySet</span>::<span class="op">&lt;</span>(), ()<span class="op">&gt;</span><span class="ident">::genesis</span>(<span class="ident">invalid_authorities_weight</span>.<span class="ident">clone</span>()), <span class="prelude-val">None</span>);
@@ -3226,7 +3231,8 @@
 		);
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authority_set</span> <span class="op">=</span>
-			<span class="ident">AuthoritySet</span>::<span class="op">&lt;</span>(), <span class="ident">u64</span><span class="op">&gt;</span><span class="ident">::genesis</span>(<span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)]).<span class="ident">unwrap</span>();
+			<span class="ident">AuthoritySet</span>::<span class="op">&lt;</span>(), <span class="ident">u64</span><span class="op">&gt;</span><span class="ident">::genesis</span>(<span class="macro">vec!</span>[(<span class="ident">AuthorityId::unchecked_from</span>([<span class="number">1</span>; <span class="number">32</span>]), <span class="number">5</span>)])
+				.<span class="ident">unwrap</span>();
 
 		<span class="kw">let</span> <span class="ident">invalid_change_empty_authorities</span> <span class="op">=</span> <span class="ident">PendingChange</span> {
 			<span class="ident">next_authorities</span>: <span class="macro">vec!</span>[],
@@ -3266,7 +3272,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">cleans_up_stale_forced_changes_when_applying_standard_change</span>() {
-		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]), <span class="number">1</span>)];
+		<span class="kw">let</span> <span class="ident">current_authorities</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>; <span class="number">32</span>]).<span class="ident">unwrap</span>(), <span class="number">1</span>)];
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">AuthoritySet</span> {
 			<span class="ident">current_authorities</span>: <span class="ident">current_authorities</span>.<span class="ident">clone</span>(),

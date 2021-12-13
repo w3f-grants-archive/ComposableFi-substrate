@@ -790,8 +790,8 @@
 	<span class="kw">use</span> <span class="ident">sc_block_builder::BlockBuilderProvider</span>;
 	<span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">apply_aux</span>, <span class="ident">LockImportRun</span>};
 	<span class="kw">use</span> <span class="ident">sp_consensus::BlockOrigin</span>;
-	<span class="kw">use</span> <span class="ident">sp_core::crypto::Public</span>;
-	<span class="kw">use</span> <span class="ident">sp_finality_grandpa</span>::{<span class="ident">AuthorityId</span>, <span class="ident">GRANDPA_ENGINE_ID</span> <span class="kw">as</span> <span class="ident">ID</span>};
+	<span class="kw">use</span> <span class="ident">sp_core::crypto::UncheckedFrom</span>;
+	<span class="kw">use</span> <span class="ident">sp_finality_grandpa::GRANDPA_ENGINE_ID</span> <span class="kw">as</span> <span class="ident">ID</span>;
 	<span class="kw">use</span> <span class="ident">sp_keyring::Ed25519Keyring</span>;
 	<span class="kw">use</span> <span class="ident">substrate_test_runtime_client</span>::{
 		<span class="ident">runtime</span>::{<span class="ident">Block</span>, <span class="ident">Header</span>, <span class="ident">H256</span>},
@@ -897,7 +897,7 @@
 		<span class="comment">// When we can&#39;t decode proof from Vec&lt;u8&gt;</span>
 		<span class="ident">check_finality_proof</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(
 			<span class="number">1</span>,
-			<span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">3u8</span>; <span class="number">32</span>]), <span class="number">1u64</span>)],
+			<span class="macro">vec!</span>[(<span class="ident">UncheckedFrom::unchecked_from</span>([<span class="number">3u8</span>; <span class="number">32</span>]), <span class="number">1u64</span>)],
 			<span class="macro">vec!</span>[<span class="number">42</span>],
 		)
 		.<span class="ident">unwrap_err</span>();
@@ -908,7 +908,7 @@
 		<span class="comment">// When decoded proof has zero length</span>
 		<span class="ident">check_finality_proof</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(
 			<span class="number">1</span>,
-			<span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">3u8</span>; <span class="number">32</span>]), <span class="number">1u64</span>)],
+			<span class="macro">vec!</span>[(<span class="ident">UncheckedFrom::unchecked_from</span>([<span class="number">3u8</span>; <span class="number">32</span>]), <span class="number">1u64</span>)],
 			<span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">GrandpaJustification</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>().<span class="ident">encode</span>(),
 		)
 		.<span class="ident">unwrap_err</span>();
@@ -934,7 +934,7 @@
 
 		<span class="ident">check_finality_proof</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>(
 			<span class="number">1</span>,
-			<span class="macro">vec!</span>[(<span class="ident">AuthorityId::from_slice</span>(<span class="kw-2">&amp;</span>[<span class="number">3u8</span>; <span class="number">32</span>]), <span class="number">1u64</span>)],
+			<span class="macro">vec!</span>[(<span class="ident">UncheckedFrom::unchecked_from</span>([<span class="number">3u8</span>; <span class="number">32</span>]), <span class="number">1u64</span>)],
 			<span class="ident">finality_proof</span>.<span class="ident">encode</span>(),
 		)
 		.<span class="ident">unwrap_err</span>();

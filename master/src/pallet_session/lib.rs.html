@@ -946,6 +946,15 @@
 <span id="946">946</span>
 <span id="947">947</span>
 <span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1260,8 +1269,10 @@
 		<span class="macro">for_tuples!</span>(
 			#(
 				<span class="kw">let</span> <span class="ident">our_keys</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">validators</span>.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>.<span class="number">0</span>, <span class="ident">k</span>.<span class="number">1</span>.<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Tuple::Key</span><span class="op">&gt;</span>(<span class="op">&lt;</span><span class="ident">Tuple::Key</span> <span class="kw">as</span> <span class="ident">RuntimeAppPublic</span><span class="op">&gt;</span><span class="ident">::ID</span>)
-						.<span class="ident">unwrap_or_default</span>())));
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span>
+						<span class="ident">k</span>.<span class="number">1</span>.<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Tuple::Key</span><span class="op">&gt;</span>(<span class="op">&lt;</span><span class="ident">Tuple::Key</span> <span class="kw">as</span> <span class="ident">RuntimeAppPublic</span><span class="op">&gt;</span><span class="ident">::ID</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">k1</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>.<span class="number">0</span>, <span class="ident">k1</span>))
+					)
+				);
 
 				<span class="ident">Tuple::on_genesis_session</span>(<span class="ident">our_keys</span>);
 			)<span class="op">*</span>
@@ -1276,11 +1287,13 @@
 		<span class="macro">for_tuples!</span>(
 			#(
 				<span class="kw">let</span> <span class="ident">our_keys</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">validators</span>.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>.<span class="number">0</span>, <span class="ident">k</span>.<span class="number">1</span>.<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Tuple::Key</span><span class="op">&gt;</span>(<span class="op">&lt;</span><span class="ident">Tuple::Key</span> <span class="kw">as</span> <span class="ident">RuntimeAppPublic</span><span class="op">&gt;</span><span class="ident">::ID</span>)
-						.<span class="ident">unwrap_or_default</span>())));
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span>
+						<span class="ident">k</span>.<span class="number">1</span>.<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Tuple::Key</span><span class="op">&gt;</span>(<span class="op">&lt;</span><span class="ident">Tuple::Key</span> <span class="kw">as</span> <span class="ident">RuntimeAppPublic</span><span class="op">&gt;</span><span class="ident">::ID</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">k1</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>.<span class="number">0</span>, <span class="ident">k1</span>))
+					));
 				<span class="kw">let</span> <span class="ident">queued_keys</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">queued_validators</span>.<span class="ident">iter</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>.<span class="number">0</span>, <span class="ident">k</span>.<span class="number">1</span>.<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Tuple::Key</span><span class="op">&gt;</span>(<span class="op">&lt;</span><span class="ident">Tuple::Key</span> <span class="kw">as</span> <span class="ident">RuntimeAppPublic</span><span class="op">&gt;</span><span class="ident">::ID</span>)
-						.<span class="ident">unwrap_or_default</span>())));
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span>
+						<span class="ident">k</span>.<span class="number">1</span>.<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Tuple::Key</span><span class="op">&gt;</span>(<span class="op">&lt;</span><span class="ident">Tuple::Key</span> <span class="kw">as</span> <span class="ident">RuntimeAppPublic</span><span class="op">&gt;</span><span class="ident">::ID</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">k1</span><span class="op">|</span> (<span class="kw-2">&amp;</span><span class="ident">k</span>.<span class="number">0</span>, <span class="ident">k1</span>))
+					));
 				<span class="ident">Tuple::on_new_session</span>(<span class="ident">changed</span>, <span class="ident">our_keys</span>, <span class="ident">queued_keys</span>);
 			)<span class="op">*</span>
 		)
@@ -1351,7 +1364,7 @@
 		<span class="kw">type</span> <span class="ident">SessionHandler</span>: <span class="ident">SessionHandler</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ValidatorId</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// The keys.</span>
-		<span class="kw">type</span> <span class="ident">Keys</span>: <span class="ident">OpaqueKeys</span> <span class="op">+</span> <span class="ident">Member</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">Default</span> <span class="op">+</span> <span class="ident">MaybeSerializeDeserialize</span>;
+		<span class="kw">type</span> <span class="ident">Keys</span>: <span class="ident">OpaqueKeys</span> <span class="op">+</span> <span class="ident">Member</span> <span class="op">+</span> <span class="ident">Parameter</span> <span class="op">+</span> <span class="ident">MaybeSerializeDeserialize</span>;
 
 		<span class="doccomment">/// Weight information for extrinsics in this pallet.</span>
 		<span class="kw">type</span> <span class="ident">WeightInfo</span>: <span class="ident">WeightInfo</span>;
@@ -1424,13 +1437,18 @@
 			<span class="kw">let</span> <span class="ident">queued_keys</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">initial_validators_1</span>
 				.<span class="ident">iter</span>()
 				.<span class="ident">cloned</span>()
-				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> (<span class="ident">v</span>.<span class="ident">clone</span>(), <span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::load_keys</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>).<span class="ident">unwrap_or_default</span>()))
+				.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
+					<span class="prelude-val">Some</span>((
+						<span class="ident">v</span>.<span class="ident">clone</span>(),
+						<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::load_keys</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>).<span class="ident">expect</span>(<span class="string">&quot;Validator in session 1 missing keys!&quot;</span>),
+					))
+				})
 				.<span class="ident">collect</span>();
 
 			<span class="comment">// Tell everyone about the genesis session keys</span>
 			<span class="ident">T::SessionHandler::on_genesis_session</span>::<span class="op">&lt;</span><span class="ident">T::Keys</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">queued_keys</span>);
 
-			<span class="op">&lt;</span><span class="ident">Validators</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">initial_validators_0</span>);
+			<span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">initial_validators_0</span>);
 			<span class="op">&lt;</span><span class="ident">QueuedKeys</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">queued_keys</span>);
 
 			<span class="ident">T::SessionManager::start_session</span>(<span class="number">0</span>);
@@ -1589,7 +1607,7 @@
 		<span class="kw">let</span> <span class="ident">session_keys</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">QueuedKeys</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>();
 		<span class="kw">let</span> <span class="ident">validators</span> <span class="op">=</span>
 			<span class="ident">session_keys</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">validator</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">validator</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-		<span class="op">&lt;</span><span class="ident">Validators</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="kw-2">&amp;</span><span class="ident">validators</span>);
+		<span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="kw-2">&amp;</span><span class="ident">validators</span>);
 
 		<span class="kw">if</span> <span class="ident">changed</span> {
 			<span class="comment">// reset disabled validators</span>
@@ -1611,7 +1629,7 @@
 				<span class="comment">// same as before, as underlying economic conditions may have changed.</span>
 				(<span class="ident">validators</span>, <span class="bool-val">true</span>)
 			} <span class="kw">else</span> {
-				(<span class="op">&lt;</span><span class="ident">Validators</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="bool-val">false</span>)
+				(<span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="bool-val">false</span>)
 			};
 
 		<span class="comment">// Queue next session keys.</span>
@@ -1637,10 +1655,10 @@
 			};
 			<span class="kw">let</span> <span class="ident">queued_amalgamated</span> <span class="op">=</span> <span class="ident">next_validators</span>
 				.<span class="ident">into_iter</span>()
-				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> {
-					<span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::load_keys</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>).<span class="ident">unwrap_or_default</span>();
+				.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> {
+					<span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::load_keys</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>)<span class="question-mark">?</span>;
 					<span class="ident">check_next_changed</span>(<span class="kw-2">&amp;</span><span class="ident">k</span>);
-					(<span class="ident">a</span>, <span class="ident">k</span>)
+					<span class="prelude-val">Some</span>((<span class="ident">a</span>, <span class="ident">k</span>))
 				})
 				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 

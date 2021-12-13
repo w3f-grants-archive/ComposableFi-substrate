@@ -323,7 +323,7 @@
 <span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">BlockChainError</span>, <span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>};
 <span class="kw">use</span> <span class="ident">sp_consensus</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ConsensusError</span>, <span class="ident">SelectChain</span>};
 <span class="kw">use</span> <span class="ident">sp_consensus_babe</span>::{<span class="ident">digests::PreDigest</span>, <span class="ident">AuthorityId</span>, <span class="ident">BabeApi</span> <span class="kw">as</span> <span class="ident">BabeRuntimeApi</span>};
-<span class="kw">use</span> <span class="ident">sp_core::crypto::Public</span>;
+<span class="kw">use</span> <span class="ident">sp_core::crypto::ByteArray</span>;
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">SyncCryptoStore</span>, <span class="ident">SyncCryptoStorePtr</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="kw">_</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">sync::Arc</span>};

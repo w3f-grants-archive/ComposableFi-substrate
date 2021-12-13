@@ -764,6 +764,27 @@
 <span id="764">764</span>
 <span id="765">765</span>
 <span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -787,7 +808,9 @@
 <span class="kw">use</span> <span class="ident">parking_lot::RwLock</span>;
 <span class="kw">use</span> <span class="ident">sp_application_crypto</span>::{<span class="ident">ecdsa</span>, <span class="ident">ed25519</span>, <span class="ident">sr25519</span>, <span class="ident">AppKey</span>, <span class="ident">AppPair</span>, <span class="ident">IsWrappedBy</span>};
 <span class="kw">use</span> <span class="ident">sp_core</span>::{
-	<span class="ident">crypto</span>::{<span class="ident">CryptoTypePublicPair</span>, <span class="ident">ExposeSecret</span>, <span class="ident">KeyTypeId</span>, <span class="ident">Pair</span> <span class="kw">as</span> <span class="ident">PairT</span>, <span class="ident">Public</span>, <span class="ident">SecretString</span>},
+	<span class="ident">crypto</span>::{
+		<span class="ident">ByteArray</span>, <span class="ident">CryptoTypePublicPair</span>, <span class="ident">ExposeSecret</span>, <span class="ident">KeyTypeId</span>, <span class="ident">Pair</span> <span class="kw">as</span> <span class="ident">PairT</span>, <span class="ident">SecretString</span>,
+	},
 	<span class="ident">sr25519</span>::{<span class="ident">Pair</span> <span class="kw">as</span> <span class="ident">Sr25519Pair</span>, <span class="ident">Public</span> <span class="kw">as</span> <span class="ident">Sr25519Public</span>},
 	<span class="ident">Encode</span>,
 };
@@ -955,7 +978,9 @@
 	) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">TraitError</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">key</span>.<span class="number">0</span> {
 			<span class="ident">ed25519::CRYPTO_ID</span> =&gt; {
-				<span class="kw">let</span> <span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">ed25519::Public::from_slice</span>(<span class="ident">key</span>.<span class="number">1</span>.<span class="ident">as_slice</span>());
+				<span class="kw">let</span> <span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">ed25519::Public::from_slice</span>(<span class="ident">key</span>.<span class="number">1</span>.<span class="ident">as_slice</span>()).<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> {
+					<span class="ident">TraitError::Other</span>(<span class="string">&quot;Corrupted public key - Invalid size&quot;</span>.<span class="ident">into</span>())
+				})<span class="question-mark">?</span>;
 				<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="self">self</span>
 					.<span class="number">0</span>
 					.<span class="ident">read</span>()
@@ -964,7 +989,9 @@
 				<span class="ident">key_pair</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">k</span>.<span class="ident">sign</span>(<span class="ident">msg</span>).<span class="ident">encode</span>()).<span class="ident">map</span>(<span class="prelude-val">Ok</span>).<span class="ident">transpose</span>()
 			},
 			<span class="ident">sr25519::CRYPTO_ID</span> =&gt; {
-				<span class="kw">let</span> <span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">sr25519::Public::from_slice</span>(<span class="ident">key</span>.<span class="number">1</span>.<span class="ident">as_slice</span>());
+				<span class="kw">let</span> <span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">sr25519::Public::from_slice</span>(<span class="ident">key</span>.<span class="number">1</span>.<span class="ident">as_slice</span>()).<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> {
+					<span class="ident">TraitError::Other</span>(<span class="string">&quot;Corrupted public key - Invalid size&quot;</span>.<span class="ident">into</span>())
+				})<span class="question-mark">?</span>;
 				<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="self">self</span>
 					.<span class="number">0</span>
 					.<span class="ident">read</span>()
@@ -973,7 +1000,9 @@
 				<span class="ident">key_pair</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">k</span>.<span class="ident">sign</span>(<span class="ident">msg</span>).<span class="ident">encode</span>()).<span class="ident">map</span>(<span class="prelude-val">Ok</span>).<span class="ident">transpose</span>()
 			},
 			<span class="ident">ecdsa::CRYPTO_ID</span> =&gt; {
-				<span class="kw">let</span> <span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">ecdsa::Public::from_slice</span>(<span class="ident">key</span>.<span class="number">1</span>.<span class="ident">as_slice</span>());
+				<span class="kw">let</span> <span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">ecdsa::Public::from_slice</span>(<span class="ident">key</span>.<span class="number">1</span>.<span class="ident">as_slice</span>()).<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> {
+					<span class="ident">TraitError::Other</span>(<span class="string">&quot;Corrupted public key - Invalid size&quot;</span>.<span class="ident">into</span>())
+				})<span class="question-mark">?</span>;
 				<span class="kw">let</span> <span class="ident">key_pair</span> <span class="op">=</span> <span class="self">self</span>
 					.<span class="number">0</span>
 					.<span class="ident">read</span>()
@@ -989,7 +1018,11 @@
 		<span class="self">self</span>.<span class="number">0</span>
 			.<span class="ident">read</span>()
 			.<span class="ident">raw_public_keys</span>(<span class="ident">key_type</span>)
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">sr25519::Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>())).<span class="ident">collect</span>())
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
+				<span class="ident">v</span>.<span class="ident">into_iter</span>()
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">sr25519::Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>()).<span class="ident">ok</span>())
+					.<span class="ident">collect</span>()
+			})
 			.<span class="ident">unwrap_or_default</span>()
 	}
 
@@ -1012,7 +1045,11 @@
 		<span class="self">self</span>.<span class="number">0</span>
 			.<span class="ident">read</span>()
 			.<span class="ident">raw_public_keys</span>(<span class="ident">key_type</span>)
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ed25519::Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>())).<span class="ident">collect</span>())
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
+				<span class="ident">v</span>.<span class="ident">into_iter</span>()
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ed25519::Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>()).<span class="ident">ok</span>())
+					.<span class="ident">collect</span>()
+			})
 			.<span class="ident">unwrap_or_default</span>()
 	}
 
@@ -1035,7 +1072,11 @@
 		<span class="self">self</span>.<span class="number">0</span>
 			.<span class="ident">read</span>()
 			.<span class="ident">raw_public_keys</span>(<span class="ident">key_type</span>)
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ecdsa::Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>())).<span class="ident">collect</span>())
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
+				<span class="ident">v</span>.<span class="ident">into_iter</span>()
+					.<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">ecdsa::Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>()).<span class="ident">ok</span>())
+					.<span class="ident">collect</span>()
+			})
 			.<span class="ident">unwrap_or_default</span>()
 	}
 
@@ -1327,8 +1368,9 @@
 		}
 
 		<span class="kw">fn</span> <span class="ident">public_keys</span><span class="op">&lt;</span><span class="ident">Public</span>: <span class="ident">AppPublic</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Public</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-			<span class="self">self</span>.<span class="ident">raw_public_keys</span>(<span class="ident">Public::ID</span>)
-				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>())).<span class="ident">collect</span>())
+			<span class="self">self</span>.<span class="ident">raw_public_keys</span>(<span class="ident">Public::ID</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
+				<span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">k</span><span class="op">|</span> <span class="ident">Public::from_slice</span>(<span class="ident">k</span>.<span class="ident">as_slice</span>()).<span class="ident">ok</span>()).<span class="ident">collect</span>()
+			})
 		}
 
 		<span class="kw">fn</span> <span class="ident">generate</span><span class="op">&lt;</span><span class="ident">Pair</span>: <span class="ident">AppPair</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Pair</span><span class="op">&gt;</span> {

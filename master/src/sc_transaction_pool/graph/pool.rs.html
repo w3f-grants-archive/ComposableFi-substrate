@@ -1196,9 +1196,6 @@
 <span id="1196">1196</span>
 <span id="1197">1197</span>
 <span id="1198">1198</span>
-<span id="1199">1199</span>
-<span id="1200">1200</span>
-<span id="1201">1201</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -1795,11 +1792,8 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">uxt</span>(<span class="ident">transfer</span>: <span class="ident">Transfer</span>) -&gt; <span class="ident">Extrinsic</span> {
-		<span class="ident">Extrinsic::Transfer</span> {
-			<span class="ident">transfer</span>,
-			<span class="ident">signature</span>: <span class="ident">Default::default</span>(),
-			<span class="ident">exhaust_resources_when_not_first</span>: <span class="bool-val">false</span>,
-		}
+		<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="ident">TryFrom::try_from</span>(<span class="kw-2">&amp;</span>[<span class="number">0</span>; <span class="number">64</span>][..]).<span class="ident">unwrap</span>();
+		<span class="ident">Extrinsic::Transfer</span> { <span class="ident">transfer</span>, <span class="ident">signature</span>, <span class="ident">exhaust_resources_when_not_first</span>: <span class="bool-val">false</span> }
 	}
 
 	<span class="kw">fn</span> <span class="ident">pool</span>() -&gt; <span class="ident">Pool</span><span class="op">&lt;</span><span class="ident">TestApi</span><span class="op">&gt;</span> {

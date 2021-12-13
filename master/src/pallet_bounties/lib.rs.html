@@ -994,7 +994,7 @@
 	<span class="ident">status</span>: <span class="ident">BountyStatus</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Default</span>, <span class="ident">Balance</span>, <span class="ident">BlockNumber</span>: <span class="ident">Clone</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Ord</span>, <span class="ident">Balance</span>, <span class="ident">BlockNumber</span>: <span class="ident">Clone</span><span class="op">&gt;</span>
 	<span class="ident">Bounty</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span>
 {
 	<span class="doccomment">/// Getter for bounty status, to be used for child bounties.</span>

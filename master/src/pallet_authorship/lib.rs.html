@@ -725,7 +725,6 @@
 <span id="725">725</span>
 <span id="726">726</span>
 <span id="727">727</span>
-<span id="728">728</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -898,7 +897,9 @@
 
 			<span class="op">&lt;</span><span class="ident">DidSetUncles</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="bool-val">false</span>);
 
-			<span class="ident">T::EventHandler::note_author</span>(<span class="ident"><span class="self">Self</span>::author</span>());
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::author</span>() {
+				<span class="ident">T::EventHandler::note_author</span>(<span class="ident">author</span>);
+			}
 
 			<span class="number">0</span>
 		}
@@ -1028,20 +1029,18 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This is safe to invoke in `on_initialize` implementations, as well</span>
 	<span class="doccomment">/// as afterwards.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">author</span>() -&gt; <span class="ident">T::AccountId</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">author</span>() -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span> {
 		<span class="comment">// Check the memoized storage value.</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Author</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>() {
-			<span class="kw">return</span> <span class="ident">author</span>
+			<span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>)
 		}
 
 		<span class="kw">let</span> <span class="ident">digest</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::digest</span>();
 		<span class="kw">let</span> <span class="ident">pre_runtime_digests</span> <span class="op">=</span> <span class="ident">digest</span>.<span class="ident">logs</span>.<span class="ident">iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span>.<span class="ident">as_pre_runtime</span>());
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>) <span class="op">=</span> <span class="ident">T::FindAuthor::find_author</span>(<span class="ident">pre_runtime_digests</span>) {
-			<span class="op">&lt;</span><span class="ident">Author</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="kw-2">&amp;</span><span class="ident">author</span>);
-			<span class="ident">author</span>
-		} <span class="kw">else</span> {
-			<span class="ident">Default::default</span>()
-		}
+		<span class="ident">T::FindAuthor::find_author</span>(<span class="ident">pre_runtime_digests</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> {
+			<span class="op">&lt;</span><span class="ident">Author</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
+			<span class="ident">a</span>
+		})
 	}
 
 	<span class="kw">fn</span> <span class="ident">verify_and_import_uncles</span>(<span class="ident">new_uncles</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T::Header</span><span class="op">&gt;</span>) -&gt; <span class="ident">dispatch::DispatchResult</span> {
@@ -1057,14 +1056,13 @@
 				<span class="ident">UncleEntryItem::InclusionHeight</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
 				<span class="ident">UncleEntryItem::Uncle</span>(<span class="ident">h</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">h</span>),
 			});
-			<span class="kw">let</span> <span class="ident">author</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::verify_uncle</span>(<span class="kw-2">&amp;</span><span class="ident">uncle</span>, <span class="ident">prev_uncles</span>, <span class="kw-2">&amp;mut</span> <span class="ident">acc</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">maybe_author</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::verify_uncle</span>(<span class="kw-2">&amp;</span><span class="ident">uncle</span>, <span class="ident">prev_uncles</span>, <span class="kw-2">&amp;mut</span> <span class="ident">acc</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">uncle</span>.<span class="ident">hash</span>();
 
-			<span class="ident">T::EventHandler::note_uncle</span>(
-				<span class="ident">author</span>.<span class="ident">clone</span>().<span class="ident">unwrap_or_default</span>(),
-				<span class="ident">now</span> <span class="op">-</span> <span class="ident">uncle</span>.<span class="ident">number</span>().<span class="ident">clone</span>(),
-			);
-			<span class="ident">uncles</span>.<span class="ident">push</span>(<span class="ident">UncleEntryItem::Uncle</span>(<span class="ident">hash</span>, <span class="ident">author</span>));
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>) <span class="op">=</span> <span class="ident">maybe_author</span>.<span class="ident">clone</span>() {
+				<span class="ident">T::EventHandler::note_uncle</span>(<span class="ident">author</span>, <span class="ident">now</span> <span class="op">-</span> <span class="ident">uncle</span>.<span class="ident">number</span>().<span class="ident">clone</span>());
+			}
+			<span class="ident">uncles</span>.<span class="ident">push</span>(<span class="ident">UncleEntryItem::Uncle</span>(<span class="ident">hash</span>, <span class="ident">maybe_author</span>));
 		}
 
 		<span class="op">&lt;</span><span class="ident">Uncles</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="kw-2">&amp;</span><span class="ident">uncles</span>);
@@ -1421,7 +1419,7 @@
 			<span class="ident">header</span>.<span class="ident">digest_mut</span>().<span class="ident">pop</span>(); <span class="comment">// pop the seal off.</span>
 			<span class="ident">System::initialize</span>(<span class="kw-2">&amp;</span><span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">Default::default</span>(), <span class="ident">header</span>.<span class="ident">digest</span>(), <span class="ident">Default::default</span>());
 
-			<span class="macro">assert_eq!</span>(<span class="ident">Authorship::author</span>(), <span class="ident">author</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Authorship::author</span>(), <span class="prelude-val">Some</span>(<span class="ident">author</span>));
 		});
 	}
 

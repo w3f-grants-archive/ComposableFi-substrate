@@ -375,6 +375,9 @@
 <span id="375">375</span>
 <span id="376">376</span>
 <span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -404,7 +407,9 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Author</span>;
 <span class="kw">impl</span> <span class="ident">OnUnbalanced</span><span class="op">&lt;</span><span class="ident">NegativeImbalance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Author</span> {
 	<span class="kw">fn</span> <span class="ident">on_nonzero_unbalanced</span>(<span class="ident">amount</span>: <span class="ident">NegativeImbalance</span>) {
-		<span class="ident">Balances::resolve_creating</span>(<span class="kw-2">&amp;</span><span class="ident">Authorship::author</span>(), <span class="ident">amount</span>);
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>) <span class="op">=</span> <span class="ident">Authorship::author</span>() {
+			<span class="ident">Balances::resolve_creating</span>(<span class="kw-2">&amp;</span><span class="ident">author</span>, <span class="ident">amount</span>);
+		}
 	}
 }
 
@@ -413,9 +418,10 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CreditToBlockAuthor</span>;
 <span class="kw">impl</span> <span class="ident">HandleCredit</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Assets</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CreditToBlockAuthor</span> {
 	<span class="kw">fn</span> <span class="ident">handle_credit</span>(<span class="ident">credit</span>: <span class="ident">CreditOf</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Assets</span><span class="op">&gt;</span>) {
-		<span class="kw">let</span> <span class="ident">author</span> <span class="op">=</span> <span class="ident">pallet_authorship::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::author</span>();
-		<span class="comment">// Drop the result which will trigger the `OnDrop` of the imbalance in case of error.</span>
-		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Assets::resolve</span>(<span class="kw-2">&amp;</span><span class="ident">author</span>, <span class="ident">credit</span>);
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">author</span>) <span class="op">=</span> <span class="ident">pallet_authorship::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::author</span>() {
+			<span class="comment">// Drop the result which will trigger the `OnDrop` of the imbalance in case of error.</span>
+			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">Assets::resolve</span>(<span class="kw-2">&amp;</span><span class="ident">author</span>, <span class="ident">credit</span>);
+		}
 	}
 }
 
