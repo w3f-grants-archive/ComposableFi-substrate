@@ -495,6 +495,7 @@
 <span id="495">495</span>
 <span id="496">496</span>
 <span id="497">497</span>
+<span id="498">498</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -759,7 +760,8 @@
 		<span class="ident">client::LocalCallExecutor</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Backend</span>, <span class="ident">NativeElseWasmExecutor</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">Backend</span>,
 		<span class="ident">G</span>,
-	<span class="op">&gt;</span>
+	<span class="op">&gt;</span> <span class="kw">where</span>
+	<span class="ident">D</span>: <span class="ident">sc_executor::NativeExecutionDispatch</span>,
 {
 	<span class="doccomment">/// Build the test client with the given native executor.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_with_native_executor</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">I</span><span class="op">&gt;</span>(

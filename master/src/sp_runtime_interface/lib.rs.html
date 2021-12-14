@@ -337,6 +337,8 @@
 <span id="337">337</span>
 <span id="338">338</span>
 <span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -419,17 +421,17 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! | Type | FFI type | Conversion |</span>
 <span class="doccomment">//! |----|----|----|</span>
-<span class="doccomment">//! | `u8` | `u8` | `Identity` |</span>
-<span class="doccomment">//! | `u16` | `u16` | `Identity` |</span>
+<span class="doccomment">//! | `u8` | `u32` | zero-extended to 32-bits |</span>
+<span class="doccomment">//! | `u16` | `u32` | zero-extended to 32-bits |</span>
 <span class="doccomment">//! | `u32` | `u32` | `Identity` |</span>
 <span class="doccomment">//! | `u64` | `u64` | `Identity` |</span>
 <span class="doccomment">//! | `i128` | `u32` | `v.as_ptr()` (pointer to a 16 byte array) |</span>
-<span class="doccomment">//! | `i8` | `i8` | `Identity` |</span>
-<span class="doccomment">//! | `i16` | `i16` | `Identity` |</span>
+<span class="doccomment">//! | `i8` | `i32` | sign-extended to 32-bits |</span>
+<span class="doccomment">//! | `i16` | `i32` | sign-extended to 32-bits |</span>
 <span class="doccomment">//! | `i32` | `i32` | `Identity` |</span>
 <span class="doccomment">//! | `i64` | `i64` | `Identity` |</span>
 <span class="doccomment">//! | `u128` | `u32` | `v.as_ptr()` (pointer to a 16 byte array) |</span>
-<span class="doccomment">//! | `bool` | `u8` | `if v { 1 } else { 0 }` |</span>
+<span class="doccomment">//! | `bool` | `u32` | `if v { 1 } else { 0 }` |</span>
 <span class="doccomment">//! | `&amp;str` | `u64` | &lt;code&gt;v.len() 32bit &lt;&lt; 32 &amp;#124; v.as_ptr() 32bit&lt;/code&gt; |</span>
 <span class="doccomment">//! | `&amp;[u8]` | `u64` | &lt;code&gt;v.len() 32bit &lt;&lt; 32 &amp;#124; v.as_ptr() 32bit&lt;/code&gt; |</span>
 <span class="doccomment">//! | `Vec&lt;u8&gt;` | `u64` | &lt;code&gt;v.len() 32bit &lt;&lt; 32 &amp;#124; v.as_ptr() 32bit&lt;/code&gt; |</span>
@@ -664,7 +666,9 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RIType</span> {
 	<span class="doccomment">/// The ffi type that is used to represent `Self`.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
-	<span class="kw">type</span> <span class="ident">FFIType</span>: <span class="ident">sp_wasm_interface::IntoValue</span> <span class="op">+</span> <span class="ident">sp_wasm_interface::TryFromValue</span>;
+	<span class="kw">type</span> <span class="ident">FFIType</span>: <span class="ident">sp_wasm_interface::IntoValue</span>
+		<span class="op">+</span> <span class="ident">sp_wasm_interface::TryFromValue</span>
+		<span class="op">+</span> <span class="ident">sp_wasm_interface::WasmTy</span>;
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
 	<span class="kw">type</span> <span class="ident">FFIType</span>;
 }

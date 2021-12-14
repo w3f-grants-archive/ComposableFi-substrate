@@ -509,6 +509,14 @@
 <span id="509">509</span>
 <span id="510">510</span>
 <span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
 <span class="comment">// Make the WASM binary available.</span>
@@ -843,6 +851,14 @@
    <span class="kw">fn</span> <span class="ident">test_panic_in_spawned</span>() {
 	   <span class="ident">sp_tasks::spawn</span>(<span class="ident">tasks::panicker</span>, <span class="macro">vec!</span>[]).<span class="ident">join</span>();
    }
+
+	<span class="kw">fn</span> <span class="ident">test_return_i8</span>() -&gt; <span class="ident">i8</span> {
+		<span class="op">-</span><span class="number">66</span>
+	}
+
+	<span class="kw">fn</span> <span class="ident">test_take_i8</span>(<span class="ident">value</span>: <span class="ident">i8</span>) {
+		<span class="macro">assert_eq!</span>(<span class="ident">value</span>, <span class="op">-</span><span class="number">66</span>);
+	}
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>

@@ -234,12 +234,6 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -266,7 +260,7 @@
 <span class="kw">use</span> <span class="ident">sp_runtime_interface_test_wasm_deprecated::wasm_binary_unwrap</span> <span class="kw">as</span> <span class="ident">wasm_binary_deprecated_unwrap</span>;
 
 <span class="kw">use</span> <span class="ident">sc_executor_common::runtime_blob::RuntimeBlob</span>;
-<span class="kw">use</span> <span class="ident">sp_wasm_interface::HostFunctions</span> <span class="kw">as</span> <span class="ident">HostFunctionsT</span>;
+<span class="kw">use</span> <span class="ident">sp_wasm_interface</span>::{<span class="ident">ExtendedHostFunctions</span>, <span class="ident">HostFunctions</span> <span class="kw">as</span> <span class="ident">HostFunctionsT</span>};
 
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections::HashSet</span>,
@@ -281,17 +275,11 @@
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TestExternalities</span>, <span class="ident">String</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">TestExternalities::default</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ext_ext</span> <span class="op">=</span> <span class="ident">ext</span>.<span class="ident">ext</span>();
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">host_functions</span> <span class="op">=</span> <span class="ident">HF::host_functions</span>();
-	<span class="ident">host_functions</span>.<span class="ident">extend</span>(<span class="ident">sp_io::SubstrateHostFunctions::host_functions</span>());
 
-	<span class="kw">let</span> <span class="ident">executor</span> <span class="op">=</span> <span class="ident">sc_executor::WasmExecutor::new</span>(
-		<span class="ident">sc_executor::WasmExecutionMethod::Interpreted</span>,
-		<span class="prelude-val">Some</span>(<span class="number">8</span>),
-		<span class="ident">host_functions</span>,
-		<span class="number">8</span>,
-		<span class="prelude-val">None</span>,
-		<span class="number">2</span>,
-	);
+	<span class="kw">let</span> <span class="ident">executor</span> <span class="op">=</span> <span class="ident">sc_executor::WasmExecutor</span>::<span class="op">&lt;</span>
+		<span class="ident">ExtendedHostFunctions</span><span class="op">&lt;</span><span class="ident">sp_io::SubstrateHostFunctions</span>, <span class="ident">HF</span><span class="op">&gt;</span>,
+	<span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">sc_executor::WasmExecutionMethod::Interpreted</span>, <span class="prelude-val">Some</span>(<span class="number">8</span>), <span class="number">8</span>, <span class="prelude-val">None</span>, <span class="number">2</span>);
+
 	<span class="ident">executor</span>
 		.<span class="ident">uncached_call</span>(
 			<span class="ident">RuntimeBlob::uncompress_if_needed</span>(<span class="ident">binary</span>).<span class="ident">expect</span>(<span class="string">&quot;Failed to parse binary&quot;</span>),
