@@ -1405,7 +1405,7 @@
 			<span class="kw">for</span> (<span class="ident">account</span>, <span class="ident">val</span>, <span class="ident">keys</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">keys</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>() {
 				<span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::inner_set_keys</span>(<span class="kw-2">&amp;</span><span class="ident">val</span>, <span class="ident">keys</span>)
 					.<span class="ident">expect</span>(<span class="string">&quot;genesis config must not contain duplicates; qed&quot;</span>);
-				<span class="kw">if</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::inc_consumers</span>(<span class="kw-2">&amp;</span><span class="ident">account</span>).<span class="ident">is_err</span>() {
+				<span class="kw">if</span> <span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::inc_consumers_without_limit</span>(<span class="kw-2">&amp;</span><span class="ident">account</span>).<span class="ident">is_err</span>() {
 					<span class="comment">// This will leak a provider reference, however it only happens once (at</span>
 					<span class="comment">// genesis) so it&#39;s really not a big deal and we assume that the user wants to</span>
 					<span class="comment">// do this since it&#39;s the only way a non-endowed account can contain a session</span>

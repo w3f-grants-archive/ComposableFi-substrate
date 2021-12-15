@@ -3141,7 +3141,7 @@
 		} <span class="kw">else</span> {
 			<span class="ident">Locks</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">who</span>, <span class="ident">bounded_locks</span>);
 			<span class="kw">if</span> <span class="op">!</span><span class="ident">existed</span> {
-				<span class="kw">if</span> <span class="ident">system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::inc_consumers</span>(<span class="ident">who</span>).<span class="ident">is_err</span>() {
+				<span class="kw">if</span> <span class="ident">system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::inc_consumers_without_limit</span>(<span class="ident">who</span>).<span class="ident">is_err</span>() {
 					<span class="comment">// No providers for the locks. This is impossible under normal circumstances</span>
 					<span class="comment">// since the funds that are under the lock will themselves be stored in the</span>
 					<span class="comment">// account and therefore will need a reference.</span>

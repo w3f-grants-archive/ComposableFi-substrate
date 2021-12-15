@@ -1322,6 +1322,7 @@
 <span id="1322">1322</span>
 <span id="1323">1323</span>
 <span id="1324">1324</span>
+<span id="1325">1325</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -1791,8 +1792,9 @@
 		<span class="ident">BadWitness</span>,
 		<span class="doccomment">/// Minimum balance should be non-zero.</span>
 		<span class="ident">MinBalanceZero</span>,
-		<span class="doccomment">/// No provider reference exists to allow a non-zero balance of a non-self-sufficient</span>
-		<span class="doccomment">/// asset.</span>
+		<span class="doccomment">/// Unable to increment the consumer reference counters on the account. Either no provider</span>
+		<span class="doccomment">/// reference exists to allow a non-zero balance of a non-self-sufficient asset, or the</span>
+		<span class="doccomment">/// maximum number of consumers has been reached.</span>
 		<span class="ident">NoProvider</span>,
 		<span class="doccomment">/// Invalid metadata given.</span>
 		<span class="ident">BadMetadata</span>,

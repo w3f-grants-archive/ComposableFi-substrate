@@ -241,6 +241,7 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
+<span id="244">244</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -264,7 +265,6 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
 
-<span class="kw">use</span> <span class="ident">log::warn</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryInto</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderBackend</span>;
@@ -431,7 +431,7 @@
 		<span class="kw">let</span> <span class="ident">dxt</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">TransactionFor</span>::<span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">xt</span>[..]).<span class="ident">map_err</span>(<span class="ident">error::Error::from</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident">tx</span>) =&gt; <span class="ident">tx</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-				<span class="macro">warn!</span>(<span class="string">&quot;Failed to submit extrinsic: {}&quot;</span>, <span class="ident">err</span>);
+				<span class="macro">log::debug!</span>(<span class="string">&quot;Failed to submit extrinsic: {}&quot;</span>, <span class="ident">err</span>);
 				<span class="comment">// reject the subscriber (ignore errors - we don&#39;t care if subscriber is no longer</span>
 				<span class="comment">// there).</span>
 				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">subscriber</span>.<span class="ident">reject</span>(<span class="ident">err</span>.<span class="ident">into</span>());
@@ -454,7 +454,7 @@
 			<span class="kw">let</span> <span class="ident">tx_stream</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">submit</span>.<span class="kw">await</span> {
 				<span class="prelude-val">Ok</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
 				<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-					<span class="macro">warn!</span>(<span class="string">&quot;Failed to submit extrinsic: {}&quot;</span>, <span class="ident">err</span>);
+					<span class="macro">log::debug!</span>(<span class="string">&quot;Failed to submit extrinsic: {}&quot;</span>, <span class="ident">err</span>);
 					<span class="comment">// reject the subscriber (ignore errors - we don&#39;t care if subscriber is no</span>
 					<span class="comment">// longer there).</span>
 					<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">subscriber</span>.<span class="ident">reject</span>(<span class="ident">err</span>.<span class="ident">into</span>());
@@ -465,14 +465,16 @@
 			<span class="ident">subscriptions</span>.<span class="ident">add</span>(<span class="ident">subscriber</span>, <span class="kw">move</span> <span class="op">|</span><span class="ident">sink</span><span class="op">|</span> {
 				<span class="ident">tx_stream</span>
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">v</span>)))
-					.<span class="ident">forward</span>(<span class="ident">sink</span>.<span class="ident">sink_map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">warn!</span>(<span class="string">&quot;Error sending notifications: {:?}&quot;</span>, <span class="ident">e</span>)))
+					.<span class="ident">forward</span>(
+						<span class="ident">sink</span>.<span class="ident">sink_map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">log::debug!</span>(<span class="string">&quot;Error sending notifications: {:?}&quot;</span>, <span class="ident">e</span>)),
+					)
 					.<span class="ident">map</span>(<span class="ident">drop</span>)
 			});
 		};
 
 		<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">subscriptions</span>.<span class="ident">executor</span>().<span class="ident">spawn_obj</span>(<span class="ident">future</span>.<span class="ident">boxed</span>().<span class="ident">into</span>());
 		<span class="kw">if</span> <span class="ident">res</span>.<span class="ident">is_err</span>() {
-			<span class="macro">warn!</span>(<span class="string">&quot;Error spawning subscription RPC task.&quot;</span>);
+			<span class="macro">log::warn!</span>(<span class="string">&quot;Error spawning subscription RPC task.&quot;</span>);
 		}
 	}
 
