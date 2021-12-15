@@ -550,9 +550,9 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">known_payload_ids</span> {
 	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::BeefyPayloadId</span>;
 
-	<span class="doccomment">/// A [`Payload`] identifier for Merkle Mountain Range root hash.</span>
+	<span class="doccomment">/// A [`Payload`](super::Payload) identifier for Merkle Mountain Range root hash.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Encoded value should contain a [`beefy_primitives::MmrRootHash`] type (i.e. 32-bytes hash).</span>
+	<span class="doccomment">/// Encoded value should contain a [`crate::MmrRootHash`] type (i.e. 32-bytes hash).</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MMR_ROOT_ID</span>: <span class="ident">BeefyPayloadId</span> <span class="op">=</span> <span class="kw-2">*</span><span class="string">b&quot;mh&quot;</span>;
 }
 
@@ -660,7 +660,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Note that SCALE-encoding of the structure is optimized for size efficiency over the wire,</span>
 <span class="doccomment">/// please take a look at custom [`Encode`] and [`Decode`] implementations and</span>
-<span class="doccomment">/// [`CompactSignedCommitment`] struct.</span>
+<span class="doccomment">/// `CompactSignedCommitment` struct.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignedCommitment</span><span class="op">&lt;</span><span class="ident">TBlockNumber</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The commitment signatures are collected for.</span>

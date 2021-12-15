@@ -1886,7 +1886,7 @@
 		<span class="self">self</span>
 	}
 
-	<span class="doccomment">/// Just a utility wrapper of [`inject_hashed_prefix`] that injects</span>
+	<span class="doccomment">/// Just a utility wrapper of [`Self::inject_hashed_prefix`] that injects</span>
 	<span class="doccomment">/// [`DEFAULT_CHILD_STORAGE_KEY_PREFIX`] as a prefix.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If set, this will guarantee that the child-tree data of ALL pallets will be downloaded.</span>
@@ -1895,9 +1895,9 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Otherwise, the only other way to make sure a child-tree is manually included is to inject</span>
 	<span class="doccomment">/// its root (`DEFAULT_CHILD_STORAGE_KEY_PREFIX`, plus some other postfix) into</span>
-	<span class="doccomment">/// [`inject_hashed_key`]. Unfortunately, there&#39;s no federated way of managing child tree roots</span>
-	<span class="doccomment">/// as of now and each pallet does its own thing. Therefore, it is not possible for this library</span>
-	<span class="doccomment">/// to automatically include child trees of pallet X, when its top keys are included.</span>
+	<span class="doccomment">/// [`Self::inject_hashed_key`]. Unfortunately, there&#39;s no federated way of managing child tree</span>
+	<span class="doccomment">/// roots as of now and each pallet does its own thing. Therefore, it is not possible for this</span>
+	<span class="doccomment">/// library to automatically include child trees of pallet X, when its top keys are included.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inject_default_child_tree_prefix</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">inject_hashed_prefix</span>(<span class="ident">DEFAULT_CHILD_STORAGE_KEY_PREFIX</span>)
 	}
