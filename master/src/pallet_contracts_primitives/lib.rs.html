@@ -318,6 +318,12 @@
 <span id="318">318</span>
 <span id="319">319</span>
 <span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -451,9 +457,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ExecReturnValue</span> {
-	<span class="doccomment">/// We understand the absense of a revert flag as success.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_success</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-		<span class="op">!</span><span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">ReturnFlags::REVERT</span>)
+	<span class="doccomment">/// The contract did revert all storage changes.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">did_revert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">flags</span>.<span class="ident">contains</span>(<span class="ident">ReturnFlags::REVERT</span>)
 	}
 }
 
@@ -488,6 +494,12 @@
 	<span class="ident">Upload</span>(<span class="ident">Bytes</span>),
 	<span class="doccomment">/// The code hash of an on-chain wasm blob.</span>
 	<span class="ident">Existing</span>(<span class="ident">Hash</span>),
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Hash</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Code</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">from</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">Code::Upload</span>(<span class="ident">Bytes</span>(<span class="ident">from</span>.<span class="ident">into</span>()))
+	}
 }
 
 <span class="doccomment">/// The amount of balance that was either charged or refunded in order to pay for storage.</span>

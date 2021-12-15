@@ -851,6 +851,26 @@
 <span id="851">851</span>
 <span id="852">852</span>
 <span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -1142,7 +1162,7 @@
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">dest</span> <span class="op">=</span> <span class="ident">T::Lookup::lookup</span>(<span class="ident">dest</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_call</span>(
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_call</span>(
 				<span class="ident">origin</span>,
 				<span class="ident">dest</span>,
 				<span class="ident">value</span>,
@@ -1151,6 +1171,11 @@
 				<span class="ident">data</span>,
 				<span class="prelude-val">None</span>,
 			);
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">retval</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">result</span> {
+				<span class="kw">if</span> <span class="ident">retval</span>.<span class="ident">did_revert</span>() {
+					<span class="ident">output</span>.<span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">Err</span>(<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ContractReverted</span>.<span class="ident">into</span>());
+				}
+			}
 			<span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">into_dispatch_result</span>(<span class="ident">output</span>.<span class="ident">result</span>, <span class="ident">T::WeightInfo::call</span>())
 		}
 
@@ -1199,7 +1224,7 @@
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">code_len</span> <span class="op">=</span> <span class="ident">code</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 			<span class="kw">let</span> <span class="ident">salt_len</span> <span class="op">=</span> <span class="ident">salt</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
-			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
 				<span class="ident">origin</span>,
 				<span class="ident">value</span>,
 				<span class="ident">gas_limit</span>,
@@ -1209,6 +1234,11 @@
 				<span class="ident">salt</span>,
 				<span class="prelude-val">None</span>,
 			);
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">retval</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">result</span> {
+				<span class="kw">if</span> <span class="ident">retval</span>.<span class="number">1</span>.<span class="ident">did_revert</span>() {
+					<span class="ident">output</span>.<span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">Err</span>(<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ContractReverted</span>.<span class="ident">into</span>());
+				}
+			}
 			<span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">into_dispatch_result</span>(
 				<span class="ident">output</span>.<span class="ident">result</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">_address</span>, <span class="ident">result</span>)<span class="op">|</span> <span class="ident">result</span>),
 				<span class="ident">T::WeightInfo::instantiate_with_code</span>(<span class="ident">code_len</span> <span class="op">/</span> <span class="number">1024</span>, <span class="ident">salt_len</span> <span class="op">/</span> <span class="number">1024</span>),
@@ -1234,7 +1264,7 @@
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">salt_len</span> <span class="op">=</span> <span class="ident">salt</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
-			<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::internal_instantiate</span>(
 				<span class="ident">origin</span>,
 				<span class="ident">value</span>,
 				<span class="ident">gas_limit</span>,
@@ -1244,6 +1274,11 @@
 				<span class="ident">salt</span>,
 				<span class="prelude-val">None</span>,
 			);
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">retval</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">output</span>.<span class="ident">result</span> {
+				<span class="kw">if</span> <span class="ident">retval</span>.<span class="number">1</span>.<span class="ident">did_revert</span>() {
+					<span class="ident">output</span>.<span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">Err</span>(<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::ContractReverted</span>.<span class="ident">into</span>());
+				}
+			}
 			<span class="ident">output</span>.<span class="ident">gas_meter</span>.<span class="ident">into_dispatch_result</span>(
 				<span class="ident">output</span>.<span class="ident">result</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">_address</span>, <span class="ident">output</span>)<span class="op">|</span> <span class="ident">output</span>),
 				<span class="ident">T::WeightInfo::instantiate</span>(<span class="ident">salt_len</span> <span class="op">/</span> <span class="number">1024</span>),
@@ -1393,6 +1428,11 @@
 		<span class="ident">StorageDepositLimitExhausted</span>,
 		<span class="doccomment">/// Code removal was denied because the code is still in use by at least one contract.</span>
 		<span class="ident">CodeInUse</span>,
+		<span class="doccomment">/// The contract ran to completion but decided to revert its storage changes.</span>
+		<span class="doccomment">/// Please note that this error is only returned from extrinsics. When called directly</span>
+		<span class="doccomment">/// or via RPC an `Ok` will be returned. In this case the caller needs to inspect the flags</span>
+		<span class="doccomment">/// to determine whether a reversion has taken place.</span>
+		<span class="ident">ContractReverted</span>,
 	}
 
 	<span class="doccomment">/// A mapping from an original code hash to the original code, untouched by instrumentation.</span>
