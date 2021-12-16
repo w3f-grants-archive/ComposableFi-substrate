@@ -704,7 +704,7 @@
 	<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
 
-<span class="doccomment">/// Wraps around an implementation of the `Network` crate and provides gossiping capabilities on</span>
+<span class="doccomment">/// Wraps around an implementation of the [`Network`] trait and provides gossiping capabilities on</span>
 <span class="doccomment">/// top of it.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GossipEngine</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
 	<span class="ident">state_machine</span>: <span class="ident">ConsensusGossip</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
@@ -721,7 +721,7 @@
 }
 
 <span class="doccomment">/// A gossip engine receives messages from the network via the `network_event_stream` and forwards</span>
-<span class="doccomment">/// them to upper layers via the `message sinks`. In the scenario where messages have been received</span>
+<span class="doccomment">/// them to upper layers via the `message_sinks`. In the scenario where messages have been received</span>
 <span class="doccomment">/// from the network but a subscribed message sink is not yet ready to receive the messages, the</span>
 <span class="doccomment">/// messages are buffered. To model this process a gossip engine can be in two states.</span>
 <span class="kw">enum</span> <span class="ident">ForwardingState</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
