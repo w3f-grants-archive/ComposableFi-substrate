@@ -1833,16 +1833,6 @@
 <span id="1833">1833</span>
 <span id="1834">1834</span>
 <span id="1835">1835</span>
-<span id="1836">1836</span>
-<span id="1837">1837</span>
-<span id="1838">1838</span>
-<span id="1839">1839</span>
-<span id="1840">1840</span>
-<span id="1841">1841</span>
-<span id="1842">1842</span>
-<span id="1843">1843</span>
-<span id="1844">1844</span>
-<span id="1845">1845</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2021 Parity Technologies (UK) Ltd.</span>
@@ -1871,8 +1861,8 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{
-		<span class="ident">ConstU128</span>, <span class="ident">ConstU32</span>, <span class="ident">Currency</span>, <span class="ident">EnsureOneOf</span>, <span class="ident">EqualPrivilegeOnly</span>, <span class="ident">Everything</span>, <span class="ident">Imbalance</span>,
-		<span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">LockIdentifier</span>, <span class="ident">Nothing</span>, <span class="ident">OnUnbalanced</span>,
+		<span class="ident">ConstU128</span>, <span class="ident">ConstU16</span>, <span class="ident">ConstU32</span>, <span class="ident">Currency</span>, <span class="ident">EnsureOneOf</span>, <span class="ident">EqualPrivilegeOnly</span>, <span class="ident">Everything</span>,
+		<span class="ident">Imbalance</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">LockIdentifier</span>, <span class="ident">Nothing</span>, <span class="ident">OnUnbalanced</span>,
 		<span class="ident">U128CurrencyToVote</span>,
 	},
 	<span class="ident">weights</span>::{
@@ -2036,7 +2026,6 @@
 		})
 		.<span class="ident">avg_block_initialization</span>(<span class="ident">AVERAGE_ON_INITIALIZE_RATIO</span>)
 		.<span class="ident">build_or_panic</span>();
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SS58Prefix</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">42</span>;
 }
 
 <span class="macro">const_assert!</span>(<span class="ident">NORMAL_DISPATCH_RATIO</span>.<span class="ident">deconstruct</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">AVERAGE_ON_INITIALIZE_RATIO</span>.<span class="ident">deconstruct</span>());
@@ -2063,7 +2052,7 @@
 	<span class="kw">type</span> <span class="ident">OnNewAccount</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">OnKilledAccount</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> <span class="ident">frame_system::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> <span class="ident">SS58Prefix</span>;
+	<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> <span class="ident">ConstU16</span><span class="op">&lt;</span><span class="number">42</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 }
@@ -2082,7 +2071,6 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">1</span>, <span class="number">88</span>);
 	<span class="comment">// Additional storage item size of 32 bytes.</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DepositFactor</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">0</span>, <span class="number">32</span>);
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxSignatories</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">100</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_multisig::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2091,7 +2079,7 @@
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
 	<span class="kw">type</span> <span class="ident">DepositBase</span> <span class="op">=</span> <span class="ident">DepositBase</span>;
 	<span class="kw">type</span> <span class="ident">DepositFactor</span> <span class="op">=</span> <span class="ident">DepositFactor</span>;
-	<span class="kw">type</span> <span class="ident">MaxSignatories</span> <span class="op">=</span> <span class="ident">MaxSignatories</span>;
+	<span class="kw">type</span> <span class="ident">MaxSignatories</span> <span class="op">=</span> <span class="ident">ConstU16</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_multisig::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
@@ -2100,10 +2088,8 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ProxyDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">1</span>, <span class="number">8</span>);
 	<span class="comment">// Additional storage item size of 33 bytes.</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ProxyDepositFactor</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">0</span>, <span class="number">33</span>);
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxProxies</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">32</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AnnouncementDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">1</span>, <span class="number">8</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AnnouncementDepositFactor</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">deposit</span>(<span class="number">0</span>, <span class="number">66</span>);
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxPending</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">32</span>;
 }
 
 <span class="doccomment">/// The type used to represent the kinds of proxying allowed.</span>
@@ -2170,9 +2156,9 @@
 	<span class="kw">type</span> <span class="ident">ProxyType</span> <span class="op">=</span> <span class="ident">ProxyType</span>;
 	<span class="kw">type</span> <span class="ident">ProxyDepositBase</span> <span class="op">=</span> <span class="ident">ProxyDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">ProxyDepositFactor</span> <span class="op">=</span> <span class="ident">ProxyDepositFactor</span>;
-	<span class="kw">type</span> <span class="ident">MaxProxies</span> <span class="op">=</span> <span class="ident">MaxProxies</span>;
+	<span class="kw">type</span> <span class="ident">MaxProxies</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_proxy::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">MaxPending</span> <span class="op">=</span> <span class="ident">MaxPending</span>;
+	<span class="kw">type</span> <span class="ident">MaxPending</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">CallHasher</span> <span class="op">=</span> <span class="ident">BlakeTwo256</span>;
 	<span class="kw">type</span> <span class="ident">AnnouncementDepositBase</span> <span class="op">=</span> <span class="ident">AnnouncementDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">AnnouncementDepositFactor</span> <span class="op">=</span> <span class="ident">AnnouncementDepositFactor</span>;
@@ -2181,7 +2167,6 @@
 <span class="macro">parameter_types!</span> {
 	<span class="kw">pub</span> <span class="ident">MaximumSchedulerWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Perbill::from_percent</span>(<span class="number">80</span>) <span class="op">*</span>
 		<span class="ident">RuntimeBlockWeights::get</span>().<span class="ident">max_block</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxScheduledPerBlock</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">50</span>;
 	<span class="comment">// Retry a scheduled item every 10 blocks (1 minute) until the preimage exists.</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NoPreimagePostponement</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="number">10</span>);
 }
@@ -2193,7 +2178,7 @@
 	<span class="kw">type</span> <span class="ident">Call</span> <span class="op">=</span> <span class="ident">Call</span>;
 	<span class="kw">type</span> <span class="ident">MaximumWeight</span> <span class="op">=</span> <span class="ident">MaximumSchedulerWeight</span>;
 	<span class="kw">type</span> <span class="ident">ScheduleOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">MaxScheduledPerBlock</span> <span class="op">=</span> <span class="ident">MaxScheduledPerBlock</span>;
+	<span class="kw">type</span> <span class="ident">MaxScheduledPerBlock</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">50</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_scheduler::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">OriginPrivilegeCmp</span> <span class="op">=</span> <span class="ident">EqualPrivilegeOnly</span>;
 	<span class="kw">type</span> <span class="ident">PreimageProvider</span> <span class="op">=</span> <span class="ident">Preimage</span>;
@@ -2426,7 +2411,6 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UnsignedPhase</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">EPOCH_DURATION_IN_BLOCKS</span> <span class="op">/</span> <span class="number">4</span>;
 
 	<span class="comment">// signed config</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SignedMaxSubmissions</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">10</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SignedRewardBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SignedDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SignedDepositByte</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">CENTS</span>;
@@ -2444,11 +2428,6 @@
 		<span class="kw-2">*</span><span class="ident">RuntimeBlockLength::get</span>()
 		.<span class="ident">max</span>
 		.<span class="ident">get</span>(<span class="ident">DispatchClass::Normal</span>);
-
-	<span class="comment">// BagsList allows a practically unbounded count of nominators to participate in NPoS elections.</span>
-	<span class="comment">// To ensure we respect memory limits when using the BagsList this must be set to a number of</span>
-	<span class="comment">// voters we know can fit into a single vec allocation.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VoterSnapshotPerBlock</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">10_000</span>;
 }
 
 <span class="macro">sp_npos_elections::generate_solution_type!</span>(
@@ -2513,7 +2492,7 @@
 	<span class="kw">type</span> <span class="ident">MinerMaxWeight</span> <span class="op">=</span> <span class="ident">MinerMaxWeight</span>;
 	<span class="kw">type</span> <span class="ident">MinerMaxLength</span> <span class="op">=</span> <span class="ident">MinerMaxLength</span>;
 	<span class="kw">type</span> <span class="ident">MinerTxPriority</span> <span class="op">=</span> <span class="ident">MultiPhaseUnsignedPriority</span>;
-	<span class="kw">type</span> <span class="ident">SignedMaxSubmissions</span> <span class="op">=</span> <span class="ident">SignedMaxSubmissions</span>;
+	<span class="kw">type</span> <span class="ident">SignedMaxSubmissions</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">10</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SignedRewardBase</span> <span class="op">=</span> <span class="ident">SignedRewardBase</span>;
 	<span class="kw">type</span> <span class="ident">SignedDepositBase</span> <span class="op">=</span> <span class="ident">SignedDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">SignedDepositByte</span> <span class="op">=</span> <span class="ident">SignedDepositByte</span>;
@@ -2532,7 +2511,10 @@
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_election_provider_multi_phase::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">ForceOrigin</span> <span class="op">=</span> <span class="ident">EnsureRootOrHalfCouncil</span>;
 	<span class="kw">type</span> <span class="ident">BenchmarkingConfig</span> <span class="op">=</span> <span class="ident">ElectionProviderBenchmarkConfig</span>;
-	<span class="kw">type</span> <span class="ident">VoterSnapshotPerBlock</span> <span class="op">=</span> <span class="ident">VoterSnapshotPerBlock</span>;
+	<span class="comment">// BagsList allows a practically unbounded count of nominators to participate in NPoS elections.</span>
+	<span class="comment">// To ensure we respect memory limits when using the BagsList this must be set to a number of</span>
+	<span class="comment">// voters we know can fit into a single vec allocation.</span>
+	<span class="kw">type</span> <span class="ident">VoterSnapshotPerBlock</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">10_000</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2550,11 +2532,9 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LaunchPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VotingPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FastTrackVotingPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">3</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">InstantAllowed</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="bool-val">true</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MinimumDeposit</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">DOLLARS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EnactmentPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">30</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CooloffPeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">28</span> <span class="op">*</span> <span class="number">24</span> <span class="op">*</span> <span class="number">60</span> <span class="op">*</span> <span class="ident">MINUTES</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxVotes</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxProposals</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 }
 
@@ -2583,7 +2563,7 @@
 		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_2</span>, <span class="ident">_3</span>, <span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">InstantOrigin</span> <span class="op">=</span>
 		<span class="ident">pallet_collective::EnsureProportionAtLeast</span><span class="op">&lt;</span><span class="ident">_1</span>, <span class="ident">_1</span>, <span class="ident">AccountId</span>, <span class="ident">TechnicalCollective</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">InstantAllowed</span> <span class="op">=</span> <span class="ident">InstantAllowed</span>;
+	<span class="kw">type</span> <span class="ident">InstantAllowed</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstBool</span><span class="op">&lt;</span><span class="bool-val">true</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">FastTrackVotingPeriod</span> <span class="op">=</span> <span class="ident">FastTrackVotingPeriod</span>;
 	<span class="comment">// To cancel a proposal which has been passed, 2/3 of the council must agree to it.</span>
 	<span class="kw">type</span> <span class="ident">CancellationOrigin</span> <span class="op">=</span>
@@ -2604,7 +2584,7 @@
 	<span class="kw">type</span> <span class="ident">Slash</span> <span class="op">=</span> <span class="ident">Treasury</span>;
 	<span class="kw">type</span> <span class="ident">Scheduler</span> <span class="op">=</span> <span class="ident">Scheduler</span>;
 	<span class="kw">type</span> <span class="ident">PalletsOrigin</span> <span class="op">=</span> <span class="ident">OriginCaller</span>;
-	<span class="kw">type</span> <span class="ident">MaxVotes</span> <span class="op">=</span> <span class="ident">MaxVotes</span>;
+	<span class="kw">type</span> <span class="ident">MaxVotes</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">100</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">pallet_democracy::weights::SubstrateWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">MaxProposals</span> <span class="op">=</span> <span class="ident">MaxProposals</span>;
 }

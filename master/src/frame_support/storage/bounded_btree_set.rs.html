@@ -434,10 +434,6 @@
 <span id="434">434</span>
 <span id="435">435</span>
 <span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -727,19 +723,15 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">test</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Twox128</span>;
+	<span class="kw">use</span> <span class="ident">frame_support::traits::ConstU32</span>;
 	<span class="kw">use</span> <span class="ident">sp_io::TestExternalities</span>;
 	<span class="kw">use</span> <span class="ident">sp_std::convert::TryInto</span>;
 
-	<span class="macro">crate::parameter_types!</span> {
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Seven</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">7</span>;
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Four</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4</span>;
-	}
-
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">Foo</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="op">&gt;</span> }
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">FooMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="op">&gt;</span> }
+	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">Foo</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
+	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">FooMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
 	<span class="macro">crate::generate_storage_alias!</span> {
 		<span class="ident">Prefix</span>,
-		<span class="ident">FooDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), (<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="op">&gt;</span>
+		<span class="ident">FooDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), (<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedBTreeSet</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">map_from_keys</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">keys</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) -&gt; <span class="ident">BTreeSet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
@@ -760,13 +752,13 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">decode_len_works</span>() {
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+			<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 			<span class="ident">Foo::put</span>(<span class="ident">bounded</span>);
 			<span class="macro">assert_eq!</span>(<span class="ident">Foo::decode_len</span>().<span class="ident">unwrap</span>(), <span class="number">3</span>);
 		});
 
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+			<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 			<span class="ident">FooMap::insert</span>(<span class="number">1</span>, <span class="ident">bounded</span>);
 			<span class="macro">assert_eq!</span>(<span class="ident">FooMap::decode_len</span>(<span class="number">1</span>).<span class="ident">unwrap</span>(), <span class="number">3</span>);
 			<span class="macro">assert!</span>(<span class="ident">FooMap::decode_len</span>(<span class="number">0</span>).<span class="ident">is_none</span>());
@@ -774,7 +766,7 @@
 		});
 
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+			<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 			<span class="ident">FooDoubleMap::insert</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="ident">bounded</span>);
 			<span class="macro">assert_eq!</span>(<span class="ident">FooDoubleMap::decode_len</span>(<span class="number">1</span>, <span class="number">1</span>).<span class="ident">unwrap</span>(), <span class="number">3</span>);
 			<span class="macro">assert!</span>(<span class="ident">FooDoubleMap::decode_len</span>(<span class="number">2</span>, <span class="number">1</span>).<span class="ident">is_none</span>());
@@ -785,7 +777,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">try_insert_works</span>() {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Four</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">4</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 		<span class="ident">bounded</span>.<span class="ident">try_insert</span>(<span class="number">0</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">bounded</span>, <span class="ident">map_from_keys</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>]));
 
@@ -795,7 +787,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">deref_coercion_works</span>() {
-		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 		<span class="comment">// these methods come from deref-ed vec.</span>
 		<span class="macro">assert_eq!</span>(<span class="ident">bounded</span>.<span class="ident">len</span>(), <span class="number">3</span>);
 		<span class="macro">assert!</span>(<span class="ident">bounded</span>.<span class="ident">iter</span>().<span class="ident">next</span>().<span class="ident">is_some</span>());
@@ -804,7 +796,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">try_mutate_works</span>() {
-		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
 		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">bounded</span>
 			.<span class="ident">try_mutate</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
 				<span class="ident">v</span>.<span class="ident">insert</span>(<span class="number">7</span>);
@@ -820,7 +812,7 @@
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">btree_map_eq_works</span>() {
-		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+		<span class="kw">let</span> <span class="ident">bounded</span> <span class="op">=</span> <span class="ident">boundedmap_from_keys</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
 		<span class="macro">assert_eq!</span>(<span class="ident">bounded</span>, <span class="ident">map_from_keys</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]));
 	}
 
@@ -828,7 +820,7 @@
 	<span class="kw">fn</span> <span class="ident">too_big_fail_to_decode</span>() {
 		<span class="kw">let</span> <span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
 		<span class="macro">assert_eq!</span>(
-			<span class="ident">BoundedBTreeSet</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Four</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">v</span>.<span class="ident">encode</span>()[..]),
+			<span class="ident">BoundedBTreeSet</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">4</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::decode</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">v</span>.<span class="ident">encode</span>()[..]),
 			<span class="prelude-val">Err</span>(<span class="string">&quot;BoundedBTreeSet exceeds its limit&quot;</span>.<span class="ident">into</span>()),
 		);
 	}
@@ -858,7 +850,7 @@
 			}
 		}
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">BoundedBTreeSet</span>::<span class="op">&lt;</span><span class="ident">Unequal</span>, <span class="ident">Four</span><span class="op">&gt;</span><span class="ident">::new</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">BoundedBTreeSet</span>::<span class="op">&lt;</span><span class="ident">Unequal</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">4</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>();
 
 		<span class="comment">// when the set is full</span>
 

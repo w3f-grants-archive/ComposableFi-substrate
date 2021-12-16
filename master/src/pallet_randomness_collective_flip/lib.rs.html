@@ -309,7 +309,6 @@
 <span id="309">309</span>
 <span id="310">310</span>
 <span id="311">311</span>
-<span id="312">312</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -481,7 +480,7 @@
 
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{
 		<span class="ident">parameter_types</span>,
-		<span class="ident">traits</span>::{<span class="ident">OnInitialize</span>, <span class="ident">Randomness</span>},
+		<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">ConstU64</span>, <span class="ident">OnInitialize</span>, <span class="ident">Randomness</span>},
 	};
 	<span class="kw">use</span> <span class="ident">frame_system::limits</span>;
 
@@ -500,7 +499,6 @@
 	);
 
 	<span class="macro">parameter_types!</span> {
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockHashCount</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">250</span>;
 		<span class="kw">pub</span> <span class="ident">BlockWeights</span>: <span class="ident">limits::BlockWeights</span> <span class="op">=</span> <span class="ident">limits::BlockWeights</span>
 			<span class="ident">::simple_max</span>(<span class="number">1024</span>);
 		<span class="kw">pub</span> <span class="ident">BlockLength</span>: <span class="ident">limits::BlockLength</span> <span class="op">=</span> <span class="ident">limits::BlockLength</span>
@@ -522,7 +520,7 @@
 		<span class="kw">type</span> <span class="ident">Lookup</span> <span class="op">=</span> <span class="ident">IdentityLookup</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">Header</span> <span class="op">=</span> <span class="ident">Header</span>;
 		<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-		<span class="kw">type</span> <span class="ident">BlockHashCount</span> <span class="op">=</span> <span class="ident">BlockHashCount</span>;
+		<span class="kw">type</span> <span class="ident">BlockHashCount</span> <span class="op">=</span> <span class="ident">ConstU64</span><span class="op">&lt;</span><span class="number">250</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">Version</span> <span class="op">=</span> ();
 		<span class="kw">type</span> <span class="ident">PalletInfo</span> <span class="op">=</span> <span class="ident">PalletInfo</span>;
 		<span class="kw">type</span> <span class="ident">AccountData</span> <span class="op">=</span> ();
@@ -531,7 +529,7 @@
 		<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> ();
 		<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> ();
 		<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
-		<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 	}
 
 	<span class="kw">impl</span> <span class="ident">pallet_randomness_collective_flip::Config</span> <span class="kw">for</span> <span class="ident">Test</span> {}

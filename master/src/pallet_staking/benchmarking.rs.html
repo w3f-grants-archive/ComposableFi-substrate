@@ -1969,7 +1969,7 @@
 
 			<span class="kw">let</span> (<span class="ident">validator_stash</span>, <span class="ident">nominators</span>) <span class="op">=</span> <span class="ident">create_validator_with_nominators</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span>(
 				<span class="ident">n</span>,
-				<span class="op">&lt;</span><span class="ident">Test</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::MaxNominatorRewardedPerValidator::get</span>() <span class="kw">as</span> <span class="ident">u32</span>,
+				<span class="op">&lt;</span><span class="ident">Test</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::MaxNominatorRewardedPerValidator::get</span>(),
 				<span class="bool-val">false</span>,
 				<span class="ident">RewardDestination::Staked</span>,
 			)
@@ -1994,7 +1994,7 @@
 
 			<span class="kw">let</span> (<span class="ident">validator_stash</span>, <span class="ident">_nominators</span>) <span class="op">=</span> <span class="ident">create_validator_with_nominators</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span>(
 				<span class="ident">n</span>,
-				<span class="op">&lt;</span><span class="ident">Test</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::MaxNominatorRewardedPerValidator::get</span>() <span class="kw">as</span> <span class="ident">u32</span>,
+				<span class="op">&lt;</span><span class="ident">Test</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::MaxNominatorRewardedPerValidator::get</span>(),
 				<span class="bool-val">false</span>,
 				<span class="ident">RewardDestination::Staked</span>,
 			)

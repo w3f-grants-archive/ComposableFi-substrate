@@ -805,7 +805,6 @@
 <span id="805">805</span>
 <span id="806">806</span>
 <span id="807">807</span>
-<span id="808">808</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -1317,7 +1316,8 @@
 	};
 
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{
-		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">ord_parameter_types</span>, <span class="ident">parameter_types</span>, <span class="ident">traits::GenesisBuild</span>,
+		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">ord_parameter_types</span>, <span class="ident">parameter_types</span>,
+		<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">ConstU64</span>, <span class="ident">GenesisBuild</span>},
 	};
 	<span class="kw">use</span> <span class="ident">frame_system::EnsureSignedBy</span>;
 
@@ -1336,8 +1336,6 @@
 	);
 
 	<span class="macro">parameter_types!</span> {
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockHashCount</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">250</span>;
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxMembers</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">10</span>;
 		<span class="kw">pub</span> <span class="ident">BlockWeights</span>: <span class="ident">frame_system::limits::BlockWeights</span> <span class="op">=</span>
 			<span class="ident">frame_system::limits::BlockWeights::simple_max</span>(<span class="number">1024</span>);
 		<span class="kw">pub</span> <span class="kw">static</span> <span class="ident">Members</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
@@ -1359,7 +1357,7 @@
 		<span class="kw">type</span> <span class="ident">Lookup</span> <span class="op">=</span> <span class="ident">IdentityLookup</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">Header</span> <span class="op">=</span> <span class="ident">Header</span>;
 		<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-		<span class="kw">type</span> <span class="ident">BlockHashCount</span> <span class="op">=</span> <span class="ident">BlockHashCount</span>;
+		<span class="kw">type</span> <span class="ident">BlockHashCount</span> <span class="op">=</span> <span class="ident">ConstU64</span><span class="op">&lt;</span><span class="number">250</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">Version</span> <span class="op">=</span> ();
 		<span class="kw">type</span> <span class="ident">PalletInfo</span> <span class="op">=</span> <span class="ident">PalletInfo</span>;
 		<span class="kw">type</span> <span class="ident">AccountData</span> <span class="op">=</span> ();
@@ -1368,7 +1366,7 @@
 		<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> ();
 		<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> ();
 		<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
-		<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
 	}
 	<span class="macro">ord_parameter_types!</span> {
 		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">One</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">1</span>;
@@ -1415,7 +1413,7 @@
 		<span class="kw">type</span> <span class="ident">PrimeOrigin</span> <span class="op">=</span> <span class="ident">EnsureSignedBy</span><span class="op">&lt;</span><span class="ident">Five</span>, <span class="ident">u64</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">MembershipInitialized</span> <span class="op">=</span> <span class="ident">TestChangeMembers</span>;
 		<span class="kw">type</span> <span class="ident">MembershipChanged</span> <span class="op">=</span> <span class="ident">TestChangeMembers</span>;
-		<span class="kw">type</span> <span class="ident">MaxMembers</span> <span class="op">=</span> <span class="ident">MaxMembers</span>;
+		<span class="kw">type</span> <span class="ident">MaxMembers</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">10</span><span class="op">&gt;</span>;
 		<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
 	}
 

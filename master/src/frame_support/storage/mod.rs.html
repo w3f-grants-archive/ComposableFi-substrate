@@ -1786,10 +1786,6 @@
 <span id="1786">1786</span>
 <span id="1787">1787</span>
 <span id="1788">1788</span>
-<span id="1789">1789</span>
-<span id="1790">1790</span>
-<span id="1791">1791</span>
-<span id="1792">1792</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2021 Parity Technologies (UK) Ltd.</span>
@@ -3196,6 +3192,7 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">assert_ok</span>, <span class="ident">hash::Identity</span>, <span class="ident">Twox128</span>};
 	<span class="kw">use</span> <span class="ident">bounded_vec::BoundedVec</span>;
+	<span class="kw">use</span> <span class="ident">frame_support::traits::ConstU32</span>;
 	<span class="kw">use</span> <span class="ident">generator::StorageValue</span> <span class="kw">as</span> <span class="kw">_</span>;
 	<span class="kw">use</span> <span class="ident">sp_core::hashing::twox_128</span>;
 	<span class="kw">use</span> <span class="ident">sp_io::TestExternalities</span>;
@@ -3506,22 +3503,17 @@
 		});
 	}
 
-	<span class="macro">crate::parameter_types!</span> {
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Seven</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">7</span>;
-		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Four</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4</span>;
-	}
-
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">Foo</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="op">&gt;</span> }
-	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">FooMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="op">&gt;</span> }
+	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">Foo</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
+	<span class="macro">crate::generate_storage_alias!</span> { <span class="ident">Prefix</span>, <span class="ident">FooMap</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> }
 	<span class="macro">crate::generate_storage_alias!</span> {
 		<span class="ident">Prefix</span>,
-		<span class="ident">FooDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), (<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="op">&gt;</span>
+		<span class="ident">FooDoubleMap</span> =&gt; <span class="ident">DoubleMap</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">Twox128</span>), (<span class="ident">u32</span>, <span class="ident">Twox128</span>), <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">try_append_works</span>() {
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">bounded</span>: <span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
+			<span class="kw">let</span> <span class="ident">bounded</span>: <span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 			<span class="ident">Foo::put</span>(<span class="ident">bounded</span>);
 			<span class="macro">assert_ok!</span>(<span class="ident">Foo::try_append</span>(<span class="number">4</span>));
 			<span class="macro">assert_ok!</span>(<span class="ident">Foo::try_append</span>(<span class="number">5</span>));
@@ -3532,7 +3524,7 @@
 		});
 
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">bounded</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
+			<span class="kw">let</span> <span class="ident">bounded</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 			<span class="ident">FooMap::insert</span>(<span class="number">1</span>, <span class="ident">bounded</span>);
 
 			<span class="macro">assert_ok!</span>(<span class="ident">FooMap::try_append</span>(<span class="number">1</span>, <span class="number">4</span>));
@@ -3547,17 +3539,17 @@
 			<span class="macro">assert_ok!</span>(<span class="ident">FooMap::try_append</span>(<span class="number">2</span>, <span class="number">4</span>));
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">FooMap::get</span>(<span class="number">2</span>).<span class="ident">unwrap</span>(),
-				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>]).<span class="ident">unwrap</span>(),
+				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>]).<span class="ident">unwrap</span>(),
 			);
 			<span class="macro">assert_ok!</span>(<span class="ident">FooMap::try_append</span>(<span class="number">2</span>, <span class="number">5</span>));
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">FooMap::get</span>(<span class="number">2</span>).<span class="ident">unwrap</span>(),
-				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>]).<span class="ident">unwrap</span>(),
+				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>]).<span class="ident">unwrap</span>(),
 			);
 		});
 
 		<span class="ident">TestExternalities::default</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">bounded</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
+			<span class="kw">let</span> <span class="ident">bounded</span>: <span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].<span class="ident">try_into</span>().<span class="ident">unwrap</span>();
 			<span class="ident">FooDoubleMap::insert</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="ident">bounded</span>);
 
 			<span class="macro">assert_ok!</span>(<span class="ident">FooDoubleMap::try_append</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">4</span>));
@@ -3572,12 +3564,12 @@
 			<span class="macro">assert_ok!</span>(<span class="ident">FooDoubleMap::try_append</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">4</span>));
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">FooDoubleMap::get</span>(<span class="number">2</span>, <span class="number">1</span>).<span class="ident">unwrap</span>(),
-				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>]).<span class="ident">unwrap</span>(),
+				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>]).<span class="ident">unwrap</span>(),
 			);
 			<span class="macro">assert_ok!</span>(<span class="ident">FooDoubleMap::try_append</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">5</span>));
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">FooDoubleMap::get</span>(<span class="number">2</span>, <span class="number">1</span>).<span class="ident">unwrap</span>(),
-				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Seven</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>]).<span class="ident">unwrap</span>(),
+				<span class="ident">BoundedVec</span>::<span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">7</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>]).<span class="ident">unwrap</span>(),
 			);
 		});
 	}
