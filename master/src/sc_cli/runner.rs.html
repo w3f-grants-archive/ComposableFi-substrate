@@ -204,13 +204,6 @@
 <span id="204">204</span>
 <span id="205">205</span>
 <span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.</span>
@@ -229,7 +222,7 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error::Error</span> <span class="kw">as</span> <span class="ident">CliError</span>, <span class="ident">CliConfiguration</span>, <span class="prelude-ty">Result</span>, <span class="ident">SubstrateCli</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error::Error</span> <span class="kw">as</span> <span class="ident">CliError</span>, <span class="prelude-ty">Result</span>, <span class="ident">SubstrateCli</span>};
 <span class="kw">use</span> <span class="ident">chrono::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">future</span>, <span class="ident">future::FutureExt</span>, <span class="ident">pin_mut</span>, <span class="ident">select</span>, <span class="ident">Future</span>};
 <span class="kw">use</span> <span class="ident">log::info</span>;
@@ -325,15 +318,8 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">SubstrateCli</span><span class="op">&gt;</span> <span class="ident">Runner</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Create a new runtime with the command provided in argument</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">CliConfiguration</span><span class="op">&gt;</span>(<span class="ident">cli</span>: <span class="kw-2">&amp;</span><span class="ident">C</span>, <span class="ident">command</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Runner</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">tokio_runtime</span> <span class="op">=</span> <span class="ident">build_runtime</span>()<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">runtime_handle</span> <span class="op">=</span> <span class="ident">tokio_runtime</span>.<span class="ident">handle</span>().<span class="ident">clone</span>();
-
-		<span class="prelude-val">Ok</span>(<span class="ident">Runner</span> {
-			<span class="ident">config</span>: <span class="ident">command</span>.<span class="ident">create_configuration</span>(<span class="ident">cli</span>, <span class="ident">runtime_handle</span>)<span class="question-mark">?</span>,
-			<span class="ident">tokio_runtime</span>,
-			<span class="ident">phantom</span>: <span class="ident">PhantomData</span>,
-		})
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">config</span>: <span class="ident">Configuration</span>, <span class="ident">tokio_runtime</span>: <span class="ident">tokio::runtime::Runtime</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Runner</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">Runner</span> { <span class="ident">config</span>, <span class="ident">tokio_runtime</span>, <span class="ident">phantom</span>: <span class="ident">PhantomData</span> })
 	}
 
 	<span class="doccomment">/// Log information about the node itself.</span>
