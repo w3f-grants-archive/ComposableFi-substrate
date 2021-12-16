@@ -1307,13 +1307,6 @@
 <span id="1307">1307</span>
 <span id="1308">1308</span>
 <span id="1309">1309</span>
-<span id="1310">1310</span>
-<span id="1311">1311</span>
-<span id="1312">1312</span>
-<span id="1313">1313</span>
-<span id="1314">1314</span>
-<span id="1315">1315</span>
-<span id="1316">1316</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2021 Parity Technologies (UK) Ltd.</span>
@@ -1460,24 +1453,17 @@
 	<span class="kw">fn</span> <span class="ident">pre_digest_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">slot</span>: <span class="ident">Slot</span>, <span class="ident">claim</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Claim</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">sp_runtime::DigestItem</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Returns a function which produces a `BlockImportParams`.</span>
-	<span class="kw">fn</span> <span class="ident">block_import_params</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">block_import_params</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-	) -&gt; <span class="ident">Box</span><span class="op">&lt;</span>
-		<span class="kw">dyn</span> <span class="ident">Fn</span>(
-				<span class="ident">B::Header</span>,
-				<span class="kw-2">&amp;</span><span class="ident">B::Hash</span>,
-				<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">B::Extrinsic</span><span class="op">&gt;</span>,
-				<span class="ident">StorageChanges</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BlockImport</span> <span class="kw">as</span> <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Transaction</span>, <span class="ident">B</span><span class="op">&gt;</span>,
-				<span class="ident"><span class="self">Self</span>::Claim</span>,
-				<span class="ident"><span class="self">Self</span>::EpochData</span>,
-			) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>
-				<span class="ident">sc_consensus::BlockImportParams</span><span class="op">&lt;</span>
-					<span class="ident">B</span>,
-					<span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BlockImport</span> <span class="kw">as</span> <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Transaction</span>,
-				<span class="op">&gt;</span>,
-				<span class="ident">sp_consensus::Error</span>,
-			<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span>
-			<span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">header</span>: <span class="ident">B::Header</span>,
+		<span class="ident">header_hash</span>: <span class="kw-2">&amp;</span><span class="ident">B::Hash</span>,
+		<span class="ident">body</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">B::Extrinsic</span><span class="op">&gt;</span>,
+		<span class="ident">storage_changes</span>: <span class="ident">StorageChanges</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BlockImport</span> <span class="kw">as</span> <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Transaction</span>, <span class="ident">B</span><span class="op">&gt;</span>,
+		<span class="ident">public</span>: <span class="ident"><span class="self">Self</span>::Claim</span>,
+		<span class="ident">epoch</span>: <span class="ident"><span class="self">Self</span>::EpochData</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>
+		<span class="ident">sc_consensus::BlockImportParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BlockImport</span> <span class="kw">as</span> <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Transaction</span><span class="op">&gt;</span>,
+		<span class="ident">sp_consensus::Error</span>,
 	<span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Whether to force authoring if offline.</span>
@@ -1658,23 +1644,23 @@
 			},
 		};
 
-		<span class="kw">let</span> <span class="ident">block_import_params_maker</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">block_import_params</span>();
-		<span class="kw">let</span> <span class="ident">block_import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">block_import</span>();
-
 		<span class="kw">let</span> (<span class="ident">block</span>, <span class="ident">storage_proof</span>) <span class="op">=</span> (<span class="ident">proposal</span>.<span class="ident">block</span>, <span class="ident">proposal</span>.<span class="ident">proof</span>);
 		<span class="kw">let</span> (<span class="ident">header</span>, <span class="ident">body</span>) <span class="op">=</span> <span class="ident">block</span>.<span class="ident">deconstruct</span>();
 		<span class="kw">let</span> <span class="ident">header_num</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>();
 		<span class="kw">let</span> <span class="ident">header_hash</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">hash</span>();
 		<span class="kw">let</span> <span class="ident">parent_hash</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">parent_hash</span>();
 
-		<span class="kw">let</span> <span class="ident">block_import_params</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">block_import_params_maker</span>(
-			<span class="ident">header</span>,
-			<span class="kw-2">&amp;</span><span class="ident">header_hash</span>,
-			<span class="ident">body</span>.<span class="ident">clone</span>(),
-			<span class="ident">proposal</span>.<span class="ident">storage_changes</span>,
-			<span class="ident">claim</span>,
-			<span class="ident">epoch_data</span>,
-		) {
+		<span class="kw">let</span> <span class="ident">block_import_params</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>
+			.<span class="ident">block_import_params</span>(
+				<span class="ident">header</span>,
+				<span class="kw-2">&amp;</span><span class="ident">header_hash</span>,
+				<span class="ident">body</span>.<span class="ident">clone</span>(),
+				<span class="ident">proposal</span>.<span class="ident">storage_changes</span>,
+				<span class="ident">claim</span>,
+				<span class="ident">epoch_data</span>,
+			)
+			.<span class="kw">await</span>
+		{
 			<span class="prelude-val">Ok</span>(<span class="ident">bi</span>) =&gt; <span class="ident">bi</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
 				<span class="macro">warn!</span>(<span class="ident">target</span>: <span class="ident">logging_target</span>, <span class="string">&quot;Failed to create block import params: {:?}&quot;</span>, <span class="ident">err</span>);
@@ -1701,7 +1687,7 @@
 		);
 
 		<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">block_import_params</span>.<span class="ident">post_header</span>();
-		<span class="kw">match</span> <span class="ident">block_import</span>.<span class="ident">import_block</span>(<span class="ident">block_import_params</span>, <span class="ident">Default::default</span>()).<span class="kw">await</span> {
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">block_import</span>().<span class="ident">import_block</span>(<span class="ident">block_import_params</span>, <span class="ident">Default::default</span>()).<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="ident">res</span>) =&gt; {
 				<span class="ident">res</span>.<span class="ident">handle_justification</span>(
 					<span class="kw-2">&amp;</span><span class="ident">header</span>.<span class="ident">hash</span>(),
