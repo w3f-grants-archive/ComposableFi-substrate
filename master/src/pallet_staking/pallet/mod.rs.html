@@ -1711,16 +1711,16 @@
 
 		<span class="doccomment">/// Something that provides the election functionality.</span>
 		<span class="kw">type</span> <span class="ident">ElectionProvider</span>: <span class="ident">frame_election_provider_support::ElectionProvider</span><span class="op">&lt;</span>
-			<span class="ident"><span class="self">Self</span>::AccountId</span>,
-			<span class="ident"><span class="self">Self</span>::BlockNumber</span>,
+			<span class="ident">AccountId</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span>,
+			<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BlockNumber</span>,
 			<span class="comment">// we only accept an election provider that has staking as data provider.</span>
 			<span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
 		<span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Something that provides the election functionality at genesis.</span>
 		<span class="kw">type</span> <span class="ident">GenesisElectionProvider</span>: <span class="ident">frame_election_provider_support::ElectionProvider</span><span class="op">&lt;</span>
-			<span class="ident"><span class="self">Self</span>::AccountId</span>,
-			<span class="ident"><span class="self">Self</span>::BlockNumber</span>,
+			<span class="ident">AccountId</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AccountId</span>,
+			<span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BlockNumber</span>,
 			<span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
 		<span class="op">&gt;</span>;
 

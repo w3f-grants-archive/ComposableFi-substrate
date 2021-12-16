@@ -82,9 +82,6 @@
 <span id="82">82</span>
 <span id="83">83</span>
 <span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
-<span id="87">87</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -142,11 +139,8 @@
 			<span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::SortedListProvider::count</span>(),
 		);
 
-		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">pallet_staking::Pallet</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ElectionDataProvider</span><span class="op">&lt;</span>
-			<span class="ident">Runtime::AccountId</span>,
-			<span class="ident">Runtime::BlockNumber</span>,
-		<span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::voters</span>(<span class="ident">voter_limit</span>)
-		.<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">voters</span> <span class="op">=</span>
+			<span class="op">&lt;</span><span class="ident">pallet_staking::Pallet</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ElectionDataProvider</span><span class="op">&gt;</span><span class="ident">::voters</span>(<span class="ident">voter_limit</span>).<span class="ident">unwrap</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">voters_nominator_only</span> <span class="op">=</span> <span class="ident">voters</span>
 			.<span class="ident">iter</span>()
