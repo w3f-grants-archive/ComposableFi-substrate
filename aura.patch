@@ -1,0 +1,1854 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index e5192d2c8f..65b0897947 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -7995,6 +7995,7 @@ dependencies = [
+  "sc-basic-authorship",
+  "sc-client-api",
+  "sc-consensus",
++ "sc-consensus-aura",
+  "sc-consensus-babe",
+  "sc-consensus-epochs",
+  "sc-transaction-pool",
+@@ -8003,6 +8004,7 @@ dependencies = [
+  "sp-api",
+  "sp-blockchain",
+  "sp-consensus",
++ "sp-consensus-aura",
+  "sp-consensus-babe",
+  "sp-consensus-slots",
+  "sp-core",
+@@ -10457,73 +10459,6 @@ dependencies = [
+  "winapi-util",
+ ]
+ 
+-[[package]]
+-name = "test-runner"
+-version = "0.9.0"
+-dependencies = [
+- "frame-system",
+- "futures 0.3.16",
+- "jsonrpc-core",
+- "log 0.4.14",
+- "num-traits",
+- "sc-basic-authorship",
+- "sc-cli",
+- "sc-client-api",
+- "sc-consensus",
+- "sc-consensus-babe",
+- "sc-consensus-manual-seal",
+- "sc-executor",
+- "sc-finality-grandpa",
+- "sc-informant",
+- "sc-network",
+- "sc-rpc",
+- "sc-rpc-server",
+- "sc-service",
+- "sc-transaction-pool",
+- "sc-transaction-pool-api",
+- "sp-api",
+- "sp-block-builder",
+- "sp-blockchain",
+- "sp-consensus",
+- "sp-consensus-babe",
+- "sp-core",
+- "sp-externalities",
+- "sp-finality-grandpa",
+- "sp-inherents",
+- "sp-keyring",
+- "sp-offchain",
+- "sp-runtime",
+- "sp-runtime-interface",
+- "sp-session",
+- "sp-state-machine",
+- "sp-transaction-pool",
+- "sp-wasm-interface",
+- "tokio",
+-]
+-
+-[[package]]
+-name = "test-runner-example"
+-version = "0.1.0"
+-dependencies = [
+- "frame-benchmarking",
+- "frame-system",
+- "node-cli",
+- "node-primitives",
+- "node-runtime",
+- "pallet-asset-tx-payment",
+- "pallet-transaction-payment",
+- "sc-consensus",
+- "sc-consensus-babe",
+- "sc-consensus-manual-seal",
+- "sc-executor",
+- "sc-finality-grandpa",
+- "sc-service",
+- "sp-consensus-babe",
+- "sp-keyring",
+- "sp-runtime",
+- "test-runner",
+-]
+-
+ [[package]]
+ name = "textwrap"
+ version = "0.11.0"
+diff --git a/Cargo.toml b/Cargo.toml
+index 93f7d42c82..b7051bdd44 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -7,7 +7,6 @@ members = [
+ 	"bin/node-template/runtime",
+ 	"bin/node/bench",
+ 	"bin/node/cli",
+-	"bin/node/test-runner-example",
+ 	"bin/node/executor",
+ 	"bin/node/primitives",
+ 	"bin/node/rpc",
+@@ -200,7 +199,6 @@ members = [
+ 	"test-utils/runtime",
+ 	"test-utils/runtime/client",
+ 	"test-utils/runtime/transaction-pool",
+-	"test-utils/test-runner",
+ 	"test-utils/test-crate",
+ 	"utils/build-script-utils",
+ 	"utils/fork-tree",
+diff --git a/bin/node/test-runner-example/Cargo.toml b/bin/node/test-runner-example/Cargo.toml
+deleted file mode 100644
+index 831a687254..0000000000
+--- a/bin/node/test-runner-example/Cargo.toml
++++ /dev/null
+@@ -1,29 +0,0 @@
+-[package]
+-name = "test-runner-example"
+-version = "0.1.0"
+-authors = ["Parity Technologies <admin@parity.io>"]
+-edition = "2021"
+-publish = false
+-
+-[dependencies]
+-test-runner = { path = "../../../test-utils/test-runner" }
+-
+-frame-system = { path = "../../../frame/system" }
+-frame-benchmarking = { path = "../../../frame/benchmarking" }
+-pallet-transaction-payment = { path = "../../../frame/transaction-payment" }
+-pallet-asset-tx-payment = { path = "../../../frame/transaction-payment/asset-tx-payment/" }
+-
+-node-runtime = { path = "../runtime" }
+-node-primitives = { path = "../primitives" }
+-node-cli = { path = "../cli" }
+-
+-grandpa = { package = "sc-finality-grandpa", path = "../../../client/finality-grandpa" }
+-sp-consensus-babe = { path = "../../../primitives/consensus/babe" }
+-sc-consensus-babe = { path = "../../../client/consensus/babe" }
+-sc-consensus-manual-seal = { path = "../../../client/consensus/manual-seal" }
+-sc-service = { default-features = false, path = "../../../client/service" }
+-sc-executor = { path = "../../../client/executor" }
+-sc-consensus = { path = "../../../client/consensus/common" }
+-
+-sp-runtime = { path = "../../../primitives/runtime" }
+-sp-keyring = { path = "../../../primitives/keyring" }
+diff --git a/bin/node/test-runner-example/src/lib.rs b/bin/node/test-runner-example/src/lib.rs
+deleted file mode 100644
+index 8ac450ac12..0000000000
+--- a/bin/node/test-runner-example/src/lib.rs
++++ /dev/null
+@@ -1,132 +0,0 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+-
+-// This program is free software: you can redistribute it and/or modify
+-// it under the terms of the GNU General Public License as published by
+-// the Free Software Foundation, either version 3 of the License, or
+-// (at your option) any later version.
+-
+-// This program is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-// GNU General Public License for more details.
+-
+-// You should have received a copy of the GNU General Public License
+-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+-#![deny(unused_extern_crates, missing_docs)]
+-
+-//! Basic example of end to end runtime tests.
+-
+-use grandpa::GrandpaBlockImport;
+-use sc_consensus_babe::BabeBlockImport;
+-use sc_consensus_manual_seal::consensus::babe::SlotTimestampProvider;
+-use sc_executor::NativeElseWasmExecutor;
+-use sc_service::{TFullBackend, TFullClient};
+-use sp_runtime::generic::Era;
+-use test_runner::{ChainInfo, SignatureVerificationOverride};
+-
+-type BlockImport<B, BE, C, SC> = BabeBlockImport<B, C, GrandpaBlockImport<BE, B, C, SC>>;
+-
+-/// A unit struct which implements `NativeExecutionDispatch` feeding in the
+-/// hard-coded runtime.
+-pub struct ExecutorDispatch;
+-
+-impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
+-	type ExtendHostFunctions =
+-		(frame_benchmarking::benchmarking::HostFunctions, SignatureVerificationOverride);
+-
+-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+-		node_runtime::api::dispatch(method, data)
+-	}
+-
+-	fn native_version() -> sc_executor::NativeVersion {
+-		node_runtime::native_version()
+-	}
+-}
+-
+-/// ChainInfo implementation.
+-struct NodeTemplateChainInfo;
+-
+-impl ChainInfo for NodeTemplateChainInfo {
+-	type Block = node_primitives::Block;
+-	type ExecutorDispatch = ExecutorDispatch;
+-	type Runtime = node_runtime::Runtime;
+-	type RuntimeApi = node_runtime::RuntimeApi;
+-	type SelectChain = sc_consensus::LongestChain<TFullBackend<Self::Block>, Self::Block>;
+-	type BlockImport = BlockImport<
+-		Self::Block,
+-		TFullBackend<Self::Block>,
+-		TFullClient<Self::Block, Self::RuntimeApi, NativeElseWasmExecutor<Self::ExecutorDispatch>>,
+-		Self::SelectChain,
+-	>;
+-	type SignedExtras = node_runtime::SignedExtra;
+-	type InherentDataProviders =
+-		(SlotTimestampProvider, sp_consensus_babe::inherents::InherentDataProvider);
+-
+-	fn signed_extras(
+-		from: <Self::Runtime as frame_system::Config>::AccountId,
+-	) -> Self::SignedExtras {
+-		(
+-			frame_system::CheckNonZeroSender::<Self::Runtime>::new(),
+-			frame_system::CheckSpecVersion::<Self::Runtime>::new(),
+-			frame_system::CheckTxVersion::<Self::Runtime>::new(),
+-			frame_system::CheckGenesis::<Self::Runtime>::new(),
+-			frame_system::CheckMortality::<Self::Runtime>::from(Era::Immortal),
+-			frame_system::CheckNonce::<Self::Runtime>::from(
+-				frame_system::Pallet::<Self::Runtime>::account_nonce(from),
+-			),
+-			frame_system::CheckWeight::<Self::Runtime>::new(),
+-			pallet_asset_tx_payment::ChargeAssetTxPayment::<Self::Runtime>::from(0, None),
+-		)
+-	}
+-}
+-
+-#[cfg(test)]
+-mod tests {
+-	use super::*;
+-	use node_cli::chain_spec::development_config;
+-	use sp_keyring::sr25519::Keyring::Alice;
+-	use sp_runtime::{traits::IdentifyAccount, MultiSigner};
+-	use test_runner::{build_runtime, client_parts, ConfigOrChainSpec, Node};
+-
+-	#[test]
+-	fn test_runner() {
+-		let tokio_runtime = build_runtime().unwrap();
+-		let (rpc, task_manager, client, pool, command_sink, backend) =
+-			client_parts::<NodeTemplateChainInfo>(ConfigOrChainSpec::ChainSpec(
+-				Box::new(development_config()),
+-				tokio_runtime.handle().clone(),
+-			))
+-			.unwrap();
+-		let node = Node::<NodeTemplateChainInfo>::new(
+-			rpc,
+-			task_manager,
+-			client,
+-			pool,
+-			command_sink,
+-			backend,
+-		);
+-
+-		tokio_runtime.block_on(async {
+-			// seals blocks
+-			node.seal_blocks(1).await;
+-			// submit extrinsics
+-			let alice = MultiSigner::from(Alice.public()).into_account();
+-			let _hash = node
+-				.submit_extrinsic(
+-					frame_system::Call::remark { remark: (b"hello world").to_vec() },
+-					Some(alice),
+-				)
+-				.await
+-				.unwrap();
+-
+-			// look ma, I can read state.
+-			let _events =
+-				node.with_state(|| frame_system::Pallet::<node_runtime::Runtime>::events());
+-			// get access to the underlying client.
+-			let _client = node.client();
+-		})
+-	}
+-}
+diff --git a/client/consensus/aura/src/lib.rs b/client/consensus/aura/src/lib.rs
+index 13f0d4e8f8..d7fe613139 100644
+--- a/client/consensus/aura/src/lib.rs
++++ b/client/consensus/aura/src/lib.rs
+@@ -490,24 +490,34 @@ fn aura_err<B: BlockT>(error: Error<B>) -> Error<B> {
+ 	error
+ }
+ 
++/// Aura Errors
+ #[derive(derive_more::Display, Debug)]
+-enum Error<B: BlockT> {
++pub enum Error<B: BlockT> {
++	/// Multiple Aura pre-runtime headers
+ 	#[display(fmt = "Multiple Aura pre-runtime headers")]
+ 	MultipleHeaders,
++	/// No Aura pre-runtime digest found
+ 	#[display(fmt = "No Aura pre-runtime digest found")]
+ 	NoDigestFound,
++	/// Header is unsealed
+ 	#[display(fmt = "Header {:?} is unsealed", _0)]
+ 	HeaderUnsealed(B::Hash),
++	/// Header has a bad seal
+ 	#[display(fmt = "Header {:?} has a bad seal", _0)]
+ 	HeaderBadSeal(B::Hash),
++	/// Slot Author not found
+ 	#[display(fmt = "Slot Author not found")]
+ 	SlotAuthorNotFound,
++	/// Bad signature
+ 	#[display(fmt = "Bad signature on {:?}", _0)]
+ 	BadSignature(B::Hash),
++	/// Client Error
+ 	Client(sp_blockchain::Error),
++	/// Unknown inherent error for identifier
+ 	#[display(fmt = "Unknown inherent error for identifier: {}", "String::from_utf8_lossy(_0)")]
+ 	UnknownInherentError(sp_inherents::InherentIdentifier),
+ 	#[display(fmt = "Inherent error: {}", _0)]
++	/// Inherents Error
+ 	Inherent(sp_inherents::Error),
+ }
+ 
+@@ -517,7 +527,8 @@ impl<B: BlockT> std::convert::From<Error<B>> for String {
+ 	}
+ }
+ 
+-fn find_pre_digest<B: BlockT, Signature: Codec>(header: &B::Header) -> Result<Slot, Error<B>> {
++/// Get pre-digests from the header
++pub fn find_pre_digest<B: BlockT, Signature: Codec>(header: &B::Header) -> Result<Slot, Error<B>> {
+ 	if header.number().is_zero() {
+ 		return Ok(0.into())
+ 	}
+diff --git a/client/consensus/manual-seal/Cargo.toml b/client/consensus/manual-seal/Cargo.toml
+index a4bb63a7a2..c55228abb5 100644
+--- a/client/consensus/manual-seal/Cargo.toml
++++ b/client/consensus/manual-seal/Cargo.toml
+@@ -27,8 +27,10 @@ async-trait = "0.1.50"
+ sc-client-api = { path = "../../api", version = "4.0.0-dev" }
+ sc-consensus = { version = "0.10.0-dev", path = "../../consensus/common" }
+ sc-consensus-babe = { path = "../../consensus/babe", version = "0.10.0-dev" }
++sc-consensus-aura = { path = "../../consensus/aura", version = "0.10.0-dev" }
+ sc-consensus-epochs = { path = "../../consensus/epochs", version = "0.10.0-dev" }
+ sp-consensus-babe = { path = "../../../primitives/consensus/babe", version = "0.10.0-dev" }
++sp-consensus-aura = { path = "../../../primitives/consensus/aura", version = "0.10.0-dev" }
+ 
+ sc-transaction-pool = { path = "../../transaction-pool", version = "4.0.0-dev" }
+ sp-blockchain = { path = "../../../primitives/blockchain", version = "4.0.0-dev" }
+diff --git a/client/consensus/manual-seal/src/consensus.rs b/client/consensus/manual-seal/src/consensus.rs
+index 9bb1d2fe1f..dfd3730fd3 100644
+--- a/client/consensus/manual-seal/src/consensus.rs
++++ b/client/consensus/manual-seal/src/consensus.rs
+@@ -23,7 +23,9 @@ use sc_consensus::BlockImportParams;
+ use sp_inherents::InherentData;
+ use sp_runtime::{traits::Block as BlockT, Digest};
+ 
++pub mod aura;
+ pub mod babe;
++pub mod timestamp;
+ 
+ /// Consensus data provider, manual seal uses this trait object for authoring blocks valid
+ /// for any runtime.
+diff --git a/client/consensus/manual-seal/src/consensus/aura.rs b/client/consensus/manual-seal/src/consensus/aura.rs
+new file mode 100644
+index 0000000000..4497a94bdd
+--- /dev/null
++++ b/client/consensus/manual-seal/src/consensus/aura.rs
+@@ -0,0 +1,97 @@
++// This file is part of Substrate.
++
++// Copyright (C) 2022 Parity Technologies (UK) Ltd.
++// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
++
++// This program is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++
++// This program is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++// GNU General Public License for more details.
++
++// You should have received a copy of the GNU General Public License
++// along with this program. If not, see <https://www.gnu.org/licenses/>.
++
++//! Aura consensus data provider, This allows manual seal author blocks that are valid for
++//! runtimes that expect the aura-specific digests.
++
++use crate::{ConsensusDataProvider, Error};
++use sc_client_api::{AuxStore, UsageProvider};
++use sc_consensus::BlockImportParams;
++use sc_consensus_aura::slot_duration;
++use sp_api::{ProvideRuntimeApi, TransactionFor};
++use sp_blockchain::{HeaderBackend, HeaderMetadata};
++use sp_consensus_aura::{
++	digests::CompatibleDigestItem,
++	sr25519::{AuthorityId, AuthoritySignature},
++	AuraApi,
++};
++use sp_inherents::InherentData;
++use sp_runtime::{traits::Block as BlockT, Digest, DigestItem};
++use sp_timestamp::TimestampInherentData;
++use std::{marker::PhantomData, sync::Arc};
++
++/// Consensus data provider for Aura.
++pub struct AuraConsensusDataProvider<B, C> {
++	// slot duration in milliseconds
++	slot_duration: u64,
++	// phantom data for required generics
++	_phantom: PhantomData<(B, C)>,
++}
++
++impl<B, C> AuraConsensusDataProvider<B, C>
++where
++	B: BlockT,
++	C: AuxStore + ProvideRuntimeApi<B> + UsageProvider<B>,
++	C::Api: AuraApi<B, AuthorityId>,
++{
++	/// Creates a new instance of the [`AuraConsensusDataProvider`], requires that `client`
++	/// implements [`sp_consensus_aura::AuraApi`]
++	pub fn new(client: Arc<C>) -> Self {
++		let slot_duration =
++			(*slot_duration(&*client).expect("slot_duration is always present; qed.")).get();
++
++		Self { slot_duration, _phantom: PhantomData }
++	}
++}
++
++impl<B, C> ConsensusDataProvider<B> for AuraConsensusDataProvider<B, C>
++where
++	B: BlockT,
++	C: AuxStore
++		+ HeaderBackend<B>
++		+ HeaderMetadata<B, Error = sp_blockchain::Error>
++		+ UsageProvider<B>
++		+ ProvideRuntimeApi<B>,
++	C::Api: AuraApi<B, AuthorityId>,
++{
++	type Transaction = TransactionFor<C, B>;
++
++	fn create_digest(
++		&self,
++		_parent: &B::Header,
++		inherents: &InherentData,
++	) -> Result<Digest, Error> {
++		let time_stamp =
++			*inherents.timestamp_inherent_data()?.expect("Timestamp is always present; qed");
++		// we always calculate the new slot number based on the current time-stamp and the slot
++		// duration.
++		let digest_item = <DigestItem as CompatibleDigestItem<AuthoritySignature>>::aura_pre_digest(
++			(time_stamp / self.slot_duration).into(),
++		);
++		Ok(Digest { logs: vec![digest_item] })
++	}
++
++	fn append_block_import(
++		&self,
++		_parent: &B::Header,
++		_params: &mut BlockImportParams<B, Self::Transaction>,
++		_inherents: &InherentData,
++	) -> Result<(), Error> {
++		Ok(())
++	}
++}
+diff --git a/client/consensus/manual-seal/src/consensus/babe.rs b/client/consensus/manual-seal/src/consensus/babe.rs
+index 6d86658cbf..9c2a163804 100644
+--- a/client/consensus/manual-seal/src/consensus/babe.rs
++++ b/client/consensus/manual-seal/src/consensus/babe.rs
+@@ -16,7 +16,8 @@
+ // You should have received a copy of the GNU General Public License
+ // along with this program. If not, see <https://www.gnu.org/licenses/>.
+ 
+-//! BABE consensus data provider
++//! BABE consensus data provider, This allows manual seal author blocks that are valid for runtimes
++//! that expect babe-specific digests.
+ 
+ use super::ConsensusDataProvider;
+ use crate::Error;
+@@ -30,11 +31,7 @@ use sc_consensus_epochs::{
+ 	descendent_query, EpochHeader, SharedEpochChanges, ViableEpochDescriptor,
+ };
+ use sp_keystore::SyncCryptoStorePtr;
+-use std::{
+-	borrow::Cow,
+-	sync::{atomic, Arc},
+-	time::SystemTime,
+-};
++use std::{borrow::Cow, sync::Arc};
+ 
+ use sc_consensus::{BlockImportParams, ForkChoiceStrategy, Verifier};
+ use sp_api::{ProvideRuntimeApi, TransactionFor};
+@@ -46,13 +43,13 @@ use sp_consensus_babe::{
+ 	AuthorityId, BabeApi, BabeAuthorityWeight, ConsensusLog, BABE_ENGINE_ID,
+ };
+ use sp_consensus_slots::Slot;
+-use sp_inherents::{InherentData, InherentDataProvider, InherentIdentifier};
++use sp_inherents::InherentData;
+ use sp_runtime::{
+ 	generic::{BlockId, Digest},
+-	traits::{Block as BlockT, Header, Zero},
++	traits::{Block as BlockT, Header},
+ 	DigestItem,
+ };
+-use sp_timestamp::{InherentType, TimestampInherentData, INHERENT_IDENTIFIER};
++use sp_timestamp::TimestampInherentData;
+ 
+ /// Provides BABE-compatible predigests and BlockImportParams.
+ /// Intended for use with BABE runtimes.
+@@ -311,67 +308,3 @@ where
+ 		Ok(())
+ 	}
+ }
+-
+-/// Provide duration since unix epoch in millisecond for timestamp inherent.
+-/// Mocks the timestamp inherent to always produce the timestamp for the next babe slot.
+-pub struct SlotTimestampProvider {
+-	time: atomic::AtomicU64,
+-	slot_duration: u64,
+-}
+-
+-impl SlotTimestampProvider {
+-	/// Create a new mocked time stamp provider.
+-	pub fn new<B, C>(client: Arc<C>) -> Result<Self, Error>
+-	where
+-		B: BlockT,
+-		C: AuxStore + HeaderBackend<B> + ProvideRuntimeApi<B> + UsageProvider<B>,
+-		C::Api: BabeApi<B>,
+-	{
+-		let slot_duration = Config::get(&*client)?.slot_duration;
+-		let info = client.info();
+-
+-		// looks like this isn't the first block, rehydrate the fake time.
+-		// otherwise we'd be producing blocks for older slots.
+-		let time = if info.best_number != Zero::zero() {
+-			let header = client.header(BlockId::Hash(info.best_hash))?.unwrap();
+-			let slot = find_pre_digest::<B>(&header).unwrap().slot();
+-			// add the slot duration so there's no collision of slots
+-			(*slot * slot_duration) + slot_duration
+-		} else {
+-			// this is the first block, use the correct time.
+-			let now = SystemTime::now();
+-			now.duration_since(SystemTime::UNIX_EPOCH)
+-				.map_err(|err| Error::StringError(format!("{}", err)))?
+-				.as_millis() as u64
+-		};
+-
+-		Ok(Self { time: atomic::AtomicU64::new(time), slot_duration })
+-	}
+-
+-	/// Get the current slot number
+-	pub fn slot(&self) -> u64 {
+-		self.time.load(atomic::Ordering::SeqCst) / self.slot_duration
+-	}
+-}
+-
+-#[async_trait::async_trait]
+-impl InherentDataProvider for SlotTimestampProvider {
+-	fn provide_inherent_data(
+-		&self,
+-		inherent_data: &mut InherentData,
+-	) -> Result<(), sp_inherents::Error> {
+-		// we update the time here.
+-		let duration: InherentType =
+-			self.time.fetch_add(self.slot_duration, atomic::Ordering::SeqCst).into();
+-		inherent_data.put_data(INHERENT_IDENTIFIER, &duration)?;
+-		Ok(())
+-	}
+-
+-	async fn try_handle_error(
+-		&self,
+-		_: &InherentIdentifier,
+-		_: &[u8],
+-	) -> Option<Result<(), sp_inherents::Error>> {
+-		None
+-	}
+-}
+diff --git a/client/consensus/manual-seal/src/consensus/timestamp.rs b/client/consensus/manual-seal/src/consensus/timestamp.rs
+new file mode 100644
+index 0000000000..c173391309
+--- /dev/null
++++ b/client/consensus/manual-seal/src/consensus/timestamp.rs
+@@ -0,0 +1,156 @@
++// This file is part of Substrate.
++
++// Copyright (C) 2020-2021 Parity Technologies (UK) Ltd.
++// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
++
++// This program is free software: you can redistribute it and/or modify
++// it under the terms of the GNU General Public License as published by
++// the Free Software Foundation, either version 3 of the License, or
++// (at your option) any later version.
++
++// This program is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++// GNU General Public License for more details.
++
++// You should have received a copy of the GNU General Public License
++// along with this program. If not, see <https://www.gnu.org/licenses/>.
++
++//! Mocked timestamp inherent, allows for manual seal to create blocks for runtimes
++//! that expect this inherent.
++
++use crate::Error;
++use sc_client_api::{AuxStore, UsageProvider};
++use sc_consensus_aura::slot_duration;
++use sc_consensus_babe::Config;
++use sp_api::ProvideRuntimeApi;
++use sp_blockchain::HeaderBackend;
++use sp_consensus_aura::{
++	sr25519::{AuthorityId, AuthoritySignature},
++	AuraApi,
++};
++use sp_consensus_babe::BabeApi;
++use sp_inherents::{InherentData, InherentDataProvider, InherentIdentifier};
++use sp_runtime::{
++	generic::BlockId,
++	traits::{Block as BlockT, Zero},
++};
++use sp_timestamp::{InherentType, INHERENT_IDENTIFIER};
++use std::{
++	sync::{atomic, Arc},
++	time::SystemTime,
++};
++
++/// Provide duration since unix epoch in millisecond for timestamp inherent.
++/// Mocks the timestamp inherent to always produce a valid timestamp for the next slot.
++///
++/// This works by either fetching the `slot_number` from the most recent header and dividing
++/// that value by `slot_duration` in order to fork chains that expect this inherent.
++///
++/// It produces timestamp inherents that are increaed by `slot_duraation` whenever
++/// `provide_inherent_data` is called.
++pub struct SlotTimestampProvider {
++	// holds the unix millisecnd timestamp for the most recent block
++	unix_millis: atomic::AtomicU64,
++	// configured slot_duration in the runtime
++	slot_duration: u64,
++}
++
++impl SlotTimestampProvider {
++	/// Create a new mocked time stamp provider, for babe.
++	pub fn babe<B, C>(client: Arc<C>) -> Result<Self, Error>
++	where
++		B: BlockT,
++		C: AuxStore + HeaderBackend<B> + ProvideRuntimeApi<B> + UsageProvider<B>,
++		C::Api: BabeApi<B>,
++	{
++		let slot_duration = Config::get(&*client)?.slot_duration;
++
++		let time = Self::with_header(&client, slot_duration, |header| {
++			let slot_number = *sc_consensus_babe::find_pre_digest::<B>(&header)
++				.map_err(|err| format!("{}", err))?
++				.slot();
++			Ok(slot_number)
++		})?;
++
++		Ok(Self { unix_millis: atomic::AtomicU64::new(time), slot_duration })
++	}
++
++	/// Create a new mocked time stamp provider, for aura
++	pub fn aura<B, C>(client: Arc<C>) -> Result<Self, Error>
++	where
++		B: BlockT,
++		C: AuxStore + HeaderBackend<B> + ProvideRuntimeApi<B> + UsageProvider<B>,
++		C::Api: AuraApi<B, AuthorityId>,
++	{
++		let slot_duration = (*slot_duration(&*client)?).get();
++
++		let time = Self::with_header(&client, slot_duration, |header| {
++			let slot_number = *sc_consensus_aura::find_pre_digest::<B, AuthoritySignature>(&header)
++				.map_err(|err| format!("{}", err))?;
++			Ok(slot_number)
++		})?;
++
++		Ok(Self { unix_millis: atomic::AtomicU64::new(time), slot_duration })
++	}
++
++	fn with_header<F, C, B>(client: &Arc<C>, slot_duration: u64, func: F) -> Result<u64, Error>
++	where
++		B: BlockT,
++		C: AuxStore + HeaderBackend<B> + UsageProvider<B>,
++		F: Fn(B::Header) -> Result<u64, Error>,
++	{
++		let info = client.info();
++
++		// looks like this isn't the first block, rehydrate the fake time.
++		// otherwise we'd be producing blocks for older slots.
++		let time = if info.best_number != Zero::zero() {
++			let header = client
++				.header(BlockId::Hash(info.best_hash))?
++				.ok_or_else(|| format!("best header not found in the db!"))?;
++			let slot = func(header)?;
++			// add the slot duration so there's no collision of slots
++			(slot * slot_duration) + slot_duration
++		} else {
++			// this is the first block, use the correct time.
++			let now = SystemTime::now();
++			now.duration_since(SystemTime::UNIX_EPOCH)
++				.map_err(|err| Error::StringError(format!("{}", err)))?
++				.as_millis() as u64
++		};
++
++		Ok(time)
++	}
++
++	/// Get the current slot number
++	pub fn slot(&self) -> u64 {
++		self.unix_millis.load(atomic::Ordering::SeqCst) / self.slot_duration
++	}
++
++	/// Gets the current time stamp.
++	pub fn timestamp(&self) -> sp_timestamp::Timestamp {
++		sp_timestamp::Timestamp::new(self.unix_millis.load(atomic::Ordering::SeqCst))
++	}
++}
++
++#[async_trait::async_trait]
++impl InherentDataProvider for SlotTimestampProvider {
++	fn provide_inherent_data(
++		&self,
++		inherent_data: &mut InherentData,
++	) -> Result<(), sp_inherents::Error> {
++		// we update the time here.
++		let new_time: InherentType =
++			self.unix_millis.fetch_add(self.slot_duration, atomic::Ordering::SeqCst).into();
++		inherent_data.put_data(INHERENT_IDENTIFIER, &new_time)?;
++		Ok(())
++	}
++
++	async fn try_handle_error(
++		&self,
++		_: &InherentIdentifier,
++		_: &[u8],
++	) -> Option<Result<(), sp_inherents::Error>> {
++		None
++	}
++}
+diff --git a/client/consensus/manual-seal/src/error.rs b/client/consensus/manual-seal/src/error.rs
+index 28f1a6aed3..fe0f85ecd1 100644
+--- a/client/consensus/manual-seal/src/error.rs
++++ b/client/consensus/manual-seal/src/error.rs
+@@ -62,7 +62,7 @@ pub enum Error {
+ 	BlockNotFound(String),
+ 	/// Some string error
+ 	#[display(fmt = "{}", _0)]
+-	#[from(ignore)]
++	// #[from(ignore)]
+ 	StringError(String),
+ 	/// send error
+ 	#[display(fmt = "Consensus process is terminating")]
+diff --git a/test-utils/test-runner/Cargo.toml b/test-utils/test-runner/Cargo.toml
+deleted file mode 100644
+index 78e17d0f23..0000000000
+--- a/test-utils/test-runner/Cargo.toml
++++ /dev/null
+@@ -1,59 +0,0 @@
+-[package]
+-name = "test-runner"
+-version = "0.9.0"
+-authors = ["Parity Technologies <admin@parity.io>"]
+-edition = "2021"
+-publish = false
+-
+-[dependencies]
+-# client deps
+-sc-executor = { path = "../../client/executor" }
+-sc-service = { path = "../../client/service" }
+-sc-informant = { path = "../../client/informant" }
+-sc-network = { path = "../../client/network" }
+-sc-cli = { path = "../../client/cli" }
+-sc-basic-authorship = { path = "../../client/basic-authorship" }
+-sc-rpc = { path = "../../client/rpc" }
+-sc-transaction-pool = { path = "../../client/transaction-pool" }
+-grandpa = { package = "sc-finality-grandpa", path = "../../client/finality-grandpa" }
+-sp-finality-grandpa = { path = "../../primitives/finality-grandpa" }
+-sp-consensus-babe = { path = "../../primitives/consensus/babe" }
+-sc-consensus-babe = { path = "../../client/consensus/babe" }
+-sc-consensus = { path = "../../client/consensus/common" }
+-sc-transaction-pool-api = { path = "../../client/transaction-pool/api" }
+-sc-client-api = { path = "../../client/api" }
+-sc-rpc-server = { path = "../../client/rpc-servers" }
+-manual-seal = { package = "sc-consensus-manual-seal", path = "../../client/consensus/manual-seal" }
+-
+-# primitive deps
+-sp-core = { path = "../../primitives/core" }
+-sp-blockchain = { path = "../../primitives/blockchain" }
+-sp-block-builder = { path = "../../primitives/block-builder" }
+-sp-api = { path = "../../primitives/api" }
+-sp-transaction-pool = { path = "../../primitives/transaction-pool" }
+-sp-consensus = { path = "../../primitives/consensus/common" }
+-sp-runtime = { path = "../../primitives/runtime" }
+-sp-session = { path = "../../primitives/session" }
+-sp-offchain = { path = "../../primitives/offchain" }
+-sp-inherents = { path = "../../primitives/inherents" }
+-sp-keyring = { path = "../../primitives/keyring" }
+-
+-sp-externalities = { path = "../../primitives/externalities" }
+-sp-state-machine = { path = "../../primitives/state-machine" }
+-sp-wasm-interface = { path = "../../primitives/wasm-interface" }
+-sp-runtime-interface = { path = "../../primitives/runtime-interface" }
+-
+-# pallets
+-frame-system = { path = "../../frame/system" }
+-
+-log = "0.4.8"
+-futures = "0.3.16"
+-tokio = { version = "1.15", features = ["signal"] }
+-# Calling RPC
+-jsonrpc-core = "18.0"
+-num-traits = "0.2.14"
+-
+-[features]
+-default = ["std"]
+-# This is here so that we can use the `runtime_interface` procedural macro
+-std = []
+diff --git a/test-utils/test-runner/src/client.rs b/test-utils/test-runner/src/client.rs
+deleted file mode 100644
+index 3fa3de3a87..0000000000
+--- a/test-utils/test-runner/src/client.rs
++++ /dev/null
+@@ -1,244 +0,0 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+-
+-// This program is free software: you can redistribute it and/or modify
+-// it under the terms of the GNU General Public License as published by
+-// the Free Software Foundation, either version 3 of the License, or
+-// (at your option) any later version.
+-
+-// This program is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-// GNU General Public License for more details.
+-
+-// You should have received a copy of the GNU General Public License
+-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+-//! Client parts
+-use crate::{default_config, ChainInfo};
+-use futures::channel::mpsc;
+-use jsonrpc_core::MetaIoHandler;
+-use manual_seal::{
+-	consensus::babe::{BabeConsensusDataProvider, SlotTimestampProvider},
+-	import_queue,
+-	rpc::{ManualSeal, ManualSealApi},
+-	run_manual_seal, EngineCommand, ManualSealParams,
+-};
+-use sc_client_api::backend::Backend;
+-use sc_executor::NativeElseWasmExecutor;
+-use sc_service::{
+-	build_network, new_full_parts, spawn_tasks, BuildNetworkParams, ChainSpec, Configuration,
+-	SpawnTasksParams, TFullBackend, TFullClient, TaskManager,
+-};
+-use sc_transaction_pool::BasicPool;
+-use sc_transaction_pool_api::TransactionPool;
+-use sp_api::{ApiExt, ConstructRuntimeApi, Core, Metadata};
+-use sp_block_builder::BlockBuilder;
+-use sp_consensus_babe::BabeApi;
+-use sp_finality_grandpa::GrandpaApi;
+-use sp_keyring::sr25519::Keyring::Alice;
+-use sp_offchain::OffchainWorkerApi;
+-use sp_runtime::traits::{Block as BlockT, Header};
+-use sp_session::SessionKeys;
+-use sp_transaction_pool::runtime_api::TaggedTransactionQueue;
+-use std::{str::FromStr, sync::Arc};
+-
+-type ClientParts<T> = (
+-	Arc<MetaIoHandler<sc_rpc::Metadata, sc_rpc_server::RpcMiddleware>>,
+-	TaskManager,
+-	Arc<
+-		TFullClient<
+-			<T as ChainInfo>::Block,
+-			<T as ChainInfo>::RuntimeApi,
+-			NativeElseWasmExecutor<<T as ChainInfo>::ExecutorDispatch>,
+-		>,
+-	>,
+-	Arc<
+-		dyn TransactionPool<
+-			Block = <T as ChainInfo>::Block,
+-			Hash = <<T as ChainInfo>::Block as BlockT>::Hash,
+-			Error = sc_transaction_pool::error::Error,
+-			InPoolTransaction = sc_transaction_pool::Transaction<
+-				<<T as ChainInfo>::Block as BlockT>::Hash,
+-				<<T as ChainInfo>::Block as BlockT>::Extrinsic,
+-			>,
+-		>,
+-	>,
+-	mpsc::Sender<EngineCommand<<<T as ChainInfo>::Block as BlockT>::Hash>>,
+-	Arc<TFullBackend<<T as ChainInfo>::Block>>,
+-);
+-
+-/// Provide the config or chain spec for a given chain
+-pub enum ConfigOrChainSpec {
+-	/// Configuration object
+-	Config(Configuration),
+-	/// Chain spec object
+-	ChainSpec(Box<dyn ChainSpec>, tokio::runtime::Handle),
+-}
+-/// Creates all the client parts you need for [`Node`](crate::node::Node)
+-pub fn client_parts<T>(
+-	config_or_chain_spec: ConfigOrChainSpec,
+-) -> Result<ClientParts<T>, sc_service::Error>
+-where
+-	T: ChainInfo + 'static,
+-	<T::RuntimeApi as ConstructRuntimeApi<
+-		T::Block,
+-		TFullClient<T::Block, T::RuntimeApi, NativeElseWasmExecutor<T::ExecutorDispatch>>,
+-	>>::RuntimeApi: Core<T::Block>
+-		+ Metadata<T::Block>
+-		+ OffchainWorkerApi<T::Block>
+-		+ SessionKeys<T::Block>
+-		+ TaggedTransactionQueue<T::Block>
+-		+ BlockBuilder<T::Block>
+-		+ BabeApi<T::Block>
+-		+ ApiExt<T::Block, StateBackend = <TFullBackend<T::Block> as Backend<T::Block>>::State>
+-		+ GrandpaApi<T::Block>,
+-	<T::Runtime as frame_system::Config>::Call: From<frame_system::Call<T::Runtime>>,
+-	<<T as ChainInfo>::Block as BlockT>::Hash: FromStr + Unpin,
+-	<<T as ChainInfo>::Block as BlockT>::Header: Unpin,
+-	<<<T as ChainInfo>::Block as BlockT>::Header as Header>::Number:
+-		num_traits::cast::AsPrimitive<usize>,
+-{
+-	use sp_consensus_babe::AuthorityId;
+-	let config = match config_or_chain_spec {
+-		ConfigOrChainSpec::Config(config) => config,
+-		ConfigOrChainSpec::ChainSpec(chain_spec, tokio_handle) =>
+-			default_config(tokio_handle, chain_spec),
+-	};
+-
+-	let executor = NativeElseWasmExecutor::<T::ExecutorDispatch>::new(
+-		config.wasm_method,
+-		config.default_heap_pages,
+-		config.max_runtime_instances,
+-		config.runtime_cache_size,
+-	);
+-
+-	let (client, backend, keystore, mut task_manager) =
+-		new_full_parts::<T::Block, T::RuntimeApi, _>(&config, None, executor)?;
+-	let client = Arc::new(client);
+-
+-	let select_chain = sc_consensus::LongestChain::new(backend.clone());
+-
+-	let (grandpa_block_import, ..) = grandpa::block_import(
+-		client.clone(),
+-		&(client.clone() as Arc<_>),
+-		select_chain.clone(),
+-		None,
+-	)?;
+-
+-	let slot_duration = sc_consensus_babe::Config::get(&*client)?;
+-	let (block_import, babe_link) = sc_consensus_babe::block_import(
+-		slot_duration.clone(),
+-		grandpa_block_import,
+-		client.clone(),
+-	)?;
+-
+-	let consensus_data_provider = BabeConsensusDataProvider::new(
+-		client.clone(),
+-		keystore.sync_keystore(),
+-		babe_link.epoch_changes().clone(),
+-		vec![(AuthorityId::from(Alice.public()), 1000)],
+-	)
+-	.expect("failed to create ConsensusDataProvider");
+-
+-	let import_queue =
+-		import_queue(Box::new(block_import.clone()), &task_manager.spawn_essential_handle(), None);
+-
+-	let transaction_pool = BasicPool::new_full(
+-		config.transaction_pool.clone(),
+-		true.into(),
+-		config.prometheus_registry(),
+-		task_manager.spawn_essential_handle(),
+-		client.clone(),
+-	);
+-
+-	let (network, system_rpc_tx, network_starter) = {
+-		let params = BuildNetworkParams {
+-			config: &config,
+-			client: client.clone(),
+-			transaction_pool: transaction_pool.clone(),
+-			spawn_handle: task_manager.spawn_handle(),
+-			import_queue,
+-			block_announce_validator_builder: None,
+-			warp_sync: None,
+-		};
+-		build_network(params)?
+-	};
+-
+-	// offchain workers
+-	sc_service::build_offchain_workers(
+-		&config,
+-		task_manager.spawn_handle(),
+-		client.clone(),
+-		network.clone(),
+-	);
+-
+-	// Proposer object for block authorship.
+-	let env = sc_basic_authorship::ProposerFactory::new(
+-		task_manager.spawn_handle(),
+-		client.clone(),
+-		transaction_pool.clone(),
+-		config.prometheus_registry(),
+-		None,
+-	);
+-
+-	// Channel for the rpc handler to communicate with the authorship task.
+-	let (command_sink, commands_stream) = mpsc::channel(10);
+-
+-	let rpc_sink = command_sink.clone();
+-
+-	let rpc_handlers = {
+-		let params = SpawnTasksParams {
+-			config,
+-			client: client.clone(),
+-			backend: backend.clone(),
+-			task_manager: &mut task_manager,
+-			keystore: keystore.sync_keystore(),
+-			transaction_pool: transaction_pool.clone(),
+-			rpc_extensions_builder: Box::new(move |_, _| {
+-				let mut io = jsonrpc_core::IoHandler::default();
+-				io.extend_with(ManualSealApi::to_delegate(ManualSeal::new(rpc_sink.clone())));
+-				Ok(io)
+-			}),
+-			network,
+-			system_rpc_tx,
+-			telemetry: None,
+-		};
+-		spawn_tasks(params)?
+-	};
+-
+-	let cloned_client = client.clone();
+-	let create_inherent_data_providers = Box::new(move |_, _| {
+-		let client = cloned_client.clone();
+-		async move {
+-			let timestamp =
+-				SlotTimestampProvider::new(client.clone()).map_err(|err| format!("{:?}", err))?;
+-			let babe =
+-				sp_consensus_babe::inherents::InherentDataProvider::new(timestamp.slot().into());
+-			Ok((timestamp, babe))
+-		}
+-	});
+-
+-	// Background authorship future.
+-	let authorship_future = run_manual_seal(ManualSealParams {
+-		block_import,
+-		env,
+-		client: client.clone(),
+-		pool: transaction_pool.clone(),
+-		commands_stream,
+-		select_chain,
+-		consensus_data_provider: Some(Box::new(consensus_data_provider)),
+-		create_inherent_data_providers,
+-	});
+-
+-	// spawn the authorship task as an essential task.
+-	task_manager
+-		.spawn_essential_handle()
+-		.spawn("manual-seal", None, authorship_future);
+-
+-	network_starter.start_network();
+-	let rpc_handler = rpc_handlers.io_handler();
+-
+-	Ok((rpc_handler, task_manager, client, transaction_pool, command_sink, backend))
+-}
+diff --git a/test-utils/test-runner/src/host_functions.rs b/test-utils/test-runner/src/host_functions.rs
+deleted file mode 100644
+index 8bc9597890..0000000000
+--- a/test-utils/test-runner/src/host_functions.rs
++++ /dev/null
+@@ -1,53 +0,0 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+-
+-// This program is free software: you can redistribute it and/or modify
+-// it under the terms of the GNU General Public License as published by
+-// the Free Software Foundation, either version 3 of the License, or
+-// (at your option) any later version.
+-
+-// This program is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-// GNU General Public License for more details.
+-
+-// You should have received a copy of the GNU General Public License
+-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+-
+-use sp_core::{ecdsa, ed25519, sr25519};
+-use sp_runtime_interface::runtime_interface;
+-
+-#[runtime_interface]
+-trait Crypto {
+-	fn ecdsa_verify(_sig: &ecdsa::Signature, _msg: &[u8], _pub_key: &ecdsa::Public) -> bool {
+-		true
+-	}
+-
+-	#[version(2)]
+-	fn ecdsa_verify(_sig: &ecdsa::Signature, _msg: &[u8], _pub_key: &ecdsa::Public) -> bool {
+-		true
+-	}
+-
+-	fn ed25519_verify(_sig: &ed25519::Signature, _msg: &[u8], _pub_key: &ed25519::Public) -> bool {
+-		true
+-	}
+-
+-	fn sr25519_verify(_sig: &sr25519::Signature, _msg: &[u8], _pub_key: &sr25519::Public) -> bool {
+-		true
+-	}
+-
+-	#[version(2)]
+-	fn sr25519_verify(_sig: &sr25519::Signature, _msg: &[u8], _pub_key: &sr25519::Public) -> bool {
+-		true
+-	}
+-}
+-
+-/// Provides host functions that overrides runtime signature verification
+-/// to always return true.
+-pub type SignatureVerificationOverride = crypto::HostFunctions;
+-
+-// This is here to get rid of the warnings.
+-#[allow(unused_imports, dead_code)]
+-use self::crypto::{ecdsa_verify, ed25519_verify, sr25519_verify};
+diff --git a/test-utils/test-runner/src/lib.rs b/test-utils/test-runner/src/lib.rs
+deleted file mode 100644
+index 19e437e26d..0000000000
+--- a/test-utils/test-runner/src/lib.rs
++++ /dev/null
+@@ -1,310 +0,0 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+-
+-// This program is free software: you can redistribute it and/or modify
+-// it under the terms of the GNU General Public License as published by
+-// the Free Software Foundation, either version 3 of the License, or
+-// (at your option) any later version.
+-
+-// This program is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-// GNU General Public License for more details.
+-
+-// You should have received a copy of the GNU General Public License
+-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+-#![deny(missing_docs, unused_extern_crates)]
+-
+-//! Test runner
+-//! # Substrate Test Runner
+-//!
+-//! Allows you to test
+-//! <br />
+-//!
+-//! - Migrations
+-//! - Runtime Upgrades
+-//! - Pallets and general runtime functionality.
+-//!
+-//! This works by running a full node with a Manual Seal-BABE™ hybrid consensus for block authoring.
+-//!
+-//! <h2>Note</h2>
+-//! The running node has no signature verification, which allows us author extrinsics for any
+-//! account on chain.     <br/>
+-//!     <br/>
+-//!
+-//! <h2>How do I Use this?</h2>
+-//!
+-//!
+-//! ```rust,ignore
+-//! use test_runner::{Node, ChainInfo, SignatureVerificationOverride, base_path, NodeConfig};
+-//! use sc_finality_grandpa::GrandpaBlockImport;
+-//! use sc_service::{
+-//!     TFullBackend, TFullClient, Configuration, TaskManager, new_full_parts, BasePath,
+-//!     DatabaseSource, KeepBlocks, TransactionStorageMode, ChainSpec, Role,
+-//!     config::{NetworkConfiguration, KeystoreConfig},
+-//! };
+-//! use std::sync::Arc;
+-//! use sp_inherents::InherentDataProviders;
+-//! use sc_consensus_babe::BabeBlockImport;
+-//! use sp_keystore::SyncCryptoStorePtr;
+-//! use sp_keyring::sr25519::Keyring::{Alice, Bob};
+-//! use node_cli::chain_spec::development_config;
+-//! use sp_consensus_babe::AuthorityId;
+-//! use manual_seal::{ConsensusDataProvider, consensus::babe::BabeConsensusDataProvider};
+-//! use sp_runtime::{traits::IdentifyAccount, MultiSigner, generic::Era};
+-//! use sc_executor::WasmExecutionMethod;
+-//! use sc_network::{multiaddr, config::TransportConfig};
+-//! use sc_client_api::execution_extensions::ExecutionStrategies;
+-//! use sc_informant::OutputFormat;
+-//! use sp_api::TransactionFor;
+-//!
+-//! type BlockImport<B, BE, C, SC> = BabeBlockImport<B, C, GrandpaBlockImport<BE, B, C, SC>>;
+-//!
+-//! pub struct ExecutorDispatch;
+-//!
+-//! impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
+-//! 	type ExtendHostFunctions = SignatureVerificationOverride;
+-//!
+-//! 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+-//! 		node_runtime::api::dispatch(method, data)
+-//! 	}
+-//!
+-//! 	fn native_version() -> sc_executor::NativeVersion {
+-//! 		node_runtime::native_version()
+-//! 	}
+-//! }
+-//!
+-//! struct Requirements;
+-//!
+-//! impl ChainInfo for Requirements {
+-//!     /// Provide a Block type with an OpaqueExtrinsic
+-//!     type Block = node_primitives::Block;
+-//!     /// Provide an ExecutorDispatch type for the runtime
+-//!     type ExecutorDispatch = ExecutorDispatch;
+-//!     /// Provide the runtime itself
+-//!     type Runtime = node_runtime::Runtime;
+-//!     /// A touch of runtime api
+-//!     type RuntimeApi = node_runtime::RuntimeApi;
+-//!     /// A pinch of SelectChain implementation
+-//!     type SelectChain = sc_consensus::LongestChain<TFullBackend<Self::Block>, Self::Block>;
+-//!     /// A slice of concrete BlockImport type
+-//! 	type BlockImport = BlockImport<
+-//! 		Self::Block,
+-//! 		TFullBackend<Self::Block>,
+-//! 		TFullClient<Self::Block, Self::RuntimeApi, NativeElseWasmExecutor<Self::ExecutorDispatch>>,
+-//! 		Self::SelectChain,
+-//!     >;
+-//!     /// and a dash of SignedExtensions
+-//! 	type SignedExtras = node_runtime::SignedExtra;
+-//!
+-//!     /// Create your signed extras here.
+-//! 	fn signed_extras(
+-//! 		from: <Self::Runtime as frame_system::Config>::AccountId,
+-//! 	) -> Self::SignedExtension {
+-//! 		let nonce = frame_system::Pallet::<Self::Runtime>::account_nonce(from);
+-//!
+-//! 		(
+-//! 			frame_system::CheckNonZeroSender::<Self::Runtime>::new(),
+-//! 			frame_system::CheckSpecVersion::<Self::Runtime>::new(),
+-//! 			frame_system::CheckTxVersion::<Self::Runtime>::new(),
+-//! 			frame_system::CheckGenesis::<Self::Runtime>::new(),
+-//! 			frame_system::CheckMortality::<Self::Runtime>::from(Era::Immortal),
+-//! 			frame_system::CheckNonce::<Self::Runtime>::from(nonce),
+-//! 			frame_system::CheckWeight::<Self::Runtime>::new(),
+-//! 			pallet_transaction_payment::ChargeTransactionPayment::<Self::Runtime>::from(0),
+-//! 		)
+-//! 	}
+-//!
+-//!     /// The function signature tells you all you need to know. ;)
+-//! 	fn create_client_parts(config: &Configuration) -> Result<
+-//! 		(
+-//! 			Arc<TFullClient<Self::Block, Self::RuntimeApi, NativeElseWasmExecutor<Self::ExecutorDispatch>>>,
+-//! 			Arc<TFullBackend<Self::Block>>,
+-//! 			KeyStorePtr,
+-//! 			TaskManager,
+-//! 			InherentDataProviders,
+-//! 			Option<Box<
+-//! 				dyn ConsensusDataProvider<
+-//! 					Self::Block,
+-//! 					Transaction = TransactionFor<
+-//! 						TFullClient<Self::Block, Self::RuntimeApi, NativeElseWasmExecutor<Self::ExecutorDispatch>>,
+-//! 						Self::Block
+-//! 					>,
+-//! 				>
+-//! 			>>,
+-//! 			Self::SelectChain,
+-//! 			Self::BlockImport
+-//! 		),
+-//! 		sc_service::Error
+-//! 	> {
+-//! 		let (
+-//! 			client,
+-//! 			backend,
+-//! 			keystore,
+-//! 			task_manager,
+-//! 		) = new_full_parts::<Self::Block, Self::RuntimeApi, NativeElseWasmExecutor<Self::ExecutorDispatch>>(config)?;
+-//! 		let client = Arc::new(client);
+-//!
+-//! 		let inherent_providers = InherentDataProviders::new();
+-//! 		let select_chain = sc_consensus::LongestChain::new(backend.clone());
+-//!
+-//! 		let (grandpa_block_import, ..) =
+-//! 			sc_finality_grandpa::block_import(client.clone(), &(client.clone() as Arc<_>), select_chain.clone())?;
+-//!
+-//! 		let (block_import, babe_link) = sc_consensus_babe::block_import(
+-//! 			sc_consensus_babe::Config::get(&*client)?,
+-//! 			grandpa_block_import,
+-//! 			client.clone(),
+-//! 		)?;
+-//!
+-//! 		let consensus_data_provider = BabeConsensusDataProvider::new(
+-//! 			client.clone(),
+-//! 			keystore.clone(),
+-//! 			&inherent_providers,
+-//! 			babe_link.epoch_changes().clone(),
+-//! 			vec![(AuthorityId::from(Alice.public()), 1000)]
+-//! 		)
+-//! 		.expect("failed to create ConsensusDataProvider");
+-//!
+-//! 		Ok((
+-//! 			client,
+-//! 			backend,
+-//! 			keystore,
+-//! 			task_manager,
+-//! 			inherent_providers,
+-//! 			Some(Box::new(consensus_data_provider)),
+-//! 			select_chain,
+-//! 			block_import
+-//! 		))
+-//! 	}
+-//!
+-//! 	fn dispatch_with_root(call: <Self::Runtime as frame_system::Config>::Call, node: &mut Node<Self>) {
+-//!         let alice = MultiSigner::from(Alice.public()).into_account();
+-//! 		// for chains that support sudo, otherwise, you'd have to use pallet-democracy here.
+-//!         let call = pallet_sudo::Call::sudo(Box::new(call));
+-//!         node.submit_extrinsic(call, alice);
+-//!         node.seal_blocks(1);
+-//!     }
+-//! }
+-//!
+-//! /// And now for the most basic test
+-//!
+-//! #[test]
+-//! fn simple_balances_test() {
+-//! 	// given
+-//! 	let config = NodeConfig {
+-//! 			execution_strategies: ExecutionStrategies {
+-//! 				syncing: sc_client_api::ExecutionStrategy::NativeWhenPossible,
+-//! 				importing: sc_client_api::ExecutionStrategy::NativeWhenPossible,
+-//! 				block_construction: sc_client_api::ExecutionStrategy::NativeWhenPossible,
+-//! 				offchain_worker: sc_client_api::ExecutionStrategy::NativeWhenPossible,
+-//! 				other: sc_client_api::ExecutionStrategy::NativeWhenPossible,
+-//! 		},
+-//! 		chain_spec: Box::new(development_config()),
+-//! 		log_targets: vec![],
+-//! 	};
+-//! 	let mut node = Node::<Requirements>::new(config).unwrap();
+-//!
+-//! 	type Balances = pallet_balances::Pallet<node_runtime::Runtime>;
+-//!
+-//! 	let (alice, bob) = (Alice.pair(), Bob.pair());
+-//! 	let (alice_account_id, bob_acount_id) = (
+-//!         MultiSigner::from(alice.public()).into_account(),
+-//!         MultiSigner::from(bob.public()).into_account()
+-//!     );
+-//!
+-//!     /// the function with_state allows us to read state, pretty cool right? :D
+-//! 	let old_balance = node.with_state(|| Balances::free_balance(alice_account_id.clone()));
+-//!
+-//!     // 70 dots
+-//!     let amount = 70_000_000_000_000;
+-//!
+-//!     /// Send extrinsic in action.
+-//! 	node.submit_extrinsic(BalancesCall::transfer(bob_acount_id.clone(), amount), alice_account_id.clone());
+-//!
+-//!     /// Produce blocks in action, Powered by manual-seal™.
+-//! 	node.seal_blocks(1);
+-//!
+-//!     /// we can check the new state :D
+-//! 	let new_balance = node.with_state(|| Balances::free_balance(alice_account_id));
+-//!
+-//!     /// we can now make assertions on how state has changed.
+-//! 	assert_eq!(old_balance + amount, new_balance);
+-//! }
+-//! ```
+-
+-use sc_consensus::BlockImport;
+-use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
+-use sc_service::TFullClient;
+-use sp_api::{ConstructRuntimeApi, TransactionFor};
+-use sp_consensus::SelectChain;
+-use sp_inherents::InherentDataProvider;
+-use sp_runtime::traits::{Block as BlockT, SignedExtension};
+-
+-mod client;
+-mod host_functions;
+-mod node;
+-mod utils;
+-
+-pub use client::*;
+-pub use host_functions::*;
+-pub use node::*;
+-pub use utils::*;
+-
+-/// Wrapper trait for concrete type required by this testing framework.
+-pub trait ChainInfo: Sized {
+-	/// Opaque block type
+-	type Block: BlockT;
+-
+-	/// ExecutorDispatch dispatch type
+-	type ExecutorDispatch: NativeExecutionDispatch + 'static;
+-
+-	/// Runtime
+-	type Runtime: frame_system::Config;
+-
+-	/// RuntimeApi
+-	type RuntimeApi: Send
+-		+ Sync
+-		+ 'static
+-		+ ConstructRuntimeApi<
+-			Self::Block,
+-			TFullClient<
+-				Self::Block,
+-				Self::RuntimeApi,
+-				NativeElseWasmExecutor<Self::ExecutorDispatch>,
+-			>,
+-		>;
+-
+-	/// select chain type.
+-	type SelectChain: SelectChain<Self::Block> + 'static;
+-
+-	/// Block import type.
+-	type BlockImport: Send
+-		+ Sync
+-		+ Clone
+-		+ BlockImport<
+-			Self::Block,
+-			Error = sp_consensus::Error,
+-			Transaction = TransactionFor<
+-				TFullClient<
+-					Self::Block,
+-					Self::RuntimeApi,
+-					NativeElseWasmExecutor<Self::ExecutorDispatch>,
+-				>,
+-				Self::Block,
+-			>,
+-		> + 'static;
+-
+-	/// The signed extras required by the runtime
+-	type SignedExtras: SignedExtension;
+-
+-	/// The inherent data providers.
+-	type InherentDataProviders: InherentDataProvider + 'static;
+-
+-	/// Signed extras, this function is caled in an externalities provided environment.
+-	fn signed_extras(
+-		from: <Self::Runtime as frame_system::Config>::AccountId,
+-	) -> Self::SignedExtras;
+-}
+diff --git a/test-utils/test-runner/src/node.rs b/test-utils/test-runner/src/node.rs
+deleted file mode 100644
+index f122e48d53..0000000000
+--- a/test-utils/test-runner/src/node.rs
++++ /dev/null
+@@ -1,278 +0,0 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+-
+-// This program is free software: you can redistribute it and/or modify
+-// it under the terms of the GNU General Public License as published by
+-// the Free Software Foundation, either version 3 of the License, or
+-// (at your option) any later version.
+-
+-// This program is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-// GNU General Public License for more details.
+-
+-// You should have received a copy of the GNU General Public License
+-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+-
+-use std::sync::Arc;
+-
+-use crate::ChainInfo;
+-use futures::{
+-	channel::{mpsc, oneshot},
+-	FutureExt, SinkExt,
+-};
+-use jsonrpc_core::MetaIoHandler;
+-use manual_seal::EngineCommand;
+-use sc_client_api::{backend::Backend, CallExecutor, ExecutorProvider};
+-use sc_executor::NativeElseWasmExecutor;
+-use sc_service::{TFullBackend, TFullCallExecutor, TFullClient, TaskManager};
+-use sc_transaction_pool_api::TransactionPool;
+-use sp_api::{OverlayedChanges, StorageTransactionCache};
+-use sp_blockchain::HeaderBackend;
+-use sp_core::ExecutionContext;
+-use sp_runtime::{
+-	generic::{BlockId, UncheckedExtrinsic},
+-	traits::{Block as BlockT, Extrinsic, Header, NumberFor},
+-	transaction_validity::TransactionSource,
+-	MultiAddress, MultiSignature,
+-};
+-use sp_state_machine::Ext;
+-
+-/// This holds a reference to a running node on another thread,
+-/// the node process is dropped when this struct is dropped
+-/// also holds logs from the process.
+-pub struct Node<T: ChainInfo> {
+-	/// rpc handler for communicating with the node over rpc.
+-	rpc_handler: Arc<MetaIoHandler<sc_rpc::Metadata, sc_rpc_server::RpcMiddleware>>,
+-	/// handle to the running node.
+-	task_manager: Option<TaskManager>,
+-	/// client instance
+-	client: Arc<TFullClient<T::Block, T::RuntimeApi, NativeElseWasmExecutor<T::ExecutorDispatch>>>,
+-	/// transaction pool
+-	pool: Arc<
+-		dyn TransactionPool<
+-			Block = <T as ChainInfo>::Block,
+-			Hash = <<T as ChainInfo>::Block as BlockT>::Hash,
+-			Error = sc_transaction_pool::error::Error,
+-			InPoolTransaction = sc_transaction_pool::Transaction<
+-				<<T as ChainInfo>::Block as BlockT>::Hash,
+-				<<T as ChainInfo>::Block as BlockT>::Extrinsic,
+-			>,
+-		>,
+-	>,
+-	/// channel to communicate with manual seal on.
+-	manual_seal_command_sink: mpsc::Sender<EngineCommand<<T::Block as BlockT>::Hash>>,
+-	/// backend type.
+-	backend: Arc<TFullBackend<T::Block>>,
+-	/// Block number at initialization of this Node.
+-	initial_block_number: NumberFor<T::Block>,
+-}
+-
+-type EventRecord<T> = frame_system::EventRecord<
+-	<T as frame_system::Config>::Event,
+-	<T as frame_system::Config>::Hash,
+->;
+-
+-impl<T> Node<T>
+-where
+-	T: ChainInfo,
+-	<<T::Block as BlockT>::Header as Header>::Number: From<u32>,
+-{
+-	/// Creates a new node.
+-	pub fn new(
+-		rpc_handler: Arc<MetaIoHandler<sc_rpc::Metadata, sc_rpc_server::RpcMiddleware>>,
+-		task_manager: TaskManager,
+-		client: Arc<
+-			TFullClient<T::Block, T::RuntimeApi, NativeElseWasmExecutor<T::ExecutorDispatch>>,
+-		>,
+-		pool: Arc<
+-			dyn TransactionPool<
+-				Block = <T as ChainInfo>::Block,
+-				Hash = <<T as ChainInfo>::Block as BlockT>::Hash,
+-				Error = sc_transaction_pool::error::Error,
+-				InPoolTransaction = sc_transaction_pool::Transaction<
+-					<<T as ChainInfo>::Block as BlockT>::Hash,
+-					<<T as ChainInfo>::Block as BlockT>::Extrinsic,
+-				>,
+-			>,
+-		>,
+-		command_sink: mpsc::Sender<EngineCommand<<T::Block as BlockT>::Hash>>,
+-		backend: Arc<TFullBackend<T::Block>>,
+-	) -> Self {
+-		Self {
+-			rpc_handler,
+-			task_manager: Some(task_manager),
+-			client: client.clone(),
+-			pool,
+-			backend,
+-			manual_seal_command_sink: command_sink,
+-			initial_block_number: client.info().best_number,
+-		}
+-	}
+-
+-	/// Returns a reference to the rpc handlers, use this to send rpc requests.
+-	/// eg
+-	/// ```ignore
+-	/// 	let request = r#"{"jsonrpc":"2.0","method":"engine_createBlock","params": [true, true],"id":1}"#;
+-	/// 		let response = node.rpc_handler()
+-	/// 		.handle_request_sync(request, Default::default());
+-	/// ```
+-	pub fn rpc_handler(
+-		&self,
+-	) -> Arc<MetaIoHandler<sc_rpc::Metadata, sc_rpc_server::RpcMiddleware>> {
+-		self.rpc_handler.clone()
+-	}
+-
+-	/// Return a reference to the Client
+-	pub fn client(
+-		&self,
+-	) -> Arc<TFullClient<T::Block, T::RuntimeApi, NativeElseWasmExecutor<T::ExecutorDispatch>>> {
+-		self.client.clone()
+-	}
+-
+-	/// Return a reference to the pool.
+-	pub fn pool(
+-		&self,
+-	) -> Arc<
+-		dyn TransactionPool<
+-			Block = <T as ChainInfo>::Block,
+-			Hash = <<T as ChainInfo>::Block as BlockT>::Hash,
+-			Error = sc_transaction_pool::error::Error,
+-			InPoolTransaction = sc_transaction_pool::Transaction<
+-				<<T as ChainInfo>::Block as BlockT>::Hash,
+-				<<T as ChainInfo>::Block as BlockT>::Extrinsic,
+-			>,
+-		>,
+-	> {
+-		self.pool.clone()
+-	}
+-
+-	/// Executes closure in an externalities provided environment.
+-	pub fn with_state<R>(&self, closure: impl FnOnce() -> R) -> R
+-	where
+-		<TFullCallExecutor<T::Block, NativeElseWasmExecutor<T::ExecutorDispatch>> as CallExecutor<T::Block>>::Error:
+-			std::fmt::Debug,
+-	{
+-		let id = BlockId::Hash(self.client.info().best_hash);
+-		let mut overlay = OverlayedChanges::default();
+-		let mut cache = StorageTransactionCache::<
+-			T::Block,
+-			<TFullBackend<T::Block> as Backend<T::Block>>::State,
+-		>::default();
+-		let mut extensions = self
+-			.client
+-			.execution_extensions()
+-			.extensions(&id, ExecutionContext::BlockConstruction);
+-		let state_backend = self
+-			.backend
+-			.state_at(id.clone())
+-			.expect(&format!("State at block {} not found", id));
+-
+-		let mut ext = Ext::new(&mut overlay, &mut cache, &state_backend, Some(&mut extensions));
+-		sp_externalities::set_and_run_with_externalities(&mut ext, closure)
+-	}
+-
+-	/// submit some extrinsic to the node. if signer is None, will submit unsigned_extrinsic.
+-	pub async fn submit_extrinsic(
+-		&self,
+-		call: impl Into<<T::Runtime as frame_system::Config>::Call>,
+-		signer: Option<<T::Runtime as frame_system::Config>::AccountId>,
+-	) -> Result<<T::Block as BlockT>::Hash, sc_transaction_pool::error::Error>
+-	where
+-		<T::Block as BlockT>::Extrinsic: From<
+-			UncheckedExtrinsic<
+-				MultiAddress<
+-					<T::Runtime as frame_system::Config>::AccountId,
+-					<T::Runtime as frame_system::Config>::Index,
+-				>,
+-				<T::Runtime as frame_system::Config>::Call,
+-				MultiSignature,
+-				T::SignedExtras,
+-			>,
+-		>,
+-	{
+-		let signed_data = if let Some(signer) = signer {
+-			let extra = self.with_state(|| T::signed_extras(signer.clone()));
+-			Some((
+-				signer.into(),
+-				MultiSignature::Sr25519(sp_core::sr25519::Signature::from_raw([0u8; 64])),
+-				extra,
+-			))
+-		} else {
+-			None
+-		};
+-		let ext = UncheckedExtrinsic::<
+-			MultiAddress<
+-				<T::Runtime as frame_system::Config>::AccountId,
+-				<T::Runtime as frame_system::Config>::Index,
+-			>,
+-			<T::Runtime as frame_system::Config>::Call,
+-			MultiSignature,
+-			T::SignedExtras,
+-		>::new(call.into(), signed_data)
+-		.expect("UncheckedExtrinsic::new() always returns Some");
+-		let at = self.client.info().best_hash;
+-
+-		self.pool
+-			.submit_one(&BlockId::Hash(at), TransactionSource::Local, ext.into())
+-			.await
+-	}
+-
+-	/// Get the events of the most recently produced block
+-	pub fn events(&self) -> Vec<EventRecord<T::Runtime>> {
+-		self.with_state(|| frame_system::Pallet::<T::Runtime>::events())
+-	}
+-
+-	/// Instructs manual seal to seal new, possibly empty blocks.
+-	pub async fn seal_blocks(&self, num: usize) {
+-		let mut sink = self.manual_seal_command_sink.clone();
+-
+-		for count in 0..num {
+-			let (sender, future_block) = oneshot::channel();
+-			let future = sink.send(EngineCommand::SealNewBlock {
+-				create_empty: true,
+-				finalize: false,
+-				parent_hash: None,
+-				sender: Some(sender),
+-			});
+-
+-			const ERROR: &'static str = "manual-seal authorship task is shutting down";
+-			future.await.expect(ERROR);
+-
+-			match future_block.await.expect(ERROR) {
+-				Ok(block) => {
+-					log::info!("sealed {} (hash: {}) of {} blocks", count + 1, block.hash, num)
+-				},
+-				Err(err) => {
+-					log::error!("failed to seal block {} of {}, error: {:?}", count + 1, num, err)
+-				},
+-			}
+-		}
+-	}
+-
+-	/// Revert count number of blocks from the chain.
+-	pub fn revert_blocks(&self, count: NumberFor<T::Block>) {
+-		self.backend.revert(count, true).expect("Failed to revert blocks: ");
+-	}
+-
+-	/// so you've decided to run the test runner as a binary, use this to shutdown gracefully.
+-	pub async fn until_shutdown(mut self) {
+-		let manager = self.task_manager.take();
+-		if let Some(mut task_manager) = manager {
+-			let task = task_manager.future().fuse();
+-			let signal = tokio::signal::ctrl_c();
+-			futures::pin_mut!(signal);
+-			futures::future::select(task, signal).await;
+-		}
+-	}
+-}
+-
+-impl<T: ChainInfo> Drop for Node<T> {
+-	fn drop(&mut self) {
+-		// Revert all blocks added since creation of the node.
+-		let diff = self.client.info().best_number - self.initial_block_number;
+-		self.revert_blocks(diff);
+-	}
+-}
+diff --git a/test-utils/test-runner/src/utils.rs b/test-utils/test-runner/src/utils.rs
+deleted file mode 100644
+index 452dc600e4..0000000000
+--- a/test-utils/test-runner/src/utils.rs
++++ /dev/null
+@@ -1,118 +0,0 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
+-
+-// This program is free software: you can redistribute it and/or modify
+-// it under the terms of the GNU General Public License as published by
+-// the Free Software Foundation, either version 3 of the License, or
+-// (at your option) any later version.
+-
+-// This program is distributed in the hope that it will be useful,
+-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-// GNU General Public License for more details.
+-
+-// You should have received a copy of the GNU General Public License
+-// along with this program. If not, see <https://www.gnu.org/licenses/>.
+-
+-use sc_client_api::execution_extensions::ExecutionStrategies;
+-use sc_executor::WasmExecutionMethod;
+-use sc_informant::OutputFormat;
+-use sc_network::{
+-	config::{NetworkConfiguration, Role, TransportConfig},
+-	multiaddr,
+-};
+-use sc_service::{
+-	config::KeystoreConfig, BasePath, ChainSpec, Configuration, DatabaseSource, KeepBlocks,
+-	TransactionStorageMode,
+-};
+-use sp_keyring::sr25519::Keyring::Alice;
+-use tokio::runtime::Handle;
+-
+-pub use sc_cli::build_runtime;
+-
+-/// Base db path gotten from env
+-pub fn base_path() -> BasePath {
+-	if let Some(base) = std::env::var("DB_BASE_PATH").ok() {
+-		BasePath::new(base)
+-	} else {
+-		BasePath::new_temp_dir().expect("couldn't create a temp dir")
+-	}
+-}
+-
+-/// Produces a default configuration object, suitable for use with most set ups.
+-pub fn default_config(tokio_handle: Handle, mut chain_spec: Box<dyn ChainSpec>) -> Configuration {
+-	let base_path = base_path();
+-	let root_path = base_path.path().to_path_buf().join("chains").join(chain_spec.id());
+-
+-	let storage = chain_spec
+-		.as_storage_builder()
+-		.build_storage()
+-		.expect("could not build storage");
+-
+-	chain_spec.set_storage(storage);
+-	let key_seed = Alice.to_seed();
+-
+-	let mut network_config = NetworkConfiguration::new(
+-		format!("Test Node for: {}", key_seed),
+-		"network/test/0.1",
+-		Default::default(),
+-		None,
+-	);
+-	let informant_output_format = OutputFormat { enable_color: false };
+-	network_config.allow_non_globals_in_dht = true;
+-
+-	network_config.listen_addresses.push(multiaddr::Protocol::Memory(0).into());
+-
+-	network_config.transport = TransportConfig::MemoryOnly;
+-
+-	Configuration {
+-		impl_name: "test-node".to_string(),
+-		impl_version: "0.1".to_string(),
+-		role: Role::Authority,
+-		tokio_handle,
+-		transaction_pool: Default::default(),
+-		network: network_config,
+-		keystore: KeystoreConfig::Path { path: root_path.join("key"), password: None },
+-		database: DatabaseSource::RocksDb { path: root_path.join("db"), cache_size: 128 },
+-		state_cache_size: 16777216,
+-		state_cache_child_ratio: None,
+-		chain_spec,
+-		wasm_method: WasmExecutionMethod::Interpreted,
+-		execution_strategies: ExecutionStrategies {
+-			syncing: sc_client_api::ExecutionStrategy::AlwaysWasm,
+-			importing: sc_client_api::ExecutionStrategy::AlwaysWasm,
+-			block_construction: sc_client_api::ExecutionStrategy::AlwaysWasm,
+-			offchain_worker: sc_client_api::ExecutionStrategy::AlwaysWasm,
+-			other: sc_client_api::ExecutionStrategy::AlwaysWasm,
+-		},
+-		rpc_http: None,
+-		rpc_ws: None,
+-		rpc_ipc: None,
+-		rpc_ws_max_connections: None,
+-		rpc_cors: None,
+-		rpc_methods: Default::default(),
+-		rpc_max_payload: None,
+-		ws_max_out_buffer_capacity: None,
+-		prometheus_config: None,
+-		telemetry_endpoints: None,
+-		default_heap_pages: None,
+-		offchain_worker: Default::default(),
+-		force_authoring: false,
+-		disable_grandpa: false,
+-		dev_key_seed: Some(key_seed),
+-		tracing_targets: None,
+-		tracing_receiver: Default::default(),
+-		max_runtime_instances: 8,
+-		announce_block: true,
+-		base_path: Some(base_path),
+-		wasm_runtime_overrides: None,
+-		informant_output_format,
+-		keystore_remote: None,
+-		keep_blocks: KeepBlocks::All,
+-		state_pruning: Default::default(),
+-		transaction_storage: TransactionStorageMode::BlockBody,
+-		runtime_cache_size: 2,
+-	}
+-}
