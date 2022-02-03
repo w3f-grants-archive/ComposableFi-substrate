@@ -25,7 +25,7 @@ use crate::{
 	},
 	PerThing,
 };
-use codec::{CompactAs, Decode, Encode};
+use codec::{CompactAs, Decode, Encode, MaxEncodedLen};
 use sp_std::{
 	convert::{TryFrom, TryInto},
 	fmt::Debug,
@@ -144,7 +144,7 @@ pub trait FixedPointNumber:
 		d: D,
 	) -> Option<Self> {
 		if d == D::zero() {
-			return None
+			return None;
 		}
 
 		let n: I129 = n.into();
@@ -365,6 +365,7 @@ macro_rules! implement_fixed {
 		#[derive(
 			Encode,
 			Decode,
+			MaxEncodedLen,
 			CompactAs,
 			Default,
 			Copy,
@@ -436,7 +437,7 @@ macro_rules! implement_fixed {
 
 			fn saturating_pow(self, exp: usize) -> Self {
 				if exp == 0 {
-					return Self::saturating_from_integer(1)
+					return Self::saturating_from_integer(1);
 				}
 
 				let exp = exp as u32;
@@ -514,7 +515,7 @@ macro_rules! implement_fixed {
 		impl CheckedDiv for $name {
 			fn checked_div(&self, other: &Self) -> Option<Self> {
 				if other.0 == 0 {
-					return None
+					return None;
 				}
 
 				let lhs: I129 = self.0.into();
