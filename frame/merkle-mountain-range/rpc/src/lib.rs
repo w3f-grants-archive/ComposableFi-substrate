@@ -19,7 +19,7 @@
 
 //! Node-specific RPC methods for interaction with Merkle Mountain Range pallet.
 
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 
 use codec::{Codec, Encode};
 use jsonrpc_core::{Error, ErrorCode, Result};
@@ -33,6 +33,7 @@ use sp_core::Bytes;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
 
 pub use pallet_mmr_primitives::{LeafIndex, MmrApi as MmrRuntimeApi};
+use sp_core::bytes::to_hex;
 
 /// Retrieved MMR leaf and its proof.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -72,7 +73,7 @@ pub struct LeafBatchProof<BlockHash> {
 impl<BlockHash> LeafBatchProof<BlockHash> {
 	/// Create new `LeafBatchProof` from a given vector of (`Leaf`,
 	/// [pallet_mmr_primitives::LeafIndex]) and a [pallet_mmr_primitives::BatchProof].
-	pub fn new<Leaf, MmrHash>(
+	pub fn new<Leaf: Debug, MmrHash>(
 		block_hash: BlockHash,
 		leaves: Vec<(Leaf, LeafIndex)>,
 		proof: BatchProof<MmrHash>,
@@ -81,6 +82,7 @@ impl<BlockHash> LeafBatchProof<BlockHash> {
 		Leaf: Encode,
 		MmrHash: Encode,
 	{
+		println!("{:#?}\n\n{:#?}", leaves, to_hex(&leaves.encode(), true));
 		Self { block_hash, leaves: Bytes(leaves.encode()), proof: Bytes(proof.encode()) }
 	}
 }
@@ -220,7 +222,9 @@ fn runtime_error_into_rpc_error(err: impl std::fmt::Debug) -> Error {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use sp_core::H256;
+	use hex_literal::hex;
+	use pallet_mmr_primitives::DataOrHash;
+	use sp_core::{bytes::from_hex, KeccakHasher, H256};
 
 	#[test]
 	fn should_serialize_leaf_proof() {
@@ -317,5 +321,58 @@ mod tests {
 
 		// then
 		assert_eq!(actual, expected);
+	}
+
+	#[test]
+	fn deserialize_leaf_batch_proof() {
+		use beefy_primitives::mmr::MmrLeaf;
+
+		type Leaf = MmrLeaf<u32, H256, H256>;
+
+		let bytes = from_hex("0x0cc50100090000009744ea94eedfcf1ae50fc4edacfd6c1db8ed345654246792b9bd60b8268cfa3a010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb0914b3edb9d6a95a4881aebc7f0ee878745a687ca45f50dbf2448b8e3b5d5483600900000000000000c501000e00000014e259b3fd4065f330b10caad83841be639e74d1cab554686328932bf5718944010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb0914b3edb9d6a95a4881aebc7f0ee878745a687ca45f50dbf2448b8e3b5d5483600e00000000000000c5010010000000ad76138c189ab47863fb04908ad40930641dd9eceb436d8ec691a14a1f07212f010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb0907e56e2c47ccdf885d359310f3a43192b77e32a7d32773e780d0bcfc6a72ebaf1000000000000000").unwrap();
+
+		let leaves: Vec<(Vec<u8>, u64)> = codec::Decode::decode(&mut &bytes[..]).unwrap();
+
+		let leaves = leaves
+			.into_iter()
+			.map(|(encoded, index)| {
+				let leaf: Leaf = codec::Decode::decode(&mut &encoded[..]).unwrap();
+				(leaf, index)
+			})
+			.collect::<Vec<_>>();
+
+		println!("leaf: {:?}", hex!("03b7076fc071f631787d64ddbd93d3e2"));
+	}
+
+	#[test]
+	fn test_multi_leaf_mmr_proof() {
+		let mmr_root = H256::from([
+			72, 183, 40, 135, 139, 221, 74, 166, 201, 0, 52, 167, 117, 108, 17, 181, 114, 52, 217,
+			146, 200, 40, 236, 116, 241, 209, 1, 223, 30, 128, 62, 112,
+		]);
+		let block_hash =
+			H256::from(hex!("04e44ea53db9c59545fbb7bc04881fd4c6327029ee7751eee32e78409d4827b7"));
+		let leaves = hex!("10c50100bd020000dbd670705fddee2d22d0d3cdced8734aa8c8374197eaf1493f9fb86e7fbeba0f010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb0975e8469015638c96e3d9942cb35297b28d0cca7add9932c5a7354fa302d6f2e3bd02000000000000c50100be020000a76a43d5b7bf9bfa6c7562ebd35019f7709910a3f76464688f62717b13b20fe8010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb0975e8469015638c96e3d9942cb35297b28d0cca7add9932c5a7354fa302d6f2e3be02000000000000c50100bf0200006d0ab0459bf2a9305e048805fbc9bc58b7e9454906c2e94b6d981f0e8ceb3180010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb091b8751c2c1962bde4b57548c1bdef9ef2efcf93730e130036feee3f944bec9edbf02000000000000c50100c0020000d6aaaaa38e330ac1500a22d0fe382ffe2ca9f95161f479dca2e56038696ee343010000000000000005000000baa93c7834125ee3120bac6e3342bd3f28611110ad21ab6075367abdffefeb091b8751c2c1962bde4b57548c1bdef9ef2efcf93730e130036feee3f944bec9edc002000000000000").to_vec();
+		let proof = hex!("10bd02000000000000be02000000000000bf02000000000000c002000000000000e903000000000000380b69447305465f8796365fe6035c938e8307482a7eb81d312c74e3bdd4d06e6f861ff8ff2a2c35ba80caf31bbb1d5042133a61b8371af548477d7cf2fc7456ba2c831a65e8ca11b67a84f4b36a9cacb86a27b30e0cc0f10b7a4d406bbcf331e881ae35265781aa57e7619352caad12c681d6c07157f337f5b57a52491475289823ebb41b1af8e1213ae3159bd422d8b421d2813435d89c2dde3b3e201940a49eb282a3bda4a8cf9bef677ae1b49dc211cf25473e02fbf4aca9257552d91bb9763dca3cf547d4d15d53e4c9ee730e3acc8b3705359cbc2857eceea31121ed6706a0c991631e945495269afa5b3759915e77b62add69c1849ac742917e62922819b5c14bffd531d4ff99ef95b9f2e897d64e0e027439334d63cdb7d3ec0c988fa1aed09fb5b47b41a2e27946eecead11062188fb0353b813c1e74c23943a0497f9a5a92a54b9292f657ce45b9bcc699d4eac12a587f19878c51bb338c3c9d84f4481e964f7f7480b0ab9da1e691359b03c003cb3c2f5dc4a29ba9610167f0d782caad6b08a2ec0e74a66afea72837b5e070d18c5e79f0c1fc35fc9c5f0645811bcdaf53cb132d461ea60f4fe62f5a3fc1aa723f4854c067d84a3b1e26c93398bf9").to_vec();
+
+		let proof: BatchProof<H256> = codec::Decode::decode(&mut &proof[..]).unwrap();
+		use beefy_primitives::mmr::MmrLeaf;
+
+		type Leaf = MmrLeaf<u32, H256, H256>;
+
+		let leaves: Vec<(Vec<u8>, u64)> = codec::Decode::decode(&mut &leaves[..]).unwrap();
+
+		let leaves = leaves
+			.into_iter()
+			.map(|(encoded, index)| {
+				let leaf: Leaf = codec::Decode::decode(&mut &encoded[..]).unwrap();
+				(leaf, index)
+			})
+			.collect::<Vec<_>>();
+		let mmr_leaves = leaves
+			.into_iter()
+			.map(|(leaf, _)| DataOrHash::<sp_runtime::traits::Keccak256, _>::Data(leaf))
+			.collect::<Vec<_>>();
+		pallet_mmr::verify_leaves_proof(mmr_root, mmr_leaves, proof).unwrap();
 	}
 }
