@@ -63,7 +63,7 @@ use sp_runtime::traits::{self, One, Saturating};
 #[cfg(any(feature = "runtime-benchmarks", test))]
 mod benchmarking;
 mod default_weights;
-mod mmr;
+pub mod mmr;
 #[cfg(test)]
 mod mock;
 #[cfg(test)]
@@ -103,11 +103,13 @@ pub trait WeightInfo {
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
+	use crate::mmr::Node;
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T, I = ()>(PhantomData<(T, I)>);
 
 	/// This pallet's configuration trait
@@ -187,13 +189,19 @@ pub mod pallet {
 	#[pallet::getter(fn mmr_leaves)]
 	pub type NumberOfLeaves<T, I = ()> = StorageValue<_, LeafIndex, ValueQuery>;
 
+	/// All known nodes & leaves in the MMR, just until offchain db is fork aware
+	#[pallet::storage]
+	#[pallet::getter(fn mmr_nodes)]
+	pub type Nodes<T: Config<I>, I: 'static = ()> =
+		StorageMap<_, Identity, NodeIndex, Vec<u8>, OptionQuery>;
+
 	/// Hashes of the nodes in the MMR.
 	///
 	/// Note this collection only contains MMR peaks, the inner nodes (and leaves)
 	/// are pruned and only stored in the Offchain DB.
 	#[pallet::storage]
 	#[pallet::getter(fn mmr_peak)]
-	pub type Nodes<T: Config<I>, I: 'static = ()> =
+	pub type Peaks<T: Config<I>, I: 'static = ()> =
 		StorageMap<_, Identity, NodeIndex, <T as Config<I>>::Hash, OptionQuery>;
 
 	#[pallet::hooks]
