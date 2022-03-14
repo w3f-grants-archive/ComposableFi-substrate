@@ -5829,9 +5829,11 @@ dependencies = [
 name = "pallet-mmr-rpc"
 version = "3.0.0"
 dependencies = [
+ "hex-literal",
  "jsonrpc-core",
  "jsonrpc-core-client",
  "jsonrpc-derive",
+ "pallet-mmr",
  "pallet-mmr-primitives",
  "parity-scale-codec",
  "serde",

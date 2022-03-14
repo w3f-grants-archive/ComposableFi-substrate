@@ -17,10 +17,10 @@
 
 //! A MMR storage implementations.
 
-use codec::Encode;
+use codec::{Decode, Encode};
 use frame_support::log;
 use mmr_lib::helper;
-use sp_io::offchain_index;
+// use sp_io::offchain_index;
 use sp_std::iter::Peekable;
 #[cfg(not(feature = "std"))]
 use sp_std::prelude::*;
@@ -28,7 +28,7 @@ use sp_std::prelude::*;
 use crate::{
 	mmr::{utils::NodesUtils, Node, NodeOf},
 	primitives::{self, NodeIndex},
-	Config, Nodes, NumberOfLeaves, Pallet,
+	Config, Nodes, NumberOfLeaves, Pallet, Peaks,
 };
 
 /// A marker type for runtime-specific storage implementation.
@@ -66,10 +66,14 @@ where
 	L: primitives::FullLeaf + codec::Decode,
 {
 	fn get_elem(&self, pos: NodeIndex) -> mmr_lib::Result<Option<NodeOf<T, I, L>>> {
-		let key = Pallet::<T, I>::offchain_key(pos);
+		let value = Nodes::<T, I>::get(pos)
+			.and_then(|opaque| Vec::<u8>::decode(&mut &opaque[..]).ok())
+			.and_then(|node| Decode::decode(&mut &node[..]).ok());
+		Ok(value)
+		// let key = Pallet::<T, I>::offchain_key(pos);
 		// Retrieve the element from Off-chain DB.
-		Ok(sp_io::offchain::local_storage_get(sp_core::offchain::StorageKind::PERSISTENT, &key)
-			.and_then(|v| codec::Decode::decode(&mut &*v).ok()))
+		// Ok(sp_io::offchain::local_storage_get(sp_core::offchain::StorageKind::PERSISTENT, &key)
+		// 	.and_then(|v| codec::Decode::decode(&mut &*v).ok()))
 	}
 
 	fn append(&mut self, _: NodeIndex, _: Vec<NodeOf<T, I, L>>) -> mmr_lib::Result<()> {
@@ -84,7 +88,7 @@ where
 	L: primitives::FullLeaf,
 {
 	fn get_elem(&self, pos: NodeIndex) -> mmr_lib::Result<Option<NodeOf<T, I, L>>> {
-		Ok(<Nodes<T, I>>::get(pos).map(Node::Hash))
+		Ok(<Peaks<T, I>>::get(pos).map(Node::Hash))
 	}
 
 	fn append(&mut self, pos: NodeIndex, elems: Vec<NodeOf<T, I, L>>) -> mmr_lib::Result<()> {
@@ -116,12 +120,13 @@ where
 		for elem in elems {
 			// Indexing API is used to store the full node content (both leaf and inner).
 			elem.using_encoded(|elem| {
-				offchain_index::set(&Pallet::<T, I>::offchain_key(node_index), elem)
+				Nodes::<T, I>::insert(node_index, elem.encode());
+				// offchain_index::set(&Pallet::<T, I>::offchain_key(node_index), elem)
 			});
 
 			// On-chain we are going to only store new peaks.
 			if peaks_to_store.next_if_eq(&node_index).is_some() {
-				<Nodes<T, I>>::insert(node_index, elem.hash());
+				<Peaks<T, I>>::insert(node_index, elem.hash());
 			}
 
 			// Increase the indices.
@@ -136,7 +141,7 @@ where
 
 		// And remove all remaining items from `peaks_before` collection.
 		for pos in peaks_to_prune {
-			<Nodes<T, I>>::remove(pos);
+			<Peaks<T, I>>::remove(pos);
 		}
 
 		Ok(())

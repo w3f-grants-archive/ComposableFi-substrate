@@ -92,7 +92,7 @@ fn should_start_empty() {
 				.unwrap()
 		);
 		assert_eq!(crate::NumberOfLeaves::<Test>::get(), 0);
-		assert_eq!(crate::Nodes::<Test>::get(0), None);
+		assert_eq!(crate::Peaks::<Test>::get(0), None);
 
 		// when
 		let weight = new_block();
@@ -100,7 +100,7 @@ fn should_start_empty() {
 		// then
 		assert_eq!(crate::NumberOfLeaves::<Test>::get(), 1);
 		assert_eq!(
-			crate::Nodes::<Test>::get(0),
+			crate::Peaks::<Test>::get(0),
 			Some(hex("4320435e8c3318562dba60116bdbcc0b82ffcecb9bb39aae3300cfda3ad0b8b0"))
 		);
 		assert_eq!(
@@ -123,8 +123,8 @@ fn should_append_to_mmr_when_on_initialize_is_called() {
 		assert_eq!(crate::NumberOfLeaves::<Test>::get(), 1);
 		assert_eq!(
 			(
-				crate::Nodes::<Test>::get(0),
-				crate::Nodes::<Test>::get(1),
+				crate::Peaks::<Test>::get(0),
+				crate::Peaks::<Test>::get(1),
 				crate::RootHash::<Test>::get(),
 			),
 			(
@@ -143,10 +143,10 @@ fn should_append_to_mmr_when_on_initialize_is_called() {
 		assert_eq!(peaks, vec![2]);
 		assert_eq!(
 			(
-				crate::Nodes::<Test>::get(0),
-				crate::Nodes::<Test>::get(1),
-				crate::Nodes::<Test>::get(2),
-				crate::Nodes::<Test>::get(3),
+				crate::Peaks::<Test>::get(0),
+				crate::Peaks::<Test>::get(1),
+				crate::Peaks::<Test>::get(2),
+				crate::Peaks::<Test>::get(3),
 				crate::RootHash::<Test>::get(),
 			),
 			(
@@ -191,13 +191,13 @@ fn should_construct_larger_mmr_correctly() {
 		let peaks = peaks_from_leaves_count(7);
 		assert_eq!(peaks, vec![6, 9, 10]);
 		for i in (0..=10).filter(|p| !peaks.contains(p)) {
-			assert!(crate::Nodes::<Test>::get(i).is_none());
+			assert!(crate::Peaks::<Test>::get(i).is_none());
 		}
 		assert_eq!(
 			(
-				crate::Nodes::<Test>::get(6),
-				crate::Nodes::<Test>::get(9),
-				crate::Nodes::<Test>::get(10),
+				crate::Peaks::<Test>::get(6),
+				crate::Peaks::<Test>::get(9),
+				crate::Peaks::<Test>::get(10),
 				crate::RootHash::<Test>::get(),
 			),
 			(
