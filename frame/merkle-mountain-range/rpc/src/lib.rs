@@ -224,7 +224,9 @@ fn runtime_error_into_rpc_error(err: impl std::fmt::Debug) -> CallError {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use sp_core::H256;
+	use hex_literal::hex;
+	use sp_core::{bytes::to_hex, H256};
+	use sp_runtime::traits::Keccak256;
 
 	#[test]
 	fn should_serialize_leaf_proof() {
@@ -322,5 +324,30 @@ mod tests {
 
 		// then
 		assert_eq!(actual, expected);
+	}
+
+	#[test]
+	fn verify_leaf_batch_proof() {
+		let proof = hex!("085100000000000000550000000000000059000000000000001c919f74633e8c8e36a84bf395798907c3b6ae5a3153a44ab0a7da4cbf3875ed73ad4360bcdefc245c0442db20542649b5be9b8e8e663615f21848ff1d93698696f0bed286e1e4847f789862436dca72cecbedc8431c472fb9a8fb4c6a2b46e406982af3b60f75914ec56e6b8aec1fa7e2bb90e56d4fe84983c15111a2967e13fda834df1c838ea86baab278721e725237cdeb00a5c4b321d6cbb1be1f34a29def22229501db81a5322cb0b44d773b24d22ff90cf9e2a6e81fdb44198d55999b9703aad4830a9be608ce5a19a67668b22d7f17ec49621c9acbe608d721d0f16336").to_vec();
+		let leaves = hex!("08c5010051000000d4d6e57a1501adb3b6913e6dcf1daa94e33b34874db5217c7cda675dc2f2ceb2010000000000000002000000697ea2a8fe5b03468548a7a413424a6292ab44a82a6f5cc594c3fa7dda7ce402aed43d163a98d6e7a734d6c499434c5ed527bdb1d91a2aa497f3ac8a4525c6ea5100000000000000c501005500000059583e0535a9976fef5a6e45207193e931b954b7aee6389996964404869ddeab010000000000000002000000697ea2a8fe5b03468548a7a413424a6292ab44a82a6f5cc594c3fa7dda7ce402f966a1030ff01a79d91a64e28f71db529fdf0f7a6062b963853020e8345eb20f5500000000000000").to_vec();
+		let mmr_root = H256::from([
+			156, 210, 34, 255, 181, 219, 85, 193, 33, 150, 251, 202, 203, 239, 8, 16, 103, 229,
+			217, 93, 230, 146, 128, 41, 30, 54, 10, 212, 146, 75, 97, 29,
+		]);
+
+		println!("{}", to_hex(&mmr_root[..], false));
+		let batch_proof: BatchProof<H256> = codec::Decode::decode(&mut &proof[..]).unwrap();
+
+		let leaves: Vec<(Vec<u8>, u64)> = codec::Decode::decode(&mut &leaves[..]).unwrap();
+
+		let mmr_leaves = leaves
+			.into_iter()
+			.map(|(l, i)| {
+				let hash = sp_core::keccak_256(&l[..]);
+				println!("leaf: {}, {:?}", i, hash);
+				pallet_mmr::mmr::Node::<Keccak256, ()>::Hash(H256::from(hash))
+			})
+			.collect::<Vec<_>>();
+		pallet_mmr::verify_leaves_proof(mmr_root, mmr_leaves, batch_proof).unwrap()
 	}
 }
