@@ -110,7 +110,8 @@ impl SlotTimestampProvider {
 				.ok_or_else(|| "best header not found in the db!".to_string())?;
 			let slot = func(header)?;
 			// add the slot duration so there's no collision of slots
-			(slot * slot_duration) + slot_duration
+			println!("\n\n\nOld time: {}\n\n\n", slot * slot_duration);
+			(slot * slot_duration) + (slot_duration * 10)
 		} else {
 			// this is the first block, use the correct time.
 			let now = SystemTime::now();
@@ -142,6 +143,7 @@ impl InherentDataProvider for SlotTimestampProvider {
 		// we update the time here.
 		let new_time: InherentType =
 			self.unix_millis.fetch_add(self.slot_duration, atomic::Ordering::SeqCst).into();
+		println!("\n\n\nNew Time: {}\n\n\n", new_time);
 		inherent_data.put_data(INHERENT_IDENTIFIER, &new_time)?;
 		Ok(())
 	}
