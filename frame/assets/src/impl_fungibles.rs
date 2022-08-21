@@ -252,7 +252,7 @@ impl<T: Config<I>, I: 'static> fungibles::approvals::Mutate<<T as SystemConfig>:
 		Self::do_approve_transfer(asset, owner, delegate, amount)
 	}
 
-	// Aprove spending tokens from a given account
+	// Approve spending tokens from a given account
 	fn transfer_from(
 		asset: T::AssetId,
 		owner: &<T as SystemConfig>::AccountId,
@@ -261,5 +261,55 @@ impl<T: Config<I>, I: 'static> fungibles::approvals::Mutate<<T as SystemConfig>:
 		amount: T::Balance,
 	) -> DispatchResult {
 		Self::do_transfer_approved(asset, owner, delegate, dest, amount)
+	}
+}
+
+// noop hold implementation
+// real impl can be next pr
+impl<T: Config<I>, I: 'static> fungibles::InspectHold<<T as SystemConfig>::AccountId>
+	for Pallet<T, I>
+{
+	fn balance_on_hold(_asset: T::AssetId, _who: &<T as SystemConfig>::AccountId) -> Self::Balance {
+		<_>::default()
+	}
+
+	fn can_hold(
+		_asset: T::AssetId,
+		_who: &<T as SystemConfig>::AccountId,
+		_amount: Self::Balance,
+	) -> bool {
+		false
+	}
+}
+
+impl<T: Config<I>, I: 'static> fungibles::MutateHold<<T as SystemConfig>::AccountId>
+	for Pallet<T, I>
+{
+	fn hold(
+		_asset: T::AssetId,
+		_who: &<T as SystemConfig>::AccountId,
+		_amount: Self::Balance,
+	) -> DispatchResult {
+		Err(DispatchError::Other("not implemented"))
+	}
+
+	fn release(
+		_asset: T::AssetId,
+		_who: &<T as SystemConfig>::AccountId,
+		_amount: Self::Balance,
+		_best_effort: bool,
+	) -> Result<Self::Balance, DispatchError> {
+		Err(DispatchError::Other("not implemented"))
+	}
+
+	fn transfer_held(
+		_asset: Self::AssetId,
+		_source: &<T as SystemConfig>::AccountId,
+		_dest: &<T as SystemConfig>::AccountId,
+		_amount: Self::Balance,
+		_best_effort: bool,
+		_on_hold: bool,
+	) -> Result<Self::Balance, DispatchError> {
+		Err(DispatchError::Other("not implemented"))
 	}
 }
