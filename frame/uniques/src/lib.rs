@@ -103,9 +103,9 @@ pub mod pallet {
 		/// Standard class creation is only allowed if the origin attempting it and the class are
 		/// in this set.
 		type CreateOrigin: EnsureOriginWithArg<
-			Success = Self::AccountId,
 			Self::Origin,
 			Self::ClassId,
+			Success = Self::AccountId,
 		>;
 
 		/// Locker trait to enable Locking mechanism downstream.
