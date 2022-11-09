@@ -1156,7 +1156,7 @@ impl<T: Config<I>, I: 'static> fungible::Unbalanced<T::AccountId> for Pallet<T, 
 				reserved: account.reserved,
 			});
 			Ok(())
-		})
+		})?
 	}
 
 	fn set_total_issuance(amount: Self::Balance) {
