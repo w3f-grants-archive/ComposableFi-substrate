@@ -198,7 +198,6 @@ impl HandleCredit<AccountId, Assets> for CreditToBlockAuthor {
 }
 
 impl pallet_asset_tx_payment::Config for Runtime {
-	type Event = Event;
 	type Fungibles = Assets;
 	type OnChargeAssetTransaction = FungiblesAdapter<
 		pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
