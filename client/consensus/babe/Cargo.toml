@@ -18,7 +18,7 @@ async-trait = "0.1.50"
 codec = { package = "parity-scale-codec", version = "3.0.0", features = [
 	"derive",
 ] }
-futures = "0.3.21"
+futures = "0.3.25"
 log = "0.4.16"
 merlin = "2.0"
 num-bigint = "0.2.3"
