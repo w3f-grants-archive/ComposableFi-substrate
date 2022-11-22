@@ -29,7 +29,7 @@ sp-std = { version = "4.0.0", default-features = false, path = "../std" }
 [dev-dependencies]
 criterion = "0.3"
 primitive-types = "0.11.1"
-rand = "0.7.2"
+rand = "0.8.4"
 
 [features]
 default = ["std"]
