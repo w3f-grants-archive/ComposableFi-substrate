@@ -18,7 +18,7 @@ ahash = "0.7.6"
 async-trait = "0.1.50"
 dyn-clone = "1.0"
 finality-grandpa = { version = "0.15.0", features = ["derive-codec"] }
-futures = "0.3.21"
+futures = "0.3.26"
 futures-timer = "3.0.1"
 hex = "0.4.2"
 log = "0.4.16"
